@@ -1,4 +1,4 @@
-# Kurangi Ping 2
+# Kurangi Ping 
 
 Monorepo scaffold for a Windows desktop game routing optimizer.
 
