@@ -1,0 +1,228 @@
+﻿openapi: 3.0.3
+info:
+  title: Kurangi Ping Relay Admin API
+  version: 1.0.0
+  description: Internal administrative endpoints for relay operations and credentials.
+servers:
+  - url: https://admin.kurangiping.example/v1
+    description: Production
+  - url: http://localhost:8100/v1
+    description: Local Development
+tags:
+  - name: Admin
+    description: Relay administration operations
+paths:
+  /admin/manifest/publish:
+    post:
+      summary: Publish relay manifest
+      description: Publishes a new signed manifest version for clients.
+      operationId: publishRelayManifest
+      tags: [Admin]
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishManifestRequest'
+      responses:
+        '201':
+          description: Manifest published
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublishManifestResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ManifestInvalidSignature'
+  /admin/relay/{relay_id}/status:
+    post:
+      summary: Update relay status
+      description: Updates administrative relay status used by health and routing control layers.
+      operationId: updateRelayStatus
+      tags: [Admin]
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: relay_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RelayStatusUpdateRequest'
+      responses:
+        '200':
+          description: Relay status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelayStatusUpdateResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /admin/credentials/rotate:
+    post:
+      summary: Rotate admin credential
+      description: Rotates service credential and returns metadata for next rollout step.
+      operationId: rotateAdminCredential
+      tags: [Admin]
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: Credential rotated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CredentialRotateResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-Admin-Api-Key
+  schemas:
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorObject'
+    ErrorObject:
+      type: object
+      required: [code, message, retryable, request_id]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        retryable:
+          type: boolean
+        request_id:
+          type: string
+          format: uuid
+    RelayNode:
+      type: object
+      required: [relay_id, region, hostname, priority]
+      properties:
+        relay_id:
+          type: string
+        region:
+          type: string
+        hostname:
+          type: string
+        priority:
+          type: integer
+          minimum: 1
+    PublishManifestRequest:
+      type: object
+      required: [version, valid_until, signature, relays]
+      properties:
+        version:
+          type: string
+        valid_until:
+          type: string
+          format: date-time
+        signature:
+          type: string
+        relays:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/RelayNode'
+    PublishManifestResponse:
+      type: object
+      required: [version, published_at, request_id]
+      properties:
+        version:
+          type: string
+        published_at:
+          type: string
+          format: date-time
+        request_id:
+          type: string
+          format: uuid
+    RelayStatusUpdateRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [ok, warn, dead, disabled]
+        note:
+          type: string
+          maxLength: 500
+    RelayStatusUpdateResponse:
+      type: object
+      required: [relay_id, status, updated_at, request_id]
+      properties:
+        relay_id:
+          type: string
+        status:
+          type: string
+          enum: [ok, warn, dead, disabled]
+        updated_at:
+          type: string
+          format: date-time
+        request_id:
+          type: string
+          format: uuid
+    CredentialRotateResponse:
+      type: object
+      required: [rotated_at, key_id, request_id]
+      properties:
+        rotated_at:
+          type: string
+          format: date-time
+        key_id:
+          type: string
+        request_id:
+          type: string
+          format: uuid
+  responses:
+    Unauthorized:
+      description: Missing or invalid admin credential
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Conflict:
+      description: Resource conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    ManifestInvalidSignature:
+      description: Manifest signature invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+security:
+  - ApiKeyAuth: []

@@ -1,0 +1,181 @@
+﻿openapi: 3.0.3
+info:
+  title: Kurangi Ping Relay Public API
+  version: 1.0.0
+  description: Public read-only relay metadata and health endpoints for Kurangi Ping clients.
+servers:
+  - url: https://api.kurangiping.example/v1
+    description: Production
+  - url: http://localhost:8080/v1
+    description: Local Development
+tags:
+  - name: Relay
+    description: Relay metadata and health operations
+paths:
+  /relay/manifest:
+    get:
+      summary: Fetch signed relay manifest
+      description: Returns the latest signed relay manifest used for client route selection.
+      operationId: getRelayManifest
+      tags: [Relay]
+      responses:
+        '200':
+          description: Manifest fetched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelayManifestResponse'
+        '422':
+          $ref: '#/components/responses/ManifestInvalidSignature'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /relay/health:
+    get:
+      summary: List relay health summaries
+      description: Returns current health and latency for available relay nodes.
+      operationId: listRelayHealth
+      tags: [Relay]
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Relay health list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelayHealthListResponse'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  schemas:
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorObject'
+    ErrorObject:
+      type: object
+      required: [code, message, retryable, request_id]
+      properties:
+        code:
+          type: string
+          example: RATE_LIMITED
+        message:
+          type: string
+          example: Too many requests
+        retryable:
+          type: boolean
+        request_id:
+          type: string
+          format: uuid
+    RelayNode:
+      type: object
+      required: [relay_id, region, hostname, priority]
+      properties:
+        relay_id:
+          type: string
+          example: sin-01
+        region:
+          type: string
+          example: sin
+        hostname:
+          type: string
+          example: sin-01.example.net
+        priority:
+          type: integer
+          minimum: 1
+    RelayManifestResponse:
+      type: object
+      required: [version, valid_until, signature, relays]
+      properties:
+        version:
+          type: string
+          example: 2026.08.0
+        valid_until:
+          type: string
+          format: date-time
+        signature:
+          type: string
+          description: Base64 signature of manifest payload
+        relays:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelayNode'
+    RelayHealthItem:
+      type: object
+      required: [relay_id, status, latency_ms, updated_at]
+      properties:
+        relay_id:
+          type: string
+        status:
+          type: string
+          enum: [ok, warn, dead]
+        latency_ms:
+          type: integer
+          minimum: 0
+        updated_at:
+          type: string
+          format: date-time
+    PageInfo:
+      type: object
+      required: [limit]
+      properties:
+        next_cursor:
+          type: string
+          nullable: true
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 200
+    RelayHealthListResponse:
+      type: object
+      required: [data, page]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelayHealthItem'
+        page:
+          $ref: '#/components/schemas/PageInfo'
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 50
+        minimum: 1
+        maximum: 200
+    Cursor:
+      name: cursor
+      in: query
+      schema:
+        type: string
+  responses:
+    ManifestInvalidSignature:
+      description: Manifest signature invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    RateLimited:
+      description: Too many requests
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'

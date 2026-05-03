@@ -1,0 +1,15 @@
+# Environment files (secrets)
+.env
+.env.local
+.env.*.local
+.env.development
+.env.staging
+.env.production
+.env.test
+!.env.example
+
+# Potential secret/key artifacts
+*.pem
+*.key
+*.p12
+*.pfx

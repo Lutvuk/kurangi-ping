@@ -1,0 +1,95 @@
+{
+  "agents": [
+    "codex",
+    "generic"
+  ],
+  "installed": [
+    {
+      "name": "prd-generator",
+      "source": "https://github.com/meganopus/pdlc/tree/main/skills/prd-generator",
+      "type": "skill",
+      "installedAt": "2026-05-02T21:18:45.386Z"
+    },
+    {
+      "name": "tech-stack",
+      "source": "https://github.com/meganopus/pdlc/tree/main/skills/tech-stack",
+      "type": "skill",
+      "installedAt": "2026-05-02T21:18:45.389Z"
+    },
+    {
+      "name": "design-system",
+      "source": "https://github.com/meganopus/pdlc/tree/main/skills/design-system",
+      "type": "skill",
+      "installedAt": "2026-05-02T21:18:45.393Z"
+    },
+    {
+      "name": "erd-generator",
+      "source": "https://github.com/meganopus/pdlc/tree/main/skills/erd-generator",
+      "type": "skill",
+      "installedAt": "2026-05-02T21:18:45.397Z"
+    },
+    {
+      "name": "api-contract-generator",
+      "source": "https://github.com/meganopus/pdlc/tree/main/skills/api-contract-generator",
+      "type": "skill",
+      "installedAt": "2026-05-02T21:18:45.401Z"
+    },
+    {
+      "name": "fsd-generator",
+      "source": "https://github.com/meganopus/pdlc/tree/main/skills/fsd-generator",
+      "type": "skill",
+      "installedAt": "2026-05-02T21:18:45.405Z"
+    },
+    {
+      "name": "tdd-generator",
+      "source": "https://github.com/meganopus/pdlc/tree/main/skills/tdd-generator",
+      "type": "skill",
+      "installedAt": "2026-05-02T21:18:45.410Z"
+    },
+    {
+      "name": "wireframe-generator",
+      "source": "https://github.com/meganopus/pdlc/tree/main/skills/wireframe-generator",
+      "type": "skill",
+      "installedAt": "2026-05-02T21:18:45.414Z"
+    },
+    {
+      "name": "epic-generator",
+      "source": "https://github.com/meganopus/pdlc/tree/main/skills/epic-generator",
+      "type": "skill",
+      "installedAt": "2026-05-02T21:18:45.418Z"
+    },
+    {
+      "name": "story-generator",
+      "source": "https://github.com/meganopus/pdlc/tree/main/skills/story-generator",
+      "type": "skill",
+      "installedAt": "2026-05-02T21:18:45.422Z"
+    },
+    {
+      "name": "project-kickoff-heavy",
+      "source": "https://github.com/meganopus/pdlc/tree/main/workflows/project-kickoff-heavy.md",
+      "type": "skill",
+      "legacyType": "workflow",
+      "installedAt": "2026-05-02T21:18:45.429Z"
+    },
+    {
+      "name": "add-feature-heavy",
+      "source": "https://github.com/meganopus/pdlc/tree/main/workflows/add-feature-heavy.md",
+      "type": "skill",
+      "legacyType": "workflow",
+      "installedAt": "2026-05-02T21:18:45.432Z"
+    },
+    {
+      "name": "start-story",
+      "source": "https://github.com/meganopus/pdlc/tree/main/workflows/start-story.md",
+      "type": "skill",
+      "legacyType": "workflow",
+      "installedAt": "2026-05-02T21:18:45.435Z"
+    },
+    {
+      "name": "dependency-graph-manager",
+      "source": "https://github.com/meganopus/pdlc/tree/main/skills/dependency-graph-manager",
+      "type": "skill",
+      "installedAt": "2026-05-02T21:18:45.443Z"
+    }
+  ]
+}

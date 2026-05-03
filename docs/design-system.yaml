@@ -1,0 +1,396 @@
+metadata:
+  title: "Design System - Kurangi Ping"
+  version: "1.0"
+  date: "May 2026"
+  tone: "Tactical · Fast · Trustworthy"
+  theme: "Dark-ops network console"
+
+visual_philosophy:
+  summary:
+    - "Bukan gaming app yang keren, tetapi monitoring tool yang serius."
+    - "Data harus terbaca dalam 0.5 detik, termasuk saat user panik sebelum raid."
+  principles:
+    - "Data dulu, dekorasi belakangan: setiap elemen harus justify kehadirannya."
+    - "Warna = informasi: teal hanya untuk live/connected, amber hanya untuk measuring/degraded."
+    - "Ketajaman bermakna: komponen data sharp corner, komponen interaktif sedikit radius."
+
+tokens:
+  colors:
+    brand_palette:
+      - name: "--color-base"
+        value: "#0A0E0F"
+        usage: "Near-black dengan cyan tint - monitor glow"
+      - name: "--color-surface-01"
+        value: "#111619"
+        usage: "Elevation 1: cards, sidebar"
+      - name: "--color-surface-02"
+        value: "#181E22"
+        usage: "Elevation 2: dropdown, hover"
+      - name: "--color-surface-03"
+        value: "#1F272C"
+        usage: "Elevation 3: modal, overlay"
+    signal_colors:
+      - name: "--color-signal"
+        value: "#00D4B8"
+        usage: "Connected, active, live only"
+      - name: "--color-signal-dim"
+        value: "rgba(0,212,184,0.08)"
+        usage: "Surface tint saat routing ON"
+      - name: "--color-signal-border"
+        value: "rgba(0,212,184,0.20)"
+        usage: "Border saat state active"
+      - name: "--color-probe"
+        value: "#E8A020"
+        usage: "Measuring, degraded, transitioning only"
+      - name: "--color-probe-dim"
+        value: "rgba(232,160,32,0.08)"
+        usage: "Surface tint saat probe/degraded"
+    semantic_relay_health:
+      - name: "--color-relay-ok"
+        value: "#3DD68C"
+        usage: "Relay sehat < 50ms"
+      - name: "--color-relay-warn"
+        value: "#E8A020"
+        usage: "Relay degraded 50-150ms"
+      - name: "--color-relay-dead"
+        value: "#E84040"
+        usage: "Relay offline / timeout"
+    text:
+      - name: "--color-text-primary"
+        value: "#E8EDF0"
+        usage: "Konten utama"
+      - name: "--color-text-secondary"
+        value: "#7A909C"
+        usage: "Label, metadata"
+      - name: "--color-text-muted"
+        value: "#3D5060"
+        usage: "Placeholder, disabled, divider label"
+      - name: "--color-text-signal"
+        value: "#00D4B8"
+        usage: "Data saat connected"
+      - name: "--color-text-probe"
+        value: "#E8A020"
+        usage: "Data saat measuring"
+    border:
+      - name: "--color-border-subtle"
+        value: "#1F2D35"
+        usage: "Divider halus"
+      - name: "--color-border-default"
+        value: "#253540"
+        usage: "Border komponen default"
+      - name: "--color-border-strong"
+        value: "#34485A"
+        usage: "Border komponen fokus/hover"
+    rules:
+      - "--color-signal hanya muncul saat routing ON, tidak boleh dekorasi."
+      - "--color-probe hanya untuk measuring atau relay degraded."
+      - "Jangan campurkan signal dan probe dalam satu komponen."
+      - "Background app selalu --color-base."
+
+  typography:
+    font_stack:
+      display:
+        value: "'Rajdhani', sans-serif"
+        usage: "Heading, label section, toggle text"
+      body:
+        value: "'DM Sans', sans-serif"
+        usage: "Body copy, navigasi, deskripsi"
+      mono:
+        value: "'JetBrains Mono', monospace"
+        usage: "Angka ping, IP, hostname, log output"
+    rationale:
+      - "Rajdhani: geometrik, cocok HUD/militer, tidak sci-fi berlebihan."
+      - "DM Sans: humanist, warm tapi profesional."
+      - "JetBrains Mono: visual authority untuk data network."
+    forbidden_fonts:
+      - "Inter"
+      - "Roboto"
+      - "Arial"
+      - "Space Grotesk"
+      - "Oxanium"
+    scale:
+      display:
+        - name: "--text-display-lg"
+          value: "700 24px/1.1 Rajdhani"
+          usage: "App logo, section besar"
+        - name: "--text-display-md"
+          value: "600 18px/1.2 Rajdhani"
+          usage: "Toggle label, modal title"
+        - name: "--text-display-sm"
+          value: "500 14px/1.3 Rajdhani"
+          usage: "Card heading"
+      body:
+        - name: "--text-body-md"
+          value: "400 14px/1.6 DM Sans"
+          usage: "Deskripsi, konten utama"
+        - name: "--text-body-sm"
+          value: "400 12px/1.5 DM Sans"
+          usage: "Secondary info, metadata"
+        - name: "--text-label"
+          value: "500 10px/1.4 DM Sans"
+          usage: "Label uppercase, nav item"
+          letter_spacing: "0.08em"
+      mono:
+        - name: "--text-mono-xl"
+          value: "600 32px/1.0 JetBrains Mono"
+          usage: "Angka ping utama"
+        - name: "--text-mono-lg"
+          value: "600 20px/1.0 JetBrains Mono"
+          usage: "Angka sekunder"
+        - name: "--text-mono-md"
+          value: "400 12px/1.4 JetBrains Mono"
+          usage: "Hostname, IP, server"
+        - name: "--text-mono-sm"
+          value: "400 10px/1.4 JetBrains Mono"
+          usage: "Log, detail teknis"
+
+  spacing:
+    note: "Tidak murni 4px grid, ada character sizes spesifik domain."
+    scale:
+      - { name: "--space-1", value: "4px" }
+      - { name: "--space-2", value: "8px" }
+      - { name: "--space-3", value: "12px" }
+      - { name: "--space-4", value: "16px" }
+      - { name: "--space-5", value: "20px" }
+      - { name: "--space-6", value: "28px", note: "Sedikit lebih lega untuk section break" }
+      - { name: "--space-7", value: "40px", note: "Sweet spot padding panel utama" }
+      - { name: "--space-8", value: "64px" }
+
+  shape_and_elevation:
+    radius:
+      - { name: "--radius-none", value: "0px", usage: "Data cards, metric display" }
+      - { name: "--radius-xs", value: "2px", usage: "Badge, tag, indicator kecil" }
+      - { name: "--radius-sm", value: "4px", usage: "Toggle, interactive utama" }
+      - { name: "--radius-md", value: "6px", usage: "Dropdown, tooltip" }
+      - { name: "--radius-lg", value: "10px", usage: "App window, modal" }
+    radius_rule:
+      - "Semakin data-heavy, semakin tajam corner."
+      - "Toggle 4px, Ping number card 0px, Modal 10px."
+    border_tokens:
+      - { name: "--border-subtle", value: "1px solid var(--color-border-subtle)" }
+      - { name: "--border-default", value: "1px solid var(--color-border-default)" }
+      - { name: "--border-strong", value: "1px solid var(--color-border-strong)" }
+      - { name: "--border-signal", value: "1px solid var(--color-signal-border)", usage: "Hanya saat active" }
+      - { name: "--border-accent", value: "2px solid var(--color-signal)", usage: "Hanya toggle active" }
+    shadows:
+      - { name: "--shadow-none", value: "none", usage: "Default semua elemen" }
+      - { name: "--shadow-overlay", value: "0 8px 32px rgba(0,0,0,0.6)", usage: "Modal saja" }
+    shadow_rule:
+      - "Tidak ada drop shadow pada komponen biasa."
+      - "Elevation disampaikan lewat warna surface."
+    z_index:
+      - { name: "--z-base", value: 0 }
+      - { name: "--z-dropdown", value: 100 }
+      - { name: "--z-toast", value: 200 }
+      - { name: "--z-overlay", value: 290, note: "Di bawah modal, di atas semua" }
+      - { name: "--z-modal", value: 300 }
+
+  breakpoints_and_motion:
+    breakpoints:
+      - { name: "--bp-compact", value: "960px", usage: "Sidebar collapse ke icon-only" }
+      - { name: "--bp-full", value: "1280px", usage: "Layout penuh, relay panel terbuka" }
+    motion:
+      durations:
+        - { name: "--duration-instant", value: "80ms", usage: "Toggle snap" }
+        - { name: "--duration-fast", value: "150ms", usage: "Hover, badge change" }
+        - { name: "--duration-normal", value: "240ms", usage: "Panel slide, dropdown" }
+        - { name: "--duration-slow", value: "400ms", usage: "Onboarding transition" }
+      easings:
+        - { name: "--ease-sharp", value: "cubic-bezier(0.2, 0, 0, 1)", usage: "Toggle decisive" }
+        - { name: "--ease-out", value: "cubic-bezier(0, 0, 0.2, 1)", usage: "Dropdown expand" }
+        - { name: "--ease-bounce", value: "cubic-bezier(0.34, 1.56, 0.64, 1)", usage: "Onboarding success" }
+      rules:
+        - "Toggle ON/OFF memakai --duration-instant + --ease-sharp."
+        - "Ping number tidak dianimasikan, langsung snap."
+
+components:
+  - name: "App Shell"
+    spec:
+      sidebar: "180px fixed, background --color-surface-01"
+      nav_item: "height 36px, font --text-label, uppercase, letter-spacing 0.08em"
+      active_state: "border-left 2px solid --color-signal, background rgba(signal, 0.04)"
+      top_bar: "height 40px, background --color-surface-01, border-bottom --border-subtle"
+
+  - name: "Primary Toggle (ON/OFF Routing)"
+    spec:
+      size: "72px x 72px"
+      border_radius: "--radius-sm (4px)"
+      off_state:
+        border: "--border-default"
+        background: "transparent"
+        label_color: "--color-text-muted"
+      on_state:
+        border: "2px solid --color-signal"
+        background: "--color-signal-dim"
+        label_color: "--color-signal"
+        ornament: "corner bracket 6px x 6px warna --color-signal"
+      transition: "--duration-instant, --ease-sharp"
+      font: "--text-display-md (Rajdhani 700)"
+    notes:
+      - "Corner bracket ornament adalah satu-satunya dekorasi di komponen ini."
+      - "Fungsi ornament: memberi batas visual tegas saat action penting."
+
+  - name: "Connection Status Badge"
+    spec:
+      padding: "3px 10px"
+      border_radius: "--radius-xs (2px)"
+      font: "--text-label uppercase, letter-spacing 0.06em"
+      off_state: "color --color-text-muted, background rgba(muted,0.15), border --border-subtle"
+      on_state: "color --color-signal, background --color-signal-dim, border --color-signal-border"
+      indicator: "6px circle, pulse opacity 2s ease-in-out infinite"
+
+  - name: "Ping Metric Card"
+    spec:
+      layout: "3-column grid, gap --space-3"
+      background: "--color-surface-01"
+      border: "--border-subtle"
+      border_radius: "--radius-none (0px)"
+      padding: "12px 14px"
+      label: "--text-label, color --color-text-muted, uppercase"
+      value: "--text-mono-xl (32px)"
+      value_states:
+        current_on: "--color-signal"
+        baseline: "--color-probe"
+        reduction: "--color-signal"
+      unit: "--text-body-sm, color --color-text-muted"
+
+  - name: "Relay Health List Item"
+    spec:
+      height: "36px"
+      layout: "[6px indicator] [hostname mono-md] [ms value mono-md] [region label]"
+      active_relay: "background --color-signal-dim, extend full width (negative margin)"
+      indicator: "6px circle, semantic health color"
+      ms_color: "sama dengan indicator"
+      hostname_color_default: "--color-text-secondary"
+      hostname_color_active: "--color-text-primary"
+
+  - name: "Game Detection Row"
+    spec:
+      background: "--color-surface-01"
+      border: "--border-subtle"
+      border_radius: "--radius-xs (2px)"
+      padding: "10px 14px"
+      game_icon: "28px x 28px, background --color-surface-03, border-radius --radius-xs"
+      game_name: "--text-body-md, --color-text-primary"
+      server_info: "--text-mono-sm, --color-text-secondary"
+      status_badge: "Detected, color --color-signal, background --color-signal-dim"
+
+  - name: "Toast / Alert"
+    spec:
+      width: "320px"
+      position: "fixed bottom-right"
+      border_radius: "--radius-xs (2px)"
+      padding: "12px 16px"
+      border_left: "3px solid semantic color"
+      background: "--color-surface-02"
+      auto_dismiss: "4000ms"
+      types:
+        - "info (signal)"
+        - "warning (probe)"
+        - "error (relay-dead)"
+        - "success (relay-ok)"
+
+  - name: "Modal (Confirm Disconnect / Update)"
+    spec:
+      overlay: "rgba(0,0,0,0.7)"
+      panel: "--color-surface-02, border --border-default, border-radius --radius-lg"
+      padding: "24px"
+      title: "--text-display-md (Rajdhani 600)"
+      body: "--text-body-md"
+      buttons: "Button primitives"
+
+  - name: "Onboarding Stepper"
+    spec:
+      steps: "numbered, horizontal flow"
+      inactive_step: "number + label, color --color-text-muted"
+      active_step: "color --color-text-primary, underline border-bottom --border-signal"
+      complete_step: "checkmark, color --color-relay-ok"
+      connector_line: "1px dashed --color-border-subtle"
+      transition: "--duration-slow, --ease-out"
+
+  - name: "Button Primitives"
+    variants:
+      primary:
+        background: "--color-signal"
+        color: "--color-base"
+        border: "none"
+        border_radius: "--radius-xs (2px)"
+        padding: "8px 20px"
+        font: "--text-label uppercase, letter-spacing 0.08em"
+      secondary:
+        background: "transparent"
+        color: "--color-text-primary"
+        border: "--border-default"
+        hover: "border --border-strong, background --color-surface-02"
+      destructive:
+        background: "transparent"
+        color: "--color-relay-dead"
+        border: "1px solid --color-relay-dead"
+        hover: "background rgba(relay-dead,0.08)"
+
+  - name: "Input & Select Primitives"
+    spec:
+      height: "36px"
+      background: "--color-surface-01"
+      border: "--border-default"
+      border_radius: "--radius-xs (2px)"
+      font: "--text-body-md, color --color-text-primary"
+      focus: "border --border-signal, outline none"
+      placeholder: "--color-text-muted"
+
+patterns:
+  - name: "One-Click Connect Flow"
+    steps:
+      - "App launch -> game auto-detected -> banner FFXIV terdeteksi"
+      - "User klik toggle (OFF -> ON)"
+      - "Badge animasi Connecting dengan probe color"
+      - "Route established -> badge snap ke Routing Active + signal color"
+      - "Ping metric muncul baseline vs current dalam < 2 detik"
+    target_duration: "< 3 detik dari klik ke angka muncul"
+
+  - name: "Relay Failover Feedback Flow"
+    steps:
+      - "Relay aktif jadi unreachable"
+      - "Toast: sin-01 unreachable - switching to nrt-01"
+      - "Badge sementara probe color Reconnecting"
+      - "Failover berhasil -> badge kembali signal color, relay list update"
+      - "Jika semua relay gagal -> badge merah No relay available, modal disconnect"
+
+  - name: "First-Run Onboarding Flow"
+    steps:
+      - "Step 1: Welcome + ringkasan (< 30 kata)"
+      - "Step 2: Permission check (Windows route table access)"
+      - "Step 3: Relay test otomatis ping semua node, pilih terbaik"
+      - "Step 4: Game detection test - Buka game kamu sekarang"
+      - "Step 5: First connect + lihat angka ping pertama kali"
+    rules:
+      - "Tidak ada akun."
+      - "Tidak ada email."
+      - "Tidak ada form panjang."
+
+  - name: "Error Recovery Flow"
+    scenarios:
+      - scenario: "No relay available"
+        behavior:
+          - "Toast error"
+          - "Modal opsi Retry / Continue without routing"
+      - scenario: "Permission denied (Windows route table)"
+        behavior:
+          - "Layar instruksi UAC step-by-step"
+          - "Tombol Restart as Administrator"
+      - scenario: "Game not detected"
+        behavior:
+          - "Banner info game tidak terdeteksi"
+          - "Tombol Scan ulang + link manual game list"
+
+non_ai_signals:
+  - "Tidak semua corner radius sama: tajam untuk data, rounded untuk interaksi."
+  - "Tidak ada purple/gradient."
+  - "Teal bukan warna brand umum, hanya live state."
+  - "Spacing tidak murni 4px grid: ada 28px dan 40px dengan alasan."
+  - "Ping number tidak animate, langsung snap."
+  - "Toggle tidak slide smooth, pakai sharp commit motion."
+  - "Tidak ada shadow pada card, elevation via warna."
+  - "Rajdhani dipilih karena konteks HUD/militer nyata."
+
+note: "Design system ini hidup, update setiap ada keputusan visual baru."

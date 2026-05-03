@@ -1,0 +1,145 @@
+﻿openapi: 3.0.3
+info:
+  title: Kurangi Ping Telemetry Ingest API
+  version: 1.0.0
+  description: Anonymous telemetry batch ingestion endpoint with strict schema allowlist.
+servers:
+  - url: https://telemetry.kurangiping.example/v1
+    description: Production
+  - url: http://localhost:8090/v1
+    description: Local Development
+tags:
+  - name: Telemetry
+    description: Telemetry ingest operations
+paths:
+  /telemetry/events:batch:
+    post:
+      summary: Ingest telemetry event batch
+      description: Accepts anonymized telemetry events. Payloads outside allowlist are rejected.
+      operationId: ingestTelemetryBatch
+      tags: [Telemetry]
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+            minLength: 8
+            maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TelemetryBatchRequest'
+      responses:
+        '202':
+          description: Batch accepted for processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TelemetryBatchAcceptedResponse'
+        '422':
+          $ref: '#/components/responses/TelemetrySchemaViolation'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  schemas:
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorObject'
+    ErrorObject:
+      type: object
+      required: [code, message, retryable, request_id]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        retryable:
+          type: boolean
+        request_id:
+          type: string
+          format: uuid
+    TelemetryEvent:
+      type: object
+      required: [event_name, occurred_at, payload]
+      properties:
+        event_name:
+          type: string
+          enum:
+            - app_opened
+            - game_detected
+            - routing_enabled
+            - ping_measured
+            - routing_disabled
+            - crash_reported
+            - relay_failed
+            - onboarding_completed
+        occurred_at:
+          type: string
+          format: date-time
+        session_id:
+          type: string
+          nullable: true
+        payload:
+          type: object
+          additionalProperties: true
+          description: Allowlisted keys are validated at ingestion policy layer.
+    TelemetryBatchRequest:
+      type: object
+      required: [installation_id_hash, events]
+      properties:
+        installation_id_hash:
+          type: string
+          description: One-way hash. No raw installation ID or user identity allowed.
+          minLength: 16
+          maxLength: 256
+        events:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/TelemetryEvent'
+    TelemetryBatchAcceptedResponse:
+      type: object
+      required: [accepted, rejected, request_id]
+      properties:
+        accepted:
+          type: integer
+          minimum: 0
+        rejected:
+          type: integer
+          minimum: 0
+        request_id:
+          type: string
+          format: uuid
+  responses:
+    TelemetrySchemaViolation:
+      description: Event payload violates telemetry allowlist schema
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    RateLimited:
+      description: Too many requests
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
