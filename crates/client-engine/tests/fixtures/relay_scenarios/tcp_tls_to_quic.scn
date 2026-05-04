@@ -1,0 +1,12 @@
+name=tcp_tls_to_quic
+now_unix_s=1700000000
+valid_until_unix_s=1800000000
+signature=known-good
+relay_id=sin-01
+relay_region=sin
+relay_host=sin-01.example.net
+relay_priority=1
+health_status=ok
+latency_ms=45
+fail_protocols=wireguard,tcp_tls
+

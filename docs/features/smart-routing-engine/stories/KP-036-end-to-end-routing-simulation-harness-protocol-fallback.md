@@ -18,10 +18,10 @@ Build simulation harness to validate multi-protocol fallback behavior under cont
 *   **Data Models:** Scenario definitions
 
 ## Acceptance Criteria (Technical)
-*   [ ] Harness validates WG failure to TCP/TLS fallback.
-*   [ ] Harness validates TCP/TLS failure to QUIC tertiary path.
-*   [ ] Exhaustion scenario produces terminal failed state.
-*   [ ] Test output includes deterministic trace of attempts.
+*   [x] Harness validates WG failure to TCP/TLS fallback.
+*   [x] Harness validates TCP/TLS failure to QUIC tertiary path.
+*   [x] Exhaustion scenario produces terminal failed state.
+*   [x] Test output includes deterministic trace of attempts.
 
 ## Business Rules & Logic
 *   Fallback reliability must be provable before feature wiring expands.
@@ -30,6 +30,6 @@ Build simulation harness to validate multi-protocol fallback behavior under cont
 *   Depends on: KP-032, KP-033, KP-034
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
