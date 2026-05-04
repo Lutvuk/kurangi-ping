@@ -1,6 +1,7 @@
 //! Routing and manifest verification boundaries.
 
 mod config;
+mod detection_gate;
 mod integration;
 mod manifest_gate;
 mod orchestrator;
@@ -10,6 +11,7 @@ mod scoring;
 mod state_machine;
 
 pub use config::{RoutingConfig, RoutingConfigError};
+pub use detection_gate::{can_activate_routing, DetectionGateDecision, DetectionGateReasonCode};
 pub use integration::{
     close_route_session, start_route_session, transition_with_session_hooks,
     RouteSessionPersistence, SessionHookResult, SessionHookStatus,
@@ -37,6 +39,7 @@ pub use state_machine::{
 };
 
 use crate::security::signature::ManifestSignatureVerifier;
+use crate::detection::state_resolver::DetectionResolution;
 
 /// Public routing service API.
 #[derive(Debug, Clone)]
@@ -100,6 +103,21 @@ impl RoutingService {
             failure_code,
         }
     }
+
+    pub fn plan_activation_with_detection<V: ManifestSignatureVerifier>(
+        &self,
+        detection_resolution: &DetectionResolution,
+        verifier: &V,
+        manifest: &RelayManifestDto,
+        now_unix_s: u64,
+    ) -> RouteActivationGateResult {
+        let detection_gate = can_activate_routing(detection_resolution);
+        if !detection_gate.can_activate {
+            return RouteActivationGateResult::Denied(detection_gate);
+        }
+
+        RouteActivationGateResult::Allowed(self.plan_activation(verifier, manifest, now_unix_s))
+    }
 }
 
 impl Default for RoutingService {
@@ -118,11 +136,21 @@ pub struct RoutePlan {
     pub failure_code: Option<ManifestFailureCode>,
 }
 
+#[derive(Debug, Clone)]
+pub enum RouteActivationGateResult {
+    Denied(DetectionGateDecision),
+    Allowed(RoutePlan),
+}
+
 #[cfg(test)]
 mod tests {
     use super::{
-        ManifestFailureCode, ManifestGateResult, RelayManifestDto, RelayNodeDto, RouteProtocol,
-        RoutingConfig, RoutingConfigError, RoutingService, DEFAULT_PROTOCOL_ORDER,
+        DetectionGateReasonCode, ManifestFailureCode, ManifestGateResult, RelayManifestDto,
+        RelayNodeDto, RouteActivationGateResult, RouteProtocol, RoutingConfig, RoutingConfigError,
+        RoutingService, DEFAULT_PROTOCOL_ORDER,
+    };
+    use crate::detection::state_resolver::{
+        DetectionMetadata, DetectionReasonCode, DetectionResolution, DetectionState,
     };
     use crate::security::signature::AllowlistSignatureVerifier;
 
@@ -137,6 +165,26 @@ mod tests {
                 hostname: "sin-01.example.net".to_string(),
                 priority: 1,
             }],
+        }
+    }
+
+    fn detection_resolution(
+        state: DetectionState,
+        reason_code: Option<DetectionReasonCode>,
+    ) -> DetectionResolution {
+        DetectionResolution {
+            state,
+            metadata: DetectionMetadata {
+                scanned_at_unix_ms: 1_700_000_000_000,
+                last_detected_at_unix_ms: None,
+                stale_after_ms: 15_000,
+                stale_age_ms: None,
+                reason_code,
+                match_count: 0,
+                matched_process_id: None,
+                matched_game_id: None,
+                matched_executable_name: None,
+            },
         }
     }
 
@@ -192,5 +240,54 @@ mod tests {
         assert!(plan.attempted_protocols.is_empty());
         assert!(plan.route_candidates.is_empty());
         assert_eq!(plan.failure_code, Some(ManifestFailureCode::SignatureInvalid));
+    }
+
+    #[test]
+    fn plan_activation_with_detection_denies_when_state_not_detected() {
+        let service = RoutingService::new();
+        let verifier = AllowlistSignatureVerifier::new(vec!["known-good".to_string()]);
+        let manifest = sample_manifest("known-good", 1_800_000_000);
+        let stale = detection_resolution(
+            DetectionState::Stale,
+            Some(DetectionReasonCode::StaleWindowExceeded),
+        );
+
+        let gated =
+            service.plan_activation_with_detection(&stale, &verifier, &manifest, 1_700_000_000);
+        match gated {
+            RouteActivationGateResult::Denied(decision) => {
+                assert_eq!(
+                    decision.reason_code,
+                    Some(DetectionGateReasonCode::DetectionStale)
+                );
+            }
+            RouteActivationGateResult::Allowed(_) => {
+                panic!("stale detection must deny routing activation")
+            }
+        }
+    }
+
+    #[test]
+    fn plan_activation_with_detection_allows_and_returns_route_plan() {
+        let service = RoutingService::new();
+        let verifier = AllowlistSignatureVerifier::new(vec!["known-good".to_string()]);
+        let manifest = sample_manifest("known-good", 1_800_000_000);
+        let detected = detection_resolution(DetectionState::Detected, None);
+
+        let gated = service.plan_activation_with_detection(
+            &detected,
+            &verifier,
+            &manifest,
+            1_700_000_000,
+        );
+        match gated {
+            RouteActivationGateResult::Allowed(plan) => {
+                assert!(plan.manifest_valid);
+                assert!(!plan.route_candidates.is_empty());
+            }
+            RouteActivationGateResult::Denied(_) => {
+                panic!("detected state should allow routing activation gate")
+            }
+        }
     }
 }

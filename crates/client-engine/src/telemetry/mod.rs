@@ -2,10 +2,30 @@
 
 pub mod events;
 
+use std::collections::BTreeMap;
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum TelemetryValue {
+    Text(String),
+    Integer(i64),
+}
+
+pub type TelemetryPayload = BTreeMap<String, TelemetryValue>;
+
 /// Lightweight telemetry event placeholder.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TelemetryEvent {
     pub name: String,
+    pub payload: TelemetryPayload,
+}
+
+impl TelemetryEvent {
+    pub fn new(name: impl Into<String>, payload: TelemetryPayload) -> Self {
+        Self {
+            name: name.into(),
+            payload,
+        }
+    }
 }
 
 /// Public batching interface used by upper orchestration layers.

@@ -18,10 +18,10 @@ Emit `game_detected` telemetry event with strict payload allowlist and schema ch
 *   **Data Models:** Telemetry detection event payload model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Event emits only on successful detection transitions.
-*   [ ] Payload includes only approved keys (`game_id`, `process_name`, `detection_time_ms`).
-*   [ ] Non-allowlisted fields are rejected before enqueue.
-*   [ ] Event path integrates with existing telemetry queue.
+*   [x] Event emits only on successful detection transitions.
+*   [x] Payload includes only approved keys (`game_id`, `process_name`, `detection_time_ms`).
+*   [x] Non-allowlisted fields are rejected before enqueue.
+*   [x] Event path integrates with existing telemetry queue.
 
 ## Business Rules & Logic
 *   Telemetry must preserve privacy and schema compliance.
@@ -30,6 +30,6 @@ Emit `game_detected` telemetry event with strict payload allowlist and schema ch
 *   Depends on: KP-041, KP-034
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
