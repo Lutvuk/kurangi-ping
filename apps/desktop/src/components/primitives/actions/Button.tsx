@@ -3,6 +3,7 @@ import type { PrimitiveIntent } from "../shared/types";
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   intent?: PrimitiveIntent;
+  ariaLabel?: string;
 };
 
 const classByIntent: Record<PrimitiveIntent, string> = {
@@ -13,6 +14,7 @@ const classByIntent: Record<PrimitiveIntent, string> = {
 
 export function Button({
   intent = "secondary",
+  ariaLabel,
   className,
   type = "button",
   ...props
@@ -22,5 +24,13 @@ export function Button({
     .filter(Boolean)
     .join(" ");
 
-  return <button type={type} className={composedClassName} {...props} />;
+  return (
+    <button
+      type={type}
+      aria-label={ariaLabel}
+      className={composedClassName}
+      tabIndex={props.tabIndex ?? 0}
+      {...props}
+    />
+  );
 }

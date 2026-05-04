@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 import type { KeyboardEvent, ReactNode } from "react";
 
 export type ModalProps = {
@@ -18,6 +18,8 @@ function getFocusableElements(container: HTMLElement): HTMLElement[] {
 
 export function Modal({ open, title, onClose, children }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
+  const descriptionId = useId();
 
   useEffect(() => {
     if (!open || !dialogRef.current) {
@@ -26,7 +28,9 @@ export function Modal({ open, title, onClose, children }: ModalProps) {
     const focusables = getFocusableElements(dialogRef.current);
     if (focusables.length > 0) {
       focusables[0].focus();
+      return;
     }
+    dialogRef.current.focus();
   }, [open]);
 
   if (!open) {
@@ -72,13 +76,17 @@ export function Modal({ open, title, onClose, children }: ModalProps) {
         className="kp-modal-panel"
         role="dialog"
         aria-modal="true"
-        aria-label={title}
+        aria-labelledby={titleId}
+        aria-describedby={descriptionId}
         onClick={(event) => event.stopPropagation()}
         onKeyDown={handleKeyDown}
         ref={dialogRef}
+        tabIndex={-1}
       >
         <header className="kp-modal-header">
-          <h2 className="kp-modal-title">{title}</h2>
+          <h2 id={titleId} className="kp-modal-title">
+            {title}
+          </h2>
           <button
             type="button"
             className="kp-modal-close kp-primitive-focus"
@@ -88,7 +96,9 @@ export function Modal({ open, title, onClose, children }: ModalProps) {
             x
           </button>
         </header>
-        <div className="kp-modal-body">{children}</div>
+        <div id={descriptionId} className="kp-modal-body">
+          {children}
+        </div>
       </div>
     </div>
   );

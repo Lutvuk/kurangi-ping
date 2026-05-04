@@ -7,5 +7,5 @@ export function Input({ className, ...props }: InputProps) {
     .filter(Boolean)
     .join(" ");
 
-  return <input className={composedClassName} {...props} />;
+  return <input className={composedClassName} tabIndex={props.tabIndex ?? 0} {...props} />;
 }

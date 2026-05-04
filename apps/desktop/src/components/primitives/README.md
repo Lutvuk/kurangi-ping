@@ -32,3 +32,4 @@ Do not import category internals from feature modules unless there is a strong r
 - No feature/business logic in primitive layer.
 - Keep primitives token-driven and reusable.
 - Keep prop contracts explicit and stable.
+- Follow accessibility baseline in `a11y.md`.

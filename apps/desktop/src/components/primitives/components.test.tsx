@@ -40,6 +40,46 @@ describe("primitive components", () => {
     expect(screen.getByRole("combobox", { name: "Relay region" })).toBeDisabled();
   });
 
+  it("exposes explicit aria role/label contracts for interactive primitives", () => {
+    render(
+      <div>
+        <Button ariaLabel="Start routing">Start</Button>
+        <Input aria-label="Game executable" />
+        <Select
+          aria-label="Preferred region"
+          options={[
+            { value: "auto", label: "Auto" },
+            { value: "sin", label: "Singapore" }
+          ]}
+        />
+      </div>
+    );
+
+    expect(screen.getByRole("button", { name: "Start routing" })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Game executable" })).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "Preferred region" })).toBeInTheDocument();
+  });
+
+  it("uses deterministic default tab order for button input and select", () => {
+    render(
+      <div>
+        <Button>One</Button>
+        <Input aria-label="Input one" />
+        <Select
+          aria-label="Select one"
+          options={[
+            { value: "a", label: "A" },
+            { value: "b", label: "B" }
+          ]}
+        />
+      </div>
+    );
+
+    expect(screen.getByRole("button", { name: "One" })).toHaveAttribute("tabindex", "0");
+    expect(screen.getByRole("textbox", { name: "Input one" })).toHaveAttribute("tabindex", "0");
+    expect(screen.getByRole("combobox", { name: "Select one" })).toHaveAttribute("tabindex", "0");
+  });
+
   it("maps status badge semantics for off connecting on degraded", () => {
     render(
       <div>
@@ -72,6 +112,9 @@ describe("primitive components", () => {
     );
 
     const dialog = screen.getByRole("dialog", { name: "Disconnect?" });
+    expect(dialog).toHaveAttribute("aria-labelledby");
+    expect(dialog).toHaveAttribute("aria-describedby");
+
     fireEvent.keyDown(dialog, { key: "Escape" });
     expect(onClose).toHaveBeenCalledTimes(1);
 
@@ -79,6 +122,11 @@ describe("primitive components", () => {
     continueButton.focus();
     fireEvent.keyDown(dialog, { key: "Tab" });
     expect(screen.getByRole("button", { name: "Close modal" })).toHaveFocus();
+
+    const closeButton = screen.getByRole("button", { name: "Close modal" });
+    closeButton.focus();
+    fireEvent.keyDown(dialog, { key: "Tab", shiftKey: true });
+    expect(continueButton).toHaveFocus();
   });
 
   it("maps toast tones to semantic accents", () => {

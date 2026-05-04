@@ -16,7 +16,7 @@ export function Select({ className, options, ...props }: SelectProps) {
     .join(" ");
 
   return (
-    <select className={composedClassName} {...props}>
+    <select className={composedClassName} tabIndex={props.tabIndex ?? 0} {...props}>
       {options.map((option) => (
         <option key={option.value} value={option.value} disabled={option.disabled}>
           {option.label}

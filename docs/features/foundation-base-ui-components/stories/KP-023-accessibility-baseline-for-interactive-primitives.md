@@ -18,10 +18,10 @@ Apply accessibility baseline across primitive components (ARIA, keyboard nav, fo
 *   **Data Models:** N/A
 
 ## Acceptance Criteria (Technical)
-*   [ ] Interactive components have explicit ARIA labels/roles.
-*   [ ] Tab order is logical and deterministic.
-*   [ ] Focus ring visibility is consistent and token-driven.
-*   [ ] Basic keyboard interactions are covered by tests.
+*   [x] Interactive components have explicit ARIA labels/roles.
+*   [x] Tab order is logical and deterministic.
+*   [x] Focus ring visibility is consistent and token-driven.
+*   [x] Basic keyboard interactions are covered by tests.
 
 ## Business Rules & Logic
 *   Accessibility is baseline quality, not optional enhancement.
@@ -30,6 +30,6 @@ Apply accessibility baseline across primitive components (ARIA, keyboard nav, fo
 *   Depends on: KP-020, KP-021
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
