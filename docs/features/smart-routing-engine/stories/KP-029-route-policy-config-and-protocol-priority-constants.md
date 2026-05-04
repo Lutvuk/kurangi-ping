@@ -18,10 +18,10 @@ Define routing policy constants and config model for protocol priority and failo
 *   **Data Models:** N/A
 
 ## Acceptance Criteria (Technical)
-*   [ ] Default protocol order is WG -> TCP/TLS -> QUIC.
-*   [ ] Policy constants are centralized and typed.
-*   [ ] Config validation rejects invalid priority sets.
-*   [ ] Policy module is unit-testable independently.
+*   [x] Default protocol order is WG -> TCP/TLS -> QUIC.
+*   [x] Policy constants are centralized and typed.
+*   [x] Config validation rejects invalid priority sets.
+*   [x] Policy module is unit-testable independently.
 
 ## Business Rules & Logic
 *   Protocol order is fixed by approved architecture decision.
@@ -30,6 +30,6 @@ Define routing policy constants and config model for protocol priority and failo
 *   Depends on: KP-005
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

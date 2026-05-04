@@ -1,12 +1,12 @@
 //! Routing and manifest verification boundaries.
 
-/// Ordered protocol preference for route attempts.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum RouteProtocol {
-    WireGuard,
-    TcpTls,
-    Quic,
-}
+mod config;
+mod policy;
+
+pub use config::{RoutingConfig, RoutingConfigError};
+pub use policy::{
+    ProtocolPriority, RetryPolicy, RouteProtocol, RoutingPolicy, DEFAULT_PROTOCOL_ORDER,
+};
 
 /// Minimal signed manifest input shape for later verification implementation.
 #[derive(Debug, Clone)]
@@ -35,31 +35,35 @@ impl ManifestVerifier for NoopManifestVerifier {
 #[derive(Debug, Clone)]
 pub struct RoutingService {
     active: bool,
-    protocol_order: [RouteProtocol; 3],
+    policy: RoutingPolicy,
 }
 
 impl RoutingService {
     pub fn new() -> Self {
         Self {
             active: false,
-            protocol_order: [
-                RouteProtocol::WireGuard,
-                RouteProtocol::TcpTls,
-                RouteProtocol::Quic,
-            ],
+            policy: RoutingPolicy::default(),
         }
+    }
+
+    pub fn from_config(config: RoutingConfig) -> Result<Self, RoutingConfigError> {
+        let policy = config.into_policy()?;
+        Ok(Self {
+            active: false,
+            policy,
+        })
     }
 
     pub fn state(&self) -> &'static str {
-        if self.active {
-            "enabled"
-        } else {
-            "disabled"
-        }
+        if self.active { "enabled" } else { "disabled" }
+    }
+
+    pub fn policy(&self) -> RoutingPolicy {
+        self.policy
     }
 
     pub fn protocol_order(&self) -> [RouteProtocol; 3] {
-        self.protocol_order
+        self.policy.protocol_order()
     }
 
     pub fn plan_activation<V: ManifestVerifier>(
@@ -71,7 +75,7 @@ impl RoutingService {
         let manifest_valid = verifier.verify(manifest);
         RoutePlan {
             manifest_valid,
-            attempted_protocols: self.protocol_order.to_vec(),
+            attempted_protocols: self.protocol_order().to_vec(),
         }
     }
 }
@@ -87,4 +91,61 @@ impl Default for RoutingService {
 pub struct RoutePlan {
     pub manifest_valid: bool,
     pub attempted_protocols: Vec<RouteProtocol>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{
+        ManifestVerifier, RouteProtocol, RoutingConfig, RoutingConfigError, RoutingService, SignedManifest,
+        DEFAULT_PROTOCOL_ORDER,
+    };
+
+    struct AlwaysValidVerifier;
+
+    impl ManifestVerifier for AlwaysValidVerifier {
+        fn verify(&self, _manifest: &SignedManifest) -> bool {
+            true
+        }
+    }
+
+    #[test]
+    fn service_defaults_to_architecture_protocol_order() {
+        let service = RoutingService::new();
+        assert_eq!(service.protocol_order(), DEFAULT_PROTOCOL_ORDER);
+        assert_eq!(service.state(), "disabled");
+    }
+
+    #[test]
+    fn service_from_config_rejects_invalid_priority_sets() {
+        let invalid_config = RoutingConfig {
+            protocol_priority: vec![
+                RouteProtocol::WireGuard,
+                RouteProtocol::WireGuard,
+                RouteProtocol::Quic,
+            ],
+            ..RoutingConfig::default()
+        };
+
+        let err = RoutingService::from_config(invalid_config).expect_err("config must be invalid");
+        assert_eq!(
+            err,
+            RoutingConfigError::DuplicateProtocol {
+                protocol: RouteProtocol::WireGuard
+            }
+        );
+    }
+
+    #[test]
+    fn plan_activation_uses_policy_protocol_order() {
+        let service = RoutingService::new();
+        let verifier = AlwaysValidVerifier;
+        let manifest = SignedManifest {
+            version: "v1".to_string(),
+            signature_b64: "sig".to_string(),
+        };
+
+        let plan = service.plan_activation(&verifier, &manifest);
+        assert!(plan.manifest_valid);
+        assert_eq!(plan.attempted_protocols, DEFAULT_PROTOCOL_ORDER.to_vec());
+    }
 }
