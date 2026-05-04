@@ -18,10 +18,10 @@ Add version-aware seed mechanism for supported game catalog evolution.
 *   **Data Models:** `supported_games`
 
 ## Acceptance Criteria (Technical)
-*   [ ] Seed updates are idempotent and version-tracked.
-*   [ ] Existing rows update safely without duplication.
-*   [ ] Seed supports enabling/disabling titles explicitly.
-*   [ ] Seed output reports applied catalog version.
+*   [x] Seed updates are idempotent and version-tracked.
+*   [x] Existing rows update safely without duplication.
+*   [x] Seed supports enabling/disabling titles explicitly.
+*   [x] Seed output reports applied catalog version.
 
 ## Business Rules & Logic
 *   Catalog updates must remain controlled and auditable.
@@ -30,6 +30,6 @@ Add version-aware seed mechanism for supported game catalog evolution.
 *   Depends on: KP-038
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

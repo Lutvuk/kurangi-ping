@@ -1,0 +1,6 @@
+{
+  "version": "v2",
+  "seed_file": "0002_supported_games_catalog.sql",
+  "released_at": "2026-05-05T00:00:00Z",
+  "notes": "Supported games catalog update with explicit disable flag coverage."
+}

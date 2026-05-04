@@ -48,6 +48,6 @@ pnpm db:seed:test
 - `pnpm db:migrate` applies pending SQLite `*.up.sql` files in lexical order.
 - Applied versions are tracked in `schema_migrations`.
 - `pnpm db:migrate:test` runs idempotency smoke test for the migration runner.
-- `pnpm db:seed` applies baseline SQL seed files in lexical order.
-- `pnpm db:seed:test` verifies idempotent re-run behavior and baseline rows.
+- `pnpm db:seed` applies the catalog seed file selected by `db/seeds/catalog_version.json`.
+- `pnpm db:seed:test` verifies idempotent re-run behavior, update path safety, and catalog version tracking output.
 - `./scripts/ci-verify-db.ps1` runs CI-style fresh DB verification (migrate + idempotency + constraint/index checks, plus optional seed checks).
