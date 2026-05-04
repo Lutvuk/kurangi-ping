@@ -1,5 +1,6 @@
 //! Detection boundary for supported game process discovery.
 
+pub mod commands;
 pub mod scanner_windows;
 pub mod state_resolver;
 

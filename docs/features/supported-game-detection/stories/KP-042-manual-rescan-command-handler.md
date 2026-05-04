@@ -18,10 +18,10 @@ Provide explicit rescan command path that triggers immediate detection refresh.
 *   **Data Models:** Rescan command/result model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Rescan bypasses periodic interval wait.
-*   [ ] Command returns updated normalized state.
-*   [ ] Concurrent rescans are debounced/serialized.
-*   [ ] Failures surface actionable error codes.
+*   [x] Rescan bypasses periodic interval wait.
+*   [x] Command returns updated normalized state.
+*   [x] Concurrent rescans are debounced/serialized.
+*   [x] Failures surface actionable error codes.
 
 ## Business Rules & Logic
 *   Manual control should feel immediate and reliable.
@@ -30,6 +30,6 @@ Provide explicit rescan command path that triggers immediate detection refresh.
 *   Depends on: KP-041
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
