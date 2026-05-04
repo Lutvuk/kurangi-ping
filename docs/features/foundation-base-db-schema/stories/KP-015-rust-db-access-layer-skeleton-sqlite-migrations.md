@@ -18,10 +18,10 @@ Provide Rust-side DB initialization and migration execution hooks for client eng
 *   **Data Models:** core SQLite tables
 
 ## Acceptance Criteria (Technical)
-*   [ ] Rust engine initializes SQLite connection with FK enforcement.
-*   [ ] Migration runner can be invoked from engine startup path.
-*   [ ] Initialization fails fast with clear errors on migration failure.
-*   [ ] Module boundaries remain aligned with architecture docs.
+*   [x] Rust engine initializes SQLite connection with FK enforcement.
+*   [x] Migration runner can be invoked from engine startup path.
+*   [x] Initialization fails fast with clear errors on migration failure.
+*   [x] Module boundaries remain aligned with architecture docs.
 
 ## Business Rules & Logic
 *   DB boot must be deterministic and safe for repeated startup.
@@ -31,6 +31,6 @@ Provide Rust-side DB initialization and migration execution hooks for client eng
 *   Depends on: KP-010, KP-011, KP-012
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
