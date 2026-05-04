@@ -18,10 +18,10 @@ Create idempotent seed script for baseline supported games to unblock game detec
 *   **Data Models:** `supported_games`
 
 ## Acceptance Criteria (Technical)
-*   [ ] Seed inserts initial supported games rows.
-*   [ ] Seed can be re-run safely without duplicates.
-*   [ ] Seed aligns with detection allowlist conventions.
-*   [ ] Script output clearly reports inserted/skipped counts.
+*   [x] Seed inserts initial supported games rows.
+*   [x] Seed can be re-run safely without duplicates.
+*   [x] Seed aligns with detection allowlist conventions.
+*   [x] Script output clearly reports inserted/skipped counts.
 
 ## Business Rules & Logic
 *   Seed data is baseline only and can be extended later.
@@ -31,6 +31,6 @@ Create idempotent seed script for baseline supported games to unblock game detec
 *   Depends on: KP-011
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

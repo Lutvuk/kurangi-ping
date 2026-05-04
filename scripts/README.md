@@ -38,8 +38,12 @@ pnpm build
 ```powershell
 pnpm db:migrate
 pnpm db:migrate:test
+pnpm db:seed
+pnpm db:seed:test
 ```
 
 - `pnpm db:migrate` applies pending SQLite `*.up.sql` files in lexical order.
 - Applied versions are tracked in `schema_migrations`.
 - `pnpm db:migrate:test` runs idempotency smoke test for the migration runner.
+- `pnpm db:seed` applies baseline SQL seed files in lexical order.
+- `pnpm db:seed:test` verifies idempotent re-run behavior and baseline rows.
