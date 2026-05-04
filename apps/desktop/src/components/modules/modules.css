@@ -291,3 +291,143 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
+
+.kp-game-row {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  border: var(--border-subtle);
+  border-radius: var(--radius-xs);
+  background: var(--color-surface-01);
+  padding: 10px 14px;
+}
+
+.kp-game-row-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xs);
+  border: var(--border-subtle);
+  background: var(--color-surface-03);
+  color: var(--color-text-primary);
+  font: var(--text-mono-sm);
+}
+
+.kp-game-row-meta {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.kp-game-row-name {
+  color: var(--color-text-primary);
+  font: var(--text-body-md);
+}
+
+.kp-game-row-server {
+  color: var(--color-text-secondary);
+  font: var(--text-mono-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kp-game-row-status {
+  border: var(--border-signal);
+  border-radius: var(--radius-xs);
+  background: var(--color-signal-dim);
+  color: var(--color-signal);
+  padding: 3px 10px;
+  font: var(--text-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.kp-game-row--not-detected .kp-game-row-status {
+  border: var(--border-subtle);
+  color: var(--color-text-muted);
+  background: rgba(61, 80, 96, 0.15);
+}
+
+.kp-onboarding-stepper {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--space-2);
+}
+
+.kp-onboarding-step {
+  position: relative;
+}
+
+.kp-onboarding-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -6px;
+  width: 12px;
+  border-top: 1px dashed var(--color-border-subtle);
+  transform: translateY(-50%);
+}
+
+.kp-onboarding-step-button,
+.kp-onboarding-step-static {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border: 0;
+  padding: var(--space-2) 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  text-align: left;
+  transition: color var(--duration-slow) var(--ease-out),
+    border-color var(--duration-slow) var(--ease-out);
+}
+
+.kp-onboarding-step-button {
+  cursor: pointer;
+}
+
+.kp-onboarding-step-button:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+}
+
+.kp-onboarding-step-indicator {
+  min-width: 16px;
+  color: inherit;
+  font: var(--text-label);
+  letter-spacing: 0.06em;
+}
+
+.kp-onboarding-step-label {
+  min-width: 0;
+  font: var(--text-body-sm);
+  color: inherit;
+  border-bottom: 1px solid transparent;
+}
+
+.kp-onboarding-step--inactive .kp-onboarding-step-button,
+.kp-onboarding-step--inactive .kp-onboarding-step-static {
+  color: var(--color-text-muted);
+}
+
+.kp-onboarding-step--active .kp-onboarding-step-button,
+.kp-onboarding-step--active .kp-onboarding-step-static {
+  color: var(--color-text-primary);
+}
+
+.kp-onboarding-step--active .kp-onboarding-step-label {
+  border-bottom-color: var(--color-signal-border);
+}
+
+.kp-onboarding-step--completed .kp-onboarding-step-button,
+.kp-onboarding-step--completed .kp-onboarding-step-static {
+  color: var(--color-relay-ok);
+}

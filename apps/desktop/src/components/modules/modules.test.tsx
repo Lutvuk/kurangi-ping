@@ -1,6 +1,13 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { ConnectionStatusBadge, PingMetricCard, PrimaryToggle, RelayHealthListItem } from "./index";
+import {
+  ConnectionStatusBadge,
+  GameDetectionRow,
+  OnboardingStepper,
+  PingMetricCard,
+  PrimaryToggle,
+  RelayHealthListItem
+} from "./index";
 
 describe("module components", () => {
   it("renders primary toggle states clearly", () => {
@@ -91,5 +98,49 @@ describe("module components", () => {
     expect(screen.getByText("SIN")).toBeInTheDocument();
     expect(screen.getByText("NRT")).toBeInTheDocument();
     expect(screen.getAllByText("ms")).toHaveLength(2);
+  });
+
+  it("renders game detection row with icon, name, server, and status", () => {
+    render(
+      <GameDetectionRow
+        gameName="Final Fantasy XIV"
+        serverInfo="Elemental - Tonberry"
+        state="detected"
+        icon="FF"
+      />
+    );
+
+    const row = screen.getByText("Final Fantasy XIV").closest("div");
+    expect(row).toHaveClass("kp-game-row");
+    expect(screen.getByText("FF")).toBeInTheDocument();
+    expect(screen.getByText("Elemental - Tonberry")).toBeInTheDocument();
+    expect(screen.getByText("Detected")).toBeInTheDocument();
+  });
+
+  it("renders onboarding stepper states and supports keyboard step change", () => {
+    const onStepSelect = vi.fn();
+    render(
+      <OnboardingStepper
+        steps={[
+          { id: "welcome", label: "Welcome", state: "completed" },
+          { id: "permission", label: "Permission", state: "active" },
+          { id: "relay-test", label: "Relay Test", state: "inactive" }
+        ]}
+        onStepSelect={onStepSelect}
+      />
+    );
+
+    const buttons = screen.getAllByRole("button");
+    expect(buttons).toHaveLength(3);
+    expect(buttons[0].closest("li")).toHaveClass("kp-onboarding-step--completed");
+    expect(buttons[1].closest("li")).toHaveClass("kp-onboarding-step--active");
+    expect(buttons[2].closest("li")).toHaveClass("kp-onboarding-step--inactive");
+    expect(screen.getByText("✓")).toBeInTheDocument();
+
+    fireEvent.keyDown(buttons[1], { key: "ArrowRight" });
+    expect(onStepSelect).toHaveBeenCalledWith("relay-test");
+
+    fireEvent.keyDown(buttons[1], { key: "ArrowLeft" });
+    expect(onStepSelect).toHaveBeenCalledWith("welcome");
   });
 });

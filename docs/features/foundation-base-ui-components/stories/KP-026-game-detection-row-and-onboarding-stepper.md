@@ -18,10 +18,10 @@ Implement foundational UI blocks for game detection display and guided onboardin
 *   **Data Models:** Onboarding step model, game detection row model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Game row shows icon/name/server/status using token styles.
-*   [ ] Stepper supports inactive/active/completed visuals.
-*   [ ] Transition motion for steps aligns with design duration tokens.
-*   [ ] Components are keyboard navigable where applicable.
+*   [x] Game row shows icon/name/server/status using token styles.
+*   [x] Stepper supports inactive/active/completed visuals.
+*   [x] Transition motion for steps aligns with design duration tokens.
+*   [x] Components are keyboard navigable where applicable.
 
 ## Business Rules & Logic
 *   Onboarding should remain concise and operationally clear.
@@ -30,6 +30,6 @@ Implement foundational UI blocks for game detection display and guided onboardin
 *   Depends on: KP-022, KP-023
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

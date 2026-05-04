@@ -9,3 +9,9 @@ export type { PingMetricCardProps, PingMetricCardState } from "./PingMetricCard"
 
 export { RelayHealthListItem } from "./RelayHealthListItem";
 export type { RelayHealthListItemProps, RelayHealthState } from "./RelayHealthListItem";
+
+export { GameDetectionRow } from "./GameDetectionRow";
+export type { GameDetectionRowProps, GameDetectionState } from "./GameDetectionRow";
+
+export { OnboardingStepper } from "./OnboardingStepper";
+export type { OnboardingStep, OnboardingStepperProps, OnboardingStepState } from "./OnboardingStepper";
