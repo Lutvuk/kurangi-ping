@@ -18,10 +18,10 @@ Add baseline indexes for expected read/write paths in session and telemetry flow
 *   **Data Models:** `route_session`, `ping_sample`, `telemetry_batch`, `telemetry_event`
 
 ## Acceptance Criteria (Technical)
-*   [ ] Indexes exist for session lookup/filter fields.
-*   [ ] Indexes exist for telemetry queue processing fields.
-*   [ ] Query plan checks confirm indexed access on target paths.
-*   [ ] No redundant or contradictory indexes are introduced.
+*   [x] Indexes exist for session lookup/filter fields.
+*   [x] Indexes exist for telemetry queue processing fields.
+*   [x] Query plan checks confirm indexed access on target paths.
+*   [x] No redundant or contradictory indexes are introduced.
 
 ## Business Rules & Logic
 *   Optimize for reliability and predictable local performance.
@@ -31,6 +31,6 @@ Add baseline indexes for expected read/write paths in session and telemetry flow
 *   Depends on: KP-012
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
