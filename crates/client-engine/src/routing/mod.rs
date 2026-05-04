@@ -1,35 +1,19 @@
 //! Routing and manifest verification boundaries.
 
 mod config;
+mod manifest_gate;
 mod policy;
 
 pub use config::{RoutingConfig, RoutingConfigError};
+pub use manifest_gate::{
+    verify_manifest_or_fail, ManifestFailureCode, ManifestGateResult, RelayManifestDto,
+    RelayNodeDto, RouteCandidate,
+};
 pub use policy::{
     ProtocolPriority, RetryPolicy, RouteProtocol, RoutingPolicy, DEFAULT_PROTOCOL_ORDER,
 };
 
-/// Minimal signed manifest input shape for later verification implementation.
-#[derive(Debug, Clone)]
-pub struct SignedManifest {
-    pub version: String,
-    pub signature_b64: String,
-}
-
-/// Manifest verification interface.
-pub trait ManifestVerifier {
-    fn verify(&self, manifest: &SignedManifest) -> bool;
-}
-
-/// Placeholder verifier used in scaffold phase.
-#[derive(Debug, Clone, Copy, Default)]
-pub struct NoopManifestVerifier;
-
-impl ManifestVerifier for NoopManifestVerifier {
-    fn verify(&self, _manifest: &SignedManifest) -> bool {
-        // TODO(KP-030): replace with signature verification against configured public key.
-        false
-    }
-}
+use crate::security::signature::ManifestSignatureVerifier;
 
 /// Public routing service API.
 #[derive(Debug, Clone)]
@@ -66,16 +50,31 @@ impl RoutingService {
         self.policy.protocol_order()
     }
 
-    pub fn plan_activation<V: ManifestVerifier>(
+    pub fn plan_activation<V: ManifestSignatureVerifier>(
         &self,
         verifier: &V,
-        manifest: &SignedManifest,
+        manifest: &RelayManifestDto,
+        now_unix_s: u64,
     ) -> RoutePlan {
-        // Scaffold only: returns a dry-run plan with no side effects.
-        let manifest_valid = verifier.verify(manifest);
+        let manifest_gate = verify_manifest_or_fail(verifier, manifest, now_unix_s);
+        let (manifest_valid, attempted_protocols, route_candidates, failure_code) = match &manifest_gate {
+            ManifestGateResult::Passed { candidates, .. } => (
+                true,
+                self.protocol_order().to_vec(),
+                candidates.clone(),
+                None,
+            ),
+            ManifestGateResult::Blocked { failure_code } => {
+                (false, Vec::new(), Vec::new(), Some(*failure_code))
+            }
+        };
+
         RoutePlan {
             manifest_valid,
-            attempted_protocols: self.protocol_order().to_vec(),
+            manifest_gate,
+            attempted_protocols,
+            route_candidates,
+            failure_code,
         }
     }
 }
@@ -90,21 +89,31 @@ impl Default for RoutingService {
 #[derive(Debug, Clone)]
 pub struct RoutePlan {
     pub manifest_valid: bool,
+    pub manifest_gate: ManifestGateResult,
     pub attempted_protocols: Vec<RouteProtocol>,
+    pub route_candidates: Vec<RouteCandidate>,
+    pub failure_code: Option<ManifestFailureCode>,
 }
 
 #[cfg(test)]
 mod tests {
     use super::{
-        ManifestVerifier, RouteProtocol, RoutingConfig, RoutingConfigError, RoutingService, SignedManifest,
-        DEFAULT_PROTOCOL_ORDER,
+        ManifestFailureCode, ManifestGateResult, RelayManifestDto, RelayNodeDto, RouteProtocol,
+        RoutingConfig, RoutingConfigError, RoutingService, DEFAULT_PROTOCOL_ORDER,
     };
+    use crate::security::signature::AllowlistSignatureVerifier;
 
-    struct AlwaysValidVerifier;
-
-    impl ManifestVerifier for AlwaysValidVerifier {
-        fn verify(&self, _manifest: &SignedManifest) -> bool {
-            true
+    fn sample_manifest(signature_b64: &str, valid_until_unix_s: u64) -> RelayManifestDto {
+        RelayManifestDto {
+            version: "2026.08.0".to_string(),
+            valid_until_unix_s,
+            signature_b64: signature_b64.to_string(),
+            relays: vec![RelayNodeDto {
+                relay_id: "sin-01".to_string(),
+                region: "sin".to_string(),
+                hostname: "sin-01.example.net".to_string(),
+                priority: 1,
+            }],
         }
     }
 
@@ -138,14 +147,27 @@ mod tests {
     #[test]
     fn plan_activation_uses_policy_protocol_order() {
         let service = RoutingService::new();
-        let verifier = AlwaysValidVerifier;
-        let manifest = SignedManifest {
-            version: "v1".to_string(),
-            signature_b64: "sig".to_string(),
-        };
+        let verifier = AllowlistSignatureVerifier::new(vec!["known-good".to_string()]);
+        let manifest = sample_manifest("known-good", 1_800_000_000);
 
-        let plan = service.plan_activation(&verifier, &manifest);
+        let plan = service.plan_activation(&verifier, &manifest, 1_700_000_000);
         assert!(plan.manifest_valid);
+        assert!(matches!(plan.manifest_gate, ManifestGateResult::Passed { .. }));
         assert_eq!(plan.attempted_protocols, DEFAULT_PROTOCOL_ORDER.to_vec());
+        assert_eq!(plan.route_candidates.len(), 1);
+        assert_eq!(plan.failure_code, None);
+    }
+
+    #[test]
+    fn plan_activation_blocks_when_manifest_invalid() {
+        let service = RoutingService::new();
+        let verifier = AllowlistSignatureVerifier::new(vec!["known-good".to_string()]);
+        let manifest = sample_manifest("bad-signature", 1_800_000_000);
+
+        let plan = service.plan_activation(&verifier, &manifest, 1_700_000_000);
+        assert!(!plan.manifest_valid);
+        assert!(plan.attempted_protocols.is_empty());
+        assert!(plan.route_candidates.is_empty());
+        assert_eq!(plan.failure_code, Some(ManifestFailureCode::SignatureInvalid));
     }
 }

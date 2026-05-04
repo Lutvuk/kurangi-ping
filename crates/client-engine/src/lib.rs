@@ -6,6 +6,7 @@ use std::path::{Path, PathBuf};
 pub mod db;
 pub mod detection;
 pub mod routing;
+pub mod security;
 pub mod telemetry;
 
 /// High-level entry point state for dependent modules.

@@ -18,10 +18,10 @@ Enforce signed manifest verification before any route candidate can be used for 
 *   **Data Models:** Manifest payload DTO
 
 ## Acceptance Criteria (Technical)
-*   [ ] Invalid signature blocks route activation.
-*   [ ] Expired manifest blocks route activation.
-*   [ ] Valid manifest passes and exposes candidate set.
-*   [ ] Error path emits deterministic failure code for UI/telemetry.
+*   [x] Invalid signature blocks route activation.
+*   [x] Expired manifest blocks route activation.
+*   [x] Valid manifest passes and exposes candidate set.
+*   [x] Error path emits deterministic failure code for UI/telemetry.
 
 ## Business Rules & Logic
 *   No unsigned relay metadata may reach route selection stage.
@@ -30,6 +30,6 @@ Enforce signed manifest verification before any route candidate can be used for 
 *   Depends on: KP-029
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
