@@ -18,10 +18,10 @@ Implement core interactive primitives using design tokens and approved state sem
 *   **Data Models:** N/A
 
 ## Acceptance Criteria (Technical)
-*   [ ] Components use token-based styles from design system.
-*   [ ] Variants (primary/secondary/destructive) are implemented for Button.
-*   [ ] Focus and disabled states are explicit and accessible.
-*   [ ] StatusBadge supports off/connecting/on/degraded semantic mapping.
+*   [x] Components use token-based styles from design system.
+*   [x] Variants (primary/secondary/destructive) are implemented for Button.
+*   [x] Focus and disabled states are explicit and accessible.
+*   [x] StatusBadge supports off/connecting/on/degraded semantic mapping.
 
 ## Business Rules & Logic
 *   Signal/probe color semantics must not be used decoratively.
@@ -30,6 +30,6 @@ Implement core interactive primitives using design tokens and approved state sem
 *   Depends on: KP-019
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
