@@ -18,10 +18,10 @@ Create Go-side DB binding stub to prepare relay controller for future persistenc
 *   **Data Models:** relay/manifest related tables (read-oriented baseline)
 
 ## Acceptance Criteria (Technical)
-*   [ ] Controller can open SQLite connection for local/dev mode.
-*   [ ] Migration invocation path exists (even if limited scope).
-*   [ ] DB bootstrap errors are surfaced through service startup logs.
-*   [ ] No write-heavy business logic added in scaffold stage.
+*   [x] Controller can open SQLite connection for local/dev mode.
+*   [x] Migration invocation path exists (even if limited scope).
+*   [x] DB bootstrap errors are surfaced through service startup logs.
+*   [x] No write-heavy business logic added in scaffold stage.
 
 ## Business Rules & Logic
 *   Keep controller data binding minimal until feature-specific implementation.
@@ -30,6 +30,6 @@ Create Go-side DB binding stub to prepare relay controller for future persistenc
 *   Depends on: KP-010, KP-011
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
