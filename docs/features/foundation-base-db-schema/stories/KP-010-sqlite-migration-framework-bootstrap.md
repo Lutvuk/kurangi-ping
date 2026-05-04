@@ -18,10 +18,10 @@ Establish a deterministic SQLite migration framework and folder conventions for 
 *   **Data Models:** `schema_migrations` metadata table
 
 ## Acceptance Criteria (Technical)
-*   [ ] Migration directory conventions are documented.
-*   [ ] Migration runner applies pending SQL files in lexical order.
-*   [ ] `schema_migrations` table tracks applied versions.
-*   [ ] Re-running migrations is idempotent.
+*   [x] Migration directory conventions are documented.
+*   [x] Migration runner applies pending SQL files in lexical order.
+*   [x] `schema_migrations` table tracks applied versions.
+*   [x] Re-running migrations is idempotent.
 
 ## Business Rules & Logic
 *   All schema changes must be migration-driven.
@@ -31,6 +31,6 @@ Establish a deterministic SQLite migration framework and folder conventions for 
 *   Depends on: None
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

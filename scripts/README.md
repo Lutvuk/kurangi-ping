@@ -32,3 +32,14 @@ pnpm build
   - Runs desktop UI tests (`vitest`), Rust crate tests, and Go tests.
 - `pnpm build`:
   - Runs desktop production build, Rust crate build, and Go build.
+
+## Database Migration
+
+```powershell
+pnpm db:migrate
+pnpm db:migrate:test
+```
+
+- `pnpm db:migrate` applies pending SQLite `*.up.sql` files in lexical order.
+- Applied versions are tracked in `schema_migrations`.
+- `pnpm db:migrate:test` runs idempotency smoke test for the migration runner.

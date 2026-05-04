@@ -25,4 +25,7 @@ apps/desktop/src-tauri/target/
 
 # Local orchestration logs
 scripts/logs/
+
+# Local sqlite databases
+db/*.sqlite
 .agents/skills/files.zip

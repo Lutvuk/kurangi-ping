@@ -18,10 +18,10 @@ Create initial migration that defines core tables from `docs/erd/core-erd.md`.
 *   **Data Models:** `user_settings`, `supported_games`, `relay_manifest`, `relay_node`, `route_session`, `ping_sample`, `telemetry_batch`, `telemetry_event`
 
 ## Acceptance Criteria (Technical)
-*   [ ] All core tables are created on clean database.
-*   [ ] Primary keys follow ERD contract.
-*   [ ] Foreign keys reference correct parent tables.
-*   [ ] Migration runs successfully via framework from KP-010.
+*   [x] All core tables are created on clean database.
+*   [x] Primary keys follow ERD contract.
+*   [x] Foreign keys reference correct parent tables.
+*   [x] Migration runs successfully via framework from KP-010.
 
 ## Business Rules & Logic
 *   Table names and relationships must remain traceable to ERD.
@@ -31,6 +31,6 @@ Create initial migration that defines core tables from `docs/erd/core-erd.md`.
 *   Depends on: KP-010
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
