@@ -1,6 +1,6 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
-import { Button, Input, Select, StatusBadge } from "./index";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { Button, Card, Input, Modal, Select, StatusBadge, Toast } from "./index";
 
 describe("primitive components", () => {
   it("renders button variants with token classes", () => {
@@ -55,5 +55,45 @@ describe("primitive components", () => {
     expect(badges[1]).toHaveClass("kp-status-badge--connecting");
     expect(badges[2]).toHaveClass("kp-status-badge--on");
     expect(badges[3]).toHaveClass("kp-status-badge--degraded");
+  });
+
+  it("renders card with sharp surface class", () => {
+    render(<Card data-testid="metric-card">Ping metrics</Card>);
+    expect(screen.getByTestId("metric-card")).toHaveClass("kp-card");
+  });
+
+  it("supports modal keyboard close and basic tab trap", () => {
+    const onClose = vi.fn();
+    render(
+      <Modal open title="Disconnect?" onClose={onClose}>
+        <button type="button">Retry</button>
+        <button type="button">Continue</button>
+      </Modal>
+    );
+
+    const dialog = screen.getByRole("dialog", { name: "Disconnect?" });
+    fireEvent.keyDown(dialog, { key: "Escape" });
+    expect(onClose).toHaveBeenCalledTimes(1);
+
+    const continueButton = screen.getByRole("button", { name: "Continue" });
+    continueButton.focus();
+    fireEvent.keyDown(dialog, { key: "Tab" });
+    expect(screen.getByRole("button", { name: "Close modal" })).toHaveFocus();
+  });
+
+  it("maps toast tones to semantic accents", () => {
+    render(
+      <div>
+        <Toast tone="info" title="Info" />
+        <Toast tone="warning" title="Warning" />
+        <Toast tone="error" title="Error" />
+        <Toast tone="success" title="Success" />
+      </div>
+    );
+
+    expect(screen.getByText("Info").closest("div")).toHaveClass("kp-toast--info");
+    expect(screen.getByText("Warning").closest("div")).toHaveClass("kp-toast--warning");
+    expect(screen.getByText("Error").closest("div")).toHaveClass("kp-toast--error");
+    expect(screen.getByText("Success").closest("div")).toHaveClass("kp-toast--success");
   });
 });

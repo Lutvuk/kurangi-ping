@@ -18,10 +18,10 @@ Build reusable surface components aligned with dark-ops visual system and intera
 *   **Data Models:** N/A
 
 ## Acceptance Criteria (Technical)
-*   [ ] Card uses sharp data-oriented styling.
-*   [ ] Modal supports overlay, focus trap, and keyboard close handling.
-*   [ ] Toast supports info/warning/error/success types with semantic accents.
-*   [ ] Motion timings align with design tokens.
+*   [x] Card uses sharp data-oriented styling.
+*   [x] Modal supports overlay, focus trap, and keyboard close handling.
+*   [x] Toast supports info/warning/error/success types with semantic accents.
+*   [x] Motion timings align with design tokens.
 
 ## Business Rules & Logic
 *   No generic shadow-heavy UI style drift is allowed.
@@ -30,6 +30,6 @@ Build reusable surface components aligned with dark-ops visual system and intera
 *   Depends on: KP-019, KP-020
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
