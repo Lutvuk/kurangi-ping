@@ -22,4 +22,7 @@ dist/
 # Tauri/Rust build artifacts
 target/
 apps/desktop/src-tauri/target/
+
+# Local orchestration logs
+scripts/logs/
 .agents/skills/files.zip

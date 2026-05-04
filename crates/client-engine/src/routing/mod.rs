@@ -51,7 +51,11 @@ impl RoutingService {
     }
 
     pub fn state(&self) -> &'static str {
-        if self.active { "enabled" } else { "disabled" }
+        if self.active {
+            "enabled"
+        } else {
+            "disabled"
+        }
     }
 
     pub fn protocol_order(&self) -> [RouteProtocol; 3] {

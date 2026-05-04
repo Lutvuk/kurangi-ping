@@ -1,0 +1,11 @@
+{
+  "name": "kurangi-ping-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.33.2",
+  "scripts": {
+    "dev": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/dev.ps1",
+    "test": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/test.ps1",
+    "build": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/build.ps1"
+  }
+}

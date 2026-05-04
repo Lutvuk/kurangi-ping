@@ -18,10 +18,10 @@ Implement base desktop shell regions to host future feature modules (sidebar, to
 *   **Data Models:** N/A
 
 ## Acceptance Criteria (Technical)
-*   [ ] Shell renders with sidebar and top status region placeholders.
-*   [ ] Layout follows spacing/typography/color tokens from design system.
-*   [ ] Compact behavior is prepared for `--bp-compact` breakpoint.
-*   [ ] Placeholder content area supports future module injection.
+*   [x] Shell renders with sidebar and top status region placeholders.
+*   [x] Layout follows spacing/typography/color tokens from design system.
+*   [x] Compact behavior is prepared for `--bp-compact` breakpoint.
+*   [x] Placeholder content area supports future module injection.
 
 ## Business Rules & Logic
 *   Data-centric visual hierarchy must be preserved.
@@ -31,6 +31,6 @@ Implement base desktop shell regions to host future feature modules (sidebar, to
 *   Depends on: KP-003, KP-004
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing (component render tests)
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing (component render tests)
+*   [x] Lint/Type check clear

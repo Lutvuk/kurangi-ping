@@ -30,3 +30,15 @@ Monorepo scaffold for a Windows desktop game routing optimizer.
 
 This baseline satisfies `KP-001` workspace bootstrap requirements only.
 Subsequent stories add environment contracts, runtime skeletons, orchestration scripts, and CI.
+
+## Orchestration Commands
+
+Run from the repository root:
+
+```powershell
+pnpm dev
+pnpm test
+pnpm build
+```
+
+These commands orchestrate desktop (TypeScript/Tauri), client engine (Rust), and relay controller (Go) workflows via scripts in `scripts/`.

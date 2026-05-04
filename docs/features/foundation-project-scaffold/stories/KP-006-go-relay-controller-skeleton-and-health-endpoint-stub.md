@@ -18,10 +18,10 @@ Create Go relay controller service skeleton with basic HTTP server and stubbed r
 *   **Data Models:** Relay health response DTO stub
 
 ## Acceptance Criteria (Technical)
-*   [ ] Go module initializes and builds.
-*   [ ] HTTP server starts and exposes `/v1/relay/health` stub endpoint.
-*   [ ] Response schema shape aligns with `docs/api/contracts/relay-public.v1.yaml` baseline.
-*   [ ] Logging excludes sensitive request payload details.
+*   [x] Go module initializes and builds.
+*   [x] HTTP server starts and exposes `/v1/relay/health` stub endpoint.
+*   [x] Response schema shape aligns with `docs/api/contracts/relay-public.v1.yaml` baseline.
+*   [x] Logging excludes sensitive request payload details.
 
 ## Business Rules & Logic
 *   Health endpoint is read-only in scaffold phase.
@@ -31,6 +31,6 @@ Create Go relay controller service skeleton with basic HTTP server and stubbed r
 *   Depends on: KP-001, KP-002
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing (basic handler tests)
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing (basic handler tests)
+*   [x] Lint/Type check clear

@@ -18,10 +18,10 @@ Implement baseline CI workflows that validate lint/type/test/build across deskto
 *   **Data Models:** N/A
 
 ## Acceptance Criteria (Technical)
-*   [ ] Pull request triggers CI checks for TS, Rust, and Go.
-*   [ ] CI fails on lint/type/test/build regressions.
-*   [ ] Workflow artifacts and logs are clear enough for debugging.
-*   [ ] Release pipeline placeholders are present for future signing and updater stages.
+*   [x] Pull request triggers CI checks for TS, Rust, and Go.
+*   [x] CI fails on lint/type/test/build regressions.
+*   [x] Workflow artifacts and logs are clear enough for debugging.
+*   [x] Release pipeline placeholders are present for future signing and updater stages.
 
 ## Business Rules & Logic
 *   CI is the minimum quality gate before merge.
@@ -31,6 +31,6 @@ Implement baseline CI workflows that validate lint/type/test/build across deskto
 *   Depends on: KP-003, KP-005, KP-006, KP-008
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing (workflow lint checks)
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing (workflow lint checks)
+*   [x] Lint/Type check clear

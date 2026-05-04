@@ -18,10 +18,10 @@ Provide unified command orchestration for running, building, and testing desktop
 *   **Data Models:** N/A
 
 ## Acceptance Criteria (Technical)
-*   [ ] Single command exists for local dev startup flow.
-*   [ ] Single command exists for full test flow (TS/Rust/Go).
-*   [ ] Single command exists for build artifacts generation.
-*   [ ] Script docs describe prerequisites and expected outputs.
+*   [x] Single command exists for local dev startup flow.
+*   [x] Single command exists for full test flow (TS/Rust/Go).
+*   [x] Single command exists for build artifacts generation.
+*   [x] Script docs describe prerequisites and expected outputs.
 
 ## Business Rules & Logic
 *   Developer velocity and repeatability are primary goals.
@@ -31,6 +31,6 @@ Provide unified command orchestration for running, building, and testing desktop
 *   Depends on: KP-003, KP-005, KP-006, KP-007
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing (script smoke tests)
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing (script smoke tests)
+*   [x] Lint/Type check clear
