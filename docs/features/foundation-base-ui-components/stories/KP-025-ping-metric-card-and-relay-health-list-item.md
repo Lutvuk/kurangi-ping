@@ -18,10 +18,10 @@ Create data-heavy monitoring components for ping metrics and relay health visibi
 *   **Data Models:** Metric/relay typed view models
 
 ## Acceptance Criteria (Technical)
-*   [ ] Ping card uses mono typography and sharp edge styling.
-*   [ ] Relay item supports active/inactive and health color states.
-*   [ ] Values and units are clearly distinguished.
-*   [ ] Component props are independent from transport/API concerns.
+*   [x] Ping card uses mono typography and sharp edge styling.
+*   [x] Relay item supports active/inactive and health color states.
+*   [x] Values and units are clearly distinguished.
+*   [x] Component props are independent from transport/API concerns.
 
 ## Business Rules & Logic
 *   Data scanning speed is primary UX objective.
@@ -30,6 +30,6 @@ Create data-heavy monitoring components for ping metrics and relay health visibi
 *   Depends on: KP-021, KP-022
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

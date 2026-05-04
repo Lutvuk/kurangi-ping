@@ -162,3 +162,132 @@
     opacity: 1;
   }
 }
+
+.kp-ping-card {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  border: var(--border-subtle);
+  border-radius: var(--radius-none);
+  background: var(--color-surface-01);
+  padding: 12px 14px;
+}
+
+.kp-ping-card-col {
+  min-width: 0;
+}
+
+.kp-ping-card-label {
+  margin: 0 0 var(--space-2);
+  font: var(--text-label);
+  color: var(--color-text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.kp-ping-card-value {
+  margin: 0;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font: var(--text-mono-xl);
+}
+
+.kp-ping-card-unit {
+  font: var(--text-body-sm);
+  color: var(--color-text-muted);
+}
+
+.kp-ping-card-value--current {
+  color: var(--color-text-primary);
+}
+
+.kp-ping-card--on .kp-ping-card-value--current {
+  color: var(--color-signal);
+}
+
+.kp-ping-card--connecting .kp-ping-card-value--current,
+.kp-ping-card--degraded .kp-ping-card-value--current {
+  color: var(--color-probe);
+}
+
+.kp-ping-card-value--baseline {
+  color: var(--color-probe);
+}
+
+.kp-ping-card-value--reduction {
+  color: var(--color-signal);
+}
+
+.kp-relay-item {
+  height: 36px;
+  display: grid;
+  grid-template-columns: 6px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--space-3);
+  border-radius: var(--radius-xs);
+  border: var(--border-subtle);
+  padding: 0 var(--space-3);
+  background: var(--color-surface-01);
+}
+
+.kp-relay-item--active {
+  background: var(--color-signal-dim);
+}
+
+.kp-relay-item-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+}
+
+.kp-relay-item--ok .kp-relay-item-indicator {
+  background: var(--color-relay-ok);
+}
+.kp-relay-item--ok .kp-relay-item-latency {
+  color: var(--color-relay-ok);
+}
+
+.kp-relay-item--warn .kp-relay-item-indicator {
+  background: var(--color-relay-warn);
+}
+.kp-relay-item--warn .kp-relay-item-latency {
+  color: var(--color-relay-warn);
+}
+
+.kp-relay-item--dead .kp-relay-item-indicator {
+  background: var(--color-relay-dead);
+}
+.kp-relay-item--dead .kp-relay-item-latency {
+  color: var(--color-relay-dead);
+}
+
+.kp-relay-item-hostname {
+  color: var(--color-text-secondary);
+  font: var(--text-mono-md);
+}
+
+.kp-relay-item--active .kp-relay-item-hostname {
+  color: var(--color-text-primary);
+}
+
+.kp-relay-item-latency {
+  margin-left: auto;
+  font: var(--text-mono-md);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.kp-relay-item-unit {
+  color: var(--color-text-muted);
+  font: var(--text-mono-sm);
+}
+
+.kp-relay-item-region {
+  color: var(--color-text-secondary);
+  font: var(--text-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
