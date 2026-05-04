@@ -40,6 +40,11 @@ if not migrations_path.exists():
     raise SystemExit(f"Migrations path not found: {migrations_path}")
 
 conn = sqlite3.connect(str(db_path))
+conn.execute("PRAGMA foreign_keys = ON")
+foreign_keys_enabled = conn.execute("PRAGMA foreign_keys").fetchone()[0]
+if foreign_keys_enabled != 1:
+    raise SystemExit("foreign_keys pragma is not enabled")
+
 conn.execute("""
 CREATE TABLE IF NOT EXISTS schema_migrations (
   version TEXT PRIMARY KEY,
