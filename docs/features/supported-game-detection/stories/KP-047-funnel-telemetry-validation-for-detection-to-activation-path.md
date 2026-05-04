@@ -18,10 +18,10 @@ Validate detection-to-activation funnel telemetry consistency across engine and 
 *   **Data Models:** Event sequence fixtures
 
 ## Acceptance Criteria (Technical)
-*   [ ] Event sequence includes `game_detected` before routing activation in success flow.
-*   [ ] Negative flows do not emit invalid activation events.
-*   [ ] Payload schema remains compliant for all funnel events.
-*   [ ] Test reports make drop-off/debug points explicit.
+*   [x] Event sequence includes `game_detected` before routing activation in success flow.
+*   [x] Negative flows do not emit invalid activation events.
+*   [x] Payload schema remains compliant for all funnel events.
+*   [x] Test reports make drop-off/debug points explicit.
 
 ## Business Rules & Logic
 *   Funnel analytics quality is needed for onboarding optimization.
@@ -30,6 +30,6 @@ Validate detection-to-activation funnel telemetry consistency across engine and 
 *   Depends on: KP-043, KP-045, KP-046
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
