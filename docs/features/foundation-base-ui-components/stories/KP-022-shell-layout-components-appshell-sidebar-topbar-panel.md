@@ -18,10 +18,10 @@ Implement core layout regions and responsive shell behavior for compact/full des
 *   **Data Models:** N/A
 
 ## Acceptance Criteria (Technical)
-*   [ ] Sidebar/topbar/content regions render consistently.
-*   [ ] Breakpoint behavior follows `--bp-compact` and `--bp-full`.
-*   [ ] Layout consumes spacing and typography tokens.
-*   [ ] Panel structure supports future feature mounting.
+*   [x] Sidebar/topbar/content regions render consistently.
+*   [x] Breakpoint behavior follows `--bp-compact` and `--bp-full`.
+*   [x] Layout consumes spacing and typography tokens.
+*   [x] Panel structure supports future feature mounting.
 
 ## Business Rules & Logic
 *   Layout must prioritize data readability and operational scanning speed.
@@ -30,6 +30,6 @@ Implement core layout regions and responsive shell behavior for compact/full des
 *   Depends on: KP-019, KP-020
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
