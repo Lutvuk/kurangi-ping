@@ -1,0 +1,7 @@
+[
+  { "process_id": 101, "executable_name": "explorer.exe" },
+  { "process_id": 222, "executable_name": "ffxiv_dx11.exe" },
+  { "process_id": 333, "executable_name": "discord.exe" },
+  { "process_id": 444, "executable_name": "wow.exe" },
+  { "process_id": 555, "executable_name": "chrome.exe" }
+]

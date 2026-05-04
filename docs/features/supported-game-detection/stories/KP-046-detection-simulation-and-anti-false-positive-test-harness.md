@@ -18,10 +18,10 @@ Create simulation harness validating detection correctness and low false-positiv
 *   **Data Models:** Synthetic process fixture sets
 
 ## Acceptance Criteria (Technical)
-*   [ ] Harness validates detection for supported process sets.
-*   [ ] Harness validates rejection of unsupported/near-match process names.
-*   [ ] Stale/error state scenarios are covered.
-*   [ ] Results are deterministic across runs.
+*   [x] Harness validates detection for supported process sets.
+*   [x] Harness validates rejection of unsupported/near-match process names.
+*   [x] Stale/error state scenarios are covered.
+*   [x] Results are deterministic across runs.
 
 ## Business Rules & Logic
 *   False positive control is critical for trust and anti-cheat safety.
@@ -30,6 +30,6 @@ Create simulation harness validating detection correctness and low false-positiv
 *   Depends on: KP-044
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
