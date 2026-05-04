@@ -25,6 +25,8 @@ pnpm build
 ### Expected Outputs
 
 - `pnpm dev`:
+  - Runs local DB migrations before service startup.
+  - Optional seed step can be enabled with `KP_DB_SEED_ON_BOOTSTRAP=1` or by running `scripts/dev.ps1 -Seed`.
   - Starts relay-controller in background.
   - Starts desktop Tauri development runtime in foreground.
   - Writes relay logs to `scripts/logs/`.

@@ -5,6 +5,7 @@
   "packageManager": "pnpm@10.33.2",
   "scripts": {
     "dev": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/dev.ps1",
+    "dev:seed": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/dev.ps1 -Seed",
     "test": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/test.ps1",
     "build": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/build.ps1",
     "db:migrate": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/db-migrate.ps1",

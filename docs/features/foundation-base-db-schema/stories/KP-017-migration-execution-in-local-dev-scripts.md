@@ -18,10 +18,10 @@ Integrate DB migrate/seed execution into local development bootstrap scripts.
 *   **Data Models:** N/A
 
 ## Acceptance Criteria (Technical)
-*   [ ] Local bootstrap includes migration execution.
-*   [ ] Optional seed step is available and documented.
-*   [ ] Script exits non-zero on migration failure.
-*   [ ] Logs clearly indicate applied migration versions.
+*   [x] Local bootstrap includes migration execution.
+*   [x] Optional seed step is available and documented.
+*   [x] Script exits non-zero on migration failure.
+*   [x] Logs clearly indicate applied migration versions.
 
 ## Business Rules & Logic
 *   Local onboarding should be one-command friendly.
@@ -31,6 +31,6 @@ Integrate DB migrate/seed execution into local development bootstrap scripts.
 *   Depends on: KP-014, KP-015, KP-016
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
