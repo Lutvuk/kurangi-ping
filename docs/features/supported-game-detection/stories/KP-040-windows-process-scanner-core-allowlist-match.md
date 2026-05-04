@@ -18,10 +18,10 @@ Implement Windows process scanner core using allowlist executable matching only.
 *   **Data Models:** Detection match model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Scanner enumerates running processes safely.
-*   [ ] Matching is restricted to allowlist entries.
-*   [ ] Unknown processes are ignored without false positives.
-*   [ ] Scanner handles permission limitations gracefully.
+*   [x] Scanner enumerates running processes safely.
+*   [x] Matching is restricted to allowlist entries.
+*   [x] Unknown processes are ignored without false positives.
+*   [x] Scanner handles permission limitations gracefully.
 
 ## Business Rules & Logic
 *   Process-external detection only; no injection behavior.
@@ -30,6 +30,6 @@ Implement Windows process scanner core using allowlist executable matching only.
 *   Depends on: KP-005, KP-039
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

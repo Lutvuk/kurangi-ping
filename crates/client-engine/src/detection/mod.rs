@@ -1,5 +1,7 @@
 //! Detection boundary for supported game process discovery.
 
+pub mod scanner_windows;
+
 /// Represents detection lifecycle state.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DetectionStatus {
