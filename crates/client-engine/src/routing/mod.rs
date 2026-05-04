@@ -2,6 +2,7 @@
 
 mod config;
 mod manifest_gate;
+mod orchestrator;
 mod policy;
 mod scoring;
 
@@ -12,6 +13,10 @@ pub use manifest_gate::{
 };
 pub use policy::{
     ProtocolPriority, RetryPolicy, RouteProtocol, RoutingPolicy, DEFAULT_PROTOCOL_ORDER,
+};
+pub use orchestrator::{
+    attempt_route, AttemptFailureReason, AttemptPlan, AttemptRecord, AttemptResult, AttemptStatus,
+    AttemptStepOutcome, RouteAttemptFailureCode, RouteDialer,
 };
 pub use scoring::{
     score_candidates, CandidateDisposition, CandidateScore, RelayHealthSnapshot, RelayHealthStatus,

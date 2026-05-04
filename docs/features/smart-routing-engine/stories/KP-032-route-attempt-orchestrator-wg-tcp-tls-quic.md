@@ -18,10 +18,10 @@ Create orchestrator that attempts route establishment by protocol priority acros
 *   **Data Models:** Route attempt context model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Orchestrator attempts WG first, then TCP/TLS, then QUIC.
-*   [ ] Candidate iteration follows scoring output.
-*   [ ] Attempt outcomes are normalized for state machine consumption.
-*   [ ] No infinite loops are possible by design.
+*   [x] Orchestrator attempts WG first, then TCP/TLS, then QUIC.
+*   [x] Candidate iteration follows scoring output.
+*   [x] Attempt outcomes are normalized for state machine consumption.
+*   [x] No infinite loops are possible by design.
 
 ## Business Rules & Logic
 *   Protocol fallback order is mandatory and cannot be user-overridden in v1.
@@ -30,6 +30,6 @@ Create orchestrator that attempts route establishment by protocol priority acros
 *   Depends on: KP-031
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
