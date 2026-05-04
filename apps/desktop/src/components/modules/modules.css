@@ -1,0 +1,164 @@
+.kp-primary-toggle {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-sm);
+  border: var(--border-default);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: var(--text-display-md);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: border-color var(--duration-instant) var(--ease-sharp),
+    background-color var(--duration-instant) var(--ease-sharp),
+    color var(--duration-instant) var(--ease-sharp);
+}
+
+.kp-primary-toggle:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+}
+
+.kp-primary-toggle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.kp-primary-toggle--on {
+  border: var(--border-accent);
+  background: var(--color-signal-dim);
+  color: var(--color-signal);
+}
+
+.kp-primary-toggle--connecting,
+.kp-primary-toggle--degraded {
+  border: 1px solid rgba(232, 160, 32, 0.2);
+  background: var(--color-probe-dim);
+  color: var(--color-probe);
+}
+
+.kp-primary-toggle-bracket {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 0;
+  opacity: 0;
+}
+
+.kp-primary-toggle--on .kp-primary-toggle-bracket,
+.kp-primary-toggle--connecting .kp-primary-toggle-bracket,
+.kp-primary-toggle--degraded .kp-primary-toggle-bracket {
+  opacity: 1;
+}
+
+.kp-primary-toggle--on .kp-primary-toggle-bracket {
+  border-color: var(--color-signal);
+}
+
+.kp-primary-toggle--connecting .kp-primary-toggle-bracket,
+.kp-primary-toggle--degraded .kp-primary-toggle-bracket {
+  border-color: var(--color-probe);
+}
+
+.kp-primary-toggle-bracket--tl {
+  top: 6px;
+  left: 6px;
+  border-top-width: 1px;
+  border-left-width: 1px;
+}
+
+.kp-primary-toggle-bracket--tr {
+  top: 6px;
+  right: 6px;
+  border-top-width: 1px;
+  border-right-width: 1px;
+}
+
+.kp-primary-toggle-bracket--bl {
+  bottom: 6px;
+  left: 6px;
+  border-bottom-width: 1px;
+  border-left-width: 1px;
+}
+
+.kp-primary-toggle-bracket--br {
+  right: 6px;
+  bottom: 6px;
+  border-right-width: 1px;
+  border-bottom-width: 1px;
+}
+
+.kp-primary-toggle-label {
+  display: inline-block;
+  text-transform: uppercase;
+}
+
+.kp-connection-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: var(--radius-xs);
+  padding: 3px 10px;
+  border: var(--border-subtle);
+  font: var(--text-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.kp-connection-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: kp-connection-pulse 2s ease-in-out infinite;
+}
+
+.kp-connection-badge--off {
+  color: var(--color-text-muted);
+  background: rgba(61, 80, 96, 0.15);
+}
+
+.kp-connection-badge--off .kp-connection-badge-dot {
+  animation: none;
+  background: var(--color-text-muted);
+}
+
+.kp-connection-badge--connecting {
+  color: var(--color-probe);
+  border: 1px solid rgba(232, 160, 32, 0.2);
+  background: var(--color-probe-dim);
+}
+
+.kp-connection-badge--connecting .kp-connection-badge-dot,
+.kp-connection-badge--degraded .kp-connection-badge-dot {
+  background: var(--color-probe);
+}
+
+.kp-connection-badge--on {
+  color: var(--color-signal);
+  border: var(--border-signal);
+  background: var(--color-signal-dim);
+}
+
+.kp-connection-badge--on .kp-connection-badge-dot {
+  background: var(--color-signal);
+}
+
+.kp-connection-badge--degraded {
+  color: var(--color-probe);
+  border: 1px solid rgba(232, 160, 32, 0.2);
+  background: var(--color-probe-dim);
+}
+
+@keyframes kp-connection-pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+  100% {
+    opacity: 1;
+  }
+}

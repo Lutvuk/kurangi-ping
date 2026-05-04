@@ -18,10 +18,10 @@ Implement operational control toggle and status badge components with strict sta
 *   **Data Models:** Status view-model props
 
 ## Acceptance Criteria (Technical)
-*   [ ] Toggle OFF/ON/connecting/degraded states are represented clearly.
-*   [ ] Signal/probe colors follow design rules.
-*   [ ] Instant snap motion is used for toggle state transitions.
-*   [ ] Components expose typed props for future integration.
+*   [x] Toggle OFF/ON/connecting/degraded states are represented clearly.
+*   [x] Signal/probe colors follow design rules.
+*   [x] Instant snap motion is used for toggle state transitions.
+*   [x] Components expose typed props for future integration.
 
 ## Business Rules & Logic
 *   These controls are mission-critical for user confidence during gameplay.
@@ -30,6 +30,6 @@ Implement operational control toggle and status badge components with strict sta
 *   Depends on: KP-020, KP-023
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
