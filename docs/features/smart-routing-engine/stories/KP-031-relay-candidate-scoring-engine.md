@@ -18,10 +18,10 @@ Implement deterministic relay scoring based on health, region preference, and po
 *   **Data Models:** Relay health + manifest candidate model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Score algorithm produces stable ordering for identical inputs.
-*   [ ] Region preference affects score as configured.
-*   [ ] Unhealthy relays are deprioritized/excluded per threshold.
-*   [ ] Score output is inspectable for debugging.
+*   [x] Score algorithm produces stable ordering for identical inputs.
+*   [x] Region preference affects score as configured.
+*   [x] Unhealthy relays are deprioritized/excluded per threshold.
+*   [x] Score output is inspectable for debugging.
 
 ## Business Rules & Logic
 *   Selection must be predictable and explainable.
@@ -30,6 +30,6 @@ Implement deterministic relay scoring based on health, region preference, and po
 *   Depends on: KP-029, KP-030
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

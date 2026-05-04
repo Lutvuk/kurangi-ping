@@ -3,6 +3,7 @@
 mod config;
 mod manifest_gate;
 mod policy;
+mod scoring;
 
 pub use config::{RoutingConfig, RoutingConfigError};
 pub use manifest_gate::{
@@ -11,6 +12,10 @@ pub use manifest_gate::{
 };
 pub use policy::{
     ProtocolPriority, RetryPolicy, RouteProtocol, RoutingPolicy, DEFAULT_PROTOCOL_ORDER,
+};
+pub use scoring::{
+    score_candidates, CandidateDisposition, CandidateScore, RelayHealthSnapshot, RelayHealthStatus,
+    RelayScoringConfig, ScoreBreakdown, ScoreExclusionReason, ScoringWeights,
 };
 
 use crate::security::signature::ManifestSignatureVerifier;
