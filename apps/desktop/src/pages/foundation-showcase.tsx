@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   ConnectionStatusBadge,
   GameDetectionRow,
@@ -6,6 +7,7 @@ import {
   PrimaryToggle,
   RelayHealthListItem
 } from "../components/modules";
+import { DetectionPanel, type DetectionViewModel } from "../features/detection";
 import { AppShell } from "../layout/AppShell";
 import { Panel } from "../layout/Panel";
 import "./foundation-showcase.css";
@@ -18,6 +20,44 @@ const onboardingSteps = [
 ];
 
 function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean }) {
+  const detectionCycle: DetectionViewModel[] = [
+    {
+      state: "not_found",
+      gameId: "ffxiv",
+      processName: "process unavailable",
+      detectionTimeMs: 0,
+      reasonCode: "not_found",
+      message: "Game belum terdeteksi. Jalankan game lalu scan ulang."
+    },
+    {
+      state: "detected",
+      gameId: "ffxiv",
+      processName: "ffxiv_dx11.exe",
+      detectionTimeMs: 742
+    },
+    {
+      state: "stale",
+      gameId: "ffxiv",
+      processName: "ffxiv_dx11.exe",
+      detectionTimeMs: 21000,
+      reasonCode: "stale_window_exceeded"
+    },
+    {
+      state: "error",
+      gameId: "ffxiv",
+      processName: "ffxiv_dx11.exe",
+      detectionTimeMs: 21000,
+      reasonCode: "permission_denied"
+    }
+  ];
+  const [detectionStateIndex, setDetectionStateIndex] = useState(0);
+
+  async function handleRescanMock() {
+    const nextIndex = (detectionStateIndex + 1) % detectionCycle.length;
+    setDetectionStateIndex(nextIndex);
+    return detectionCycle[nextIndex];
+  }
+
   return (
     <section
       className={["kp-showcase-viewport", compact ? "kp-showcase-viewport--compact" : ""]
@@ -81,6 +121,11 @@ function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean
             serverInfo="Asia Cluster"
             state="not-detected"
             icon="GI"
+          />
+          <DetectionPanel
+            title="Detection Control"
+            model={detectionCycle[detectionStateIndex]}
+            onTriggerRescan={handleRescanMock}
           />
         </div>
         <OnboardingStepper steps={onboardingSteps} />
