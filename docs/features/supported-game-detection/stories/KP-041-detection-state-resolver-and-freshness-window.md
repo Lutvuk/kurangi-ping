@@ -18,10 +18,10 @@ Resolve normalized detection states and stale timeout behavior from raw scan out
 *   **Data Models:** `DetectionState` enum
 
 ## Acceptance Criteria (Technical)
-*   [ ] States map to `not_found`, `detected`, `stale`, `error`.
-*   [ ] Freshness window logic is deterministic and configurable.
-*   [ ] Resolver output carries metadata for UI rendering.
-*   [ ] Error states include non-sensitive reason codes.
+*   [x] States map to `not_found`, `detected`, `stale`, `error`.
+*   [x] Freshness window logic is deterministic and configurable.
+*   [x] Resolver output carries metadata for UI rendering.
+*   [x] Error states include non-sensitive reason codes.
 
 ## Business Rules & Logic
 *   UI and routing gate rely on stable state semantics.
@@ -30,6 +30,6 @@ Resolve normalized detection states and stale timeout behavior from raw scan out
 *   Depends on: KP-040
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
