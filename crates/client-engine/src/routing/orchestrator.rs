@@ -1,6 +1,6 @@
 //! Route attempt orchestrator across protocol priority and scored candidates.
 
-use super::{CandidateScore, RouteCandidate, RouteProtocol};
+use super::{CandidateScore, RetryBudget, RetryMetadata, RetryPolicy, RouteCandidate, RouteProtocol};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AttemptFailureReason {
@@ -21,6 +21,7 @@ pub enum AttemptStepOutcome {
 pub enum RouteAttemptFailureCode {
     NoEligibleCandidates,
     AllAttemptsFailed,
+    RetryBudgetExhausted,
 }
 
 impl RouteAttemptFailureCode {
@@ -28,6 +29,7 @@ impl RouteAttemptFailureCode {
         match self {
             Self::NoEligibleCandidates => "ROUTE_NO_ELIGIBLE_CANDIDATES",
             Self::AllAttemptsFailed => "ROUTE_ALL_ATTEMPTS_FAILED",
+            Self::RetryBudgetExhausted => "ROUTE_RETRY_BUDGET_EXHAUSTED",
         }
     }
 }
@@ -62,6 +64,13 @@ pub struct AttemptResult {
     pub plan: AttemptPlan,
     pub status: AttemptStatus,
     pub attempts: Vec<AttemptRecord>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RetryOrchestrationResult {
+    pub final_attempt: AttemptResult,
+    pub retry_metadata: Vec<RetryMetadata>,
+    pub rounds_executed: u8,
 }
 
 pub trait RouteDialer {
@@ -130,15 +139,84 @@ pub fn attempt_route<D: RouteDialer>(
     }
 }
 
+pub fn attempt_route_with_retry<D: RouteDialer>(
+    protocol_order: &[RouteProtocol],
+    scored_candidates: &[CandidateScore],
+    retry_policy: RetryPolicy,
+    dialer: &D,
+) -> RetryOrchestrationResult {
+    let mut budget = RetryBudget::new(retry_policy.max_attempts_per_protocol);
+    let mut retry_metadata = Vec::new();
+    let mut rounds_executed: u8 = 0;
+    let mut accumulated_attempts = Vec::new();
+
+    loop {
+        rounds_executed = rounds_executed.saturating_add(1);
+        let round_result = attempt_route(protocol_order, scored_candidates, dialer);
+        let round_plan = round_result.plan.clone();
+        accumulated_attempts.extend(round_result.attempts.clone());
+
+        match round_result.status {
+            AttemptStatus::Connected { .. } => {
+                let final_attempt = AttemptResult {
+                    plan: round_plan,
+                    status: round_result.status,
+                    attempts: accumulated_attempts,
+                };
+                return RetryOrchestrationResult {
+                    final_attempt,
+                    retry_metadata,
+                    rounds_executed,
+                };
+            }
+            AttemptStatus::Exhausted { failure_code } => {
+                if failure_code == RouteAttemptFailureCode::NoEligibleCandidates {
+                    let final_attempt = AttemptResult {
+                        plan: round_plan,
+                        status: AttemptStatus::Exhausted { failure_code },
+                        attempts: accumulated_attempts,
+                    };
+                    return RetryOrchestrationResult {
+                        final_attempt,
+                        retry_metadata,
+                        rounds_executed,
+                    };
+                }
+
+                let Some(metadata) = budget.consume_retry(
+                    retry_policy.base_backoff_ms,
+                    retry_policy.max_backoff_ms,
+                    failure_code.as_code(),
+                ) else {
+                    let final_attempt = AttemptResult {
+                        plan: round_plan,
+                        status: AttemptStatus::Exhausted {
+                            failure_code: RouteAttemptFailureCode::RetryBudgetExhausted,
+                        },
+                        attempts: accumulated_attempts,
+                    };
+                    return RetryOrchestrationResult {
+                        final_attempt,
+                        retry_metadata,
+                        rounds_executed,
+                    };
+                };
+
+                retry_metadata.push(metadata);
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::{
-        attempt_route, AttemptFailureReason, AttemptStatus, AttemptStepOutcome, RouteDialer,
-        RouteAttemptFailureCode,
+        attempt_route, attempt_route_with_retry, AttemptFailureReason, AttemptStatus,
+        AttemptStepOutcome, RetryOrchestrationResult, RouteDialer, RouteAttemptFailureCode,
     };
     use crate::routing::{
         CandidateDisposition, CandidateScore, RelayHealthStatus, RouteCandidate, RouteProtocol,
-        ScoreBreakdown,
+        RetryPolicy, ScoreBreakdown,
     };
     use std::cell::RefCell;
 
@@ -290,5 +368,56 @@ mod tests {
         );
         assert!(result.attempts.is_empty());
         assert_eq!(result.plan.max_attempts, 0);
+    }
+
+    #[test]
+    fn retry_controller_stops_at_budget_and_returns_terminal_state() {
+        let dialer = TestDialer::default();
+        let scored = vec![scored_candidate("sin-01", true)];
+        let protocols = [
+            RouteProtocol::WireGuard,
+            RouteProtocol::TcpTls,
+            RouteProtocol::Quic,
+        ];
+        let retry_policy = RetryPolicy {
+            max_attempts_per_protocol: 2,
+            base_backoff_ms: 100,
+            max_backoff_ms: 250,
+        };
+
+        let RetryOrchestrationResult {
+            final_attempt,
+            retry_metadata,
+            rounds_executed,
+        } = attempt_route_with_retry(&protocols, &scored, retry_policy, &dialer);
+
+        assert_eq!(rounds_executed, 3);
+        assert_eq!(
+            final_attempt.status,
+            AttemptStatus::Exhausted {
+                failure_code: RouteAttemptFailureCode::RetryBudgetExhausted,
+            }
+        );
+        assert_eq!(retry_metadata.len(), 2);
+        assert_eq!(retry_metadata[0].delay_ms, 100);
+        assert_eq!(retry_metadata[1].delay_ms, 200);
+        assert_eq!(final_attempt.attempts.len(), 9);
+    }
+
+    #[test]
+    fn retry_metadata_is_emitted_with_trigger_code_and_remaining_budget() {
+        let dialer = TestDialer::default();
+        let scored = vec![scored_candidate("sin-01", true)];
+        let protocols = [RouteProtocol::WireGuard];
+        let retry_policy = RetryPolicy {
+            max_attempts_per_protocol: 1,
+            base_backoff_ms: 250,
+            max_backoff_ms: 3_000,
+        };
+
+        let result = attempt_route_with_retry(&protocols, &scored, retry_policy, &dialer);
+        assert_eq!(result.retry_metadata.len(), 1);
+        assert_eq!(result.retry_metadata[0].trigger_code, "ROUTE_ALL_ATTEMPTS_FAILED");
+        assert_eq!(result.retry_metadata[0].retries_remaining, 0);
     }
 }

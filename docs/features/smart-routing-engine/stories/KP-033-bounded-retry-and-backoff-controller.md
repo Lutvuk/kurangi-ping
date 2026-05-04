@@ -18,10 +18,10 @@ Implement bounded retry budget and backoff strategy for route failures.
 *   **Data Models:** Retry state model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Retry count never exceeds configured budget.
-*   [ ] Backoff schedule is deterministic and test-covered.
-*   [ ] Exhausted retries return terminal failure state.
-*   [ ] Retry metadata is emitted for telemetry.
+*   [x] Retry count never exceeds configured budget.
+*   [x] Backoff schedule is deterministic and test-covered.
+*   [x] Exhausted retries return terminal failure state.
+*   [x] Retry metadata is emitted for telemetry.
 
 ## Business Rules & Logic
 *   Failover behavior must be resilient but bounded.
@@ -30,6 +30,6 @@ Implement bounded retry budget and backoff strategy for route failures.
 *   Depends on: KP-032
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
