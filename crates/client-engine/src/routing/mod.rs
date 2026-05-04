@@ -6,6 +6,7 @@ mod orchestrator;
 mod policy;
 mod retry;
 mod scoring;
+mod state_machine;
 
 pub use config::{RoutingConfig, RoutingConfigError};
 pub use manifest_gate::{
@@ -24,6 +25,10 @@ pub use retry::{next_retry_delay, RetryBudget, RetryMetadata};
 pub use scoring::{
     score_candidates, CandidateDisposition, CandidateScore, RelayHealthSnapshot, RelayHealthStatus,
     RelayScoringConfig, ScoreBreakdown, ScoreExclusionReason, ScoringWeights,
+};
+pub use state_machine::{
+    IllegalTransitionError, RoutingState, RoutingStateMachine, RoutingStateView,
+    RoutingTransition, RoutingTrigger,
 };
 
 use crate::security::signature::ManifestSignatureVerifier;

@@ -18,10 +18,10 @@ Implement normalized routing state machine and lifecycle event emissions for UI 
 *   **Data Models:** Routing state/event payload model
 
 ## Acceptance Criteria (Technical)
-*   [ ] States include at minimum: off, connecting, connected, degraded, failed.
-*   [ ] Transitions are validated and illegal transitions rejected.
-*   [ ] `routing_enabled`, `routing_disabled`, and `relay_failed` event mappings are consistent.
-*   [ ] State outputs are serializable for UI consumption.
+*   [x] States include at minimum: off, connecting, connected, degraded, failed.
+*   [x] Transitions are validated and illegal transitions rejected.
+*   [x] `routing_enabled`, `routing_disabled`, and `relay_failed` event mappings are consistent.
+*   [x] State outputs are serializable for UI consumption.
 
 ## Business Rules & Logic
 *   User-facing state must match actual engine lifecycle.
@@ -30,6 +30,6 @@ Implement normalized routing state machine and lifecycle event emissions for UI 
 *   Depends on: KP-033
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

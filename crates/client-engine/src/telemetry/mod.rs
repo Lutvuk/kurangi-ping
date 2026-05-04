@@ -1,5 +1,7 @@
 //! Telemetry batching boundary for privacy-safe event delivery.
 
+pub mod events;
+
 /// Lightweight telemetry event placeholder.
 #[derive(Debug, Clone)]
 pub struct TelemetryEvent {
