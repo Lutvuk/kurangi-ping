@@ -1,0 +1,13 @@
+[package]
+name = "client-engine"
+version = "0.1.0"
+edition = "2021"
+description = "Kurangi Ping client network engine scaffold"
+license = "UNLICENSED"
+publish = false
+
+[lib]
+name = "client_engine"
+path = "src/lib.rs"
+
+[dependencies]

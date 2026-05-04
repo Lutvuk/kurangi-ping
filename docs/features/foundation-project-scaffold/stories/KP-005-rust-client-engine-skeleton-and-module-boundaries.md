@@ -18,10 +18,10 @@ Create Rust client engine skeleton with clear module boundaries for detection, r
 *   **Data Models:** N/A
 
 ## Acceptance Criteria (Technical)
-*   [ ] Cargo crate builds successfully.
-*   [ ] Public module interfaces compile and are documented.
-*   [ ] Placeholder implementations include TODO boundaries for future features.
-*   [ ] No routing side effects executed in scaffold phase.
+*   [x] Cargo crate builds successfully.
+*   [x] Public module interfaces compile and are documented.
+*   [x] Placeholder implementations include TODO boundaries for future features.
+*   [x] No routing side effects executed in scaffold phase.
 
 ## Business Rules & Logic
 *   Module boundaries must align with approved architecture.
@@ -31,6 +31,6 @@ Create Rust client engine skeleton with clear module boundaries for detection, r
 *   Depends on: KP-001, KP-002
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing (basic crate tests)
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing (basic crate tests)
+*   [x] Lint/Type check clear

@@ -18,10 +18,10 @@ Initialize the desktop UI workspace with Tauri + React + TypeScript baseline and
 *   **Data Models:** N/A
 
 ## Acceptance Criteria (Technical)
-*   [ ] App boots with Tauri development runtime.
-*   [ ] TypeScript build passes with strict mode baseline.
-*   [ ] UI shell placeholder renders successfully.
-*   [ ] Dev command is documented and repeatable.
+*   [x] App boots with Tauri development runtime.
+*   [x] TypeScript build passes with strict mode baseline.
+*   [x] UI shell placeholder renders successfully.
+*   [x] Dev command is documented and repeatable.
 
 ## Business Rules & Logic
 *   Keep base app lightweight and extensible.
@@ -31,6 +31,6 @@ Initialize the desktop UI workspace with Tauri + React + TypeScript baseline and
 *   Depends on: KP-001
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing (smoke test acceptable)
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing (smoke test acceptable)
+*   [x] Lint/Type check clear

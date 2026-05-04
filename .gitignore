@@ -13,3 +13,13 @@
 *.key
 *.p12
 *.pfx
+
+# JavaScript/TypeScript build artifacts
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Tauri/Rust build artifacts
+target/
+apps/desktop/src-tauri/target/
+.agents/skills/files.zip

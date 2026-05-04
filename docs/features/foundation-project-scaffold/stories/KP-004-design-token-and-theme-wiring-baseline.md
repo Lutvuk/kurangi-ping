@@ -18,10 +18,10 @@ Wire design token primitives from approved design system into desktop UI baselin
 *   **Data Models:** N/A
 
 ## Acceptance Criteria (Technical)
-*   [ ] Core color, typography, spacing, and motion tokens are declared in CSS variables.
-*   [ ] Base app shell consumes approved tokens for background/text/border.
-*   [ ] Theme files match `docs/design-system.md` semantics.
-*   [ ] No unauthorized default theme substitutions introduced.
+*   [x] Core color, typography, spacing, and motion tokens are declared in CSS variables.
+*   [x] Base app shell consumes approved tokens for background/text/border.
+*   [x] Theme files match `docs/design-system.md` semantics.
+*   [x] No unauthorized default theme substitutions introduced.
 
 ## Business Rules & Logic
 *   Visual language must preserve tactical/trustworthy direction.
@@ -31,6 +31,6 @@ Wire design token primitives from approved design system into desktop UI baselin
 *   Depends on: KP-003
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing (visual token checks optional)
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing (visual token checks optional)
+*   [x] Lint/Type check clear
