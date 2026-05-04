@@ -18,10 +18,10 @@ Add CI job to verify DB migrations apply cleanly on fresh database and remain fo
 *   **Data Models:** N/A
 
 ## Acceptance Criteria (Technical)
-*   [ ] CI provisions clean SQLite DB and applies all migrations.
-*   [ ] CI fails when migration ordering or SQL syntax is invalid.
-*   [ ] Seed verification (optional stage) confirms idempotency.
-*   [ ] CI log includes migration summary artifacts.
+*   [x] CI provisions clean SQLite DB and applies all migrations.
+*   [x] CI fails when migration ordering or SQL syntax is invalid.
+*   [x] Seed verification (optional stage) confirms idempotency.
+*   [x] CI log includes migration summary artifacts.
 
 ## Business Rules & Logic
 *   DB integrity must be enforced as merge gate.
@@ -31,6 +31,6 @@ Add CI job to verify DB migrations apply cleanly on fresh database and remain fo
 *   Depends on: KP-017
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
