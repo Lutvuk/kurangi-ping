@@ -37,11 +37,16 @@ import sys
 db = sqlite3.connect(sys.argv[1])
 count = db.execute("SELECT COUNT(*) FROM supported_games").fetchone()[0]
 ids = [row[0] for row in db.execute("SELECT game_id FROM supported_games ORDER BY game_id")]
+mode_versions = db.execute(
+    "SELECT COUNT(*) FROM supported_games WHERE match_mode = 'exact' AND catalog_version GLOB 'v[0-9]*'"
+).fetchone()[0]
 if count != 5:
     raise SystemExit(f"expected 5 supported_games rows, got {count}")
 expected = ["ffxiv", "gta_online", "swtor", "valorant", "wow"]
 if ids != expected:
     raise SystemExit(f"unexpected game_id set: {ids}")
+if mode_versions != 5:
+    raise SystemExit(f"expected 5 rows with valid match_mode/catalog_version defaults, got {mode_versions}")
 print("db_seed_test=pass")
 '@
 

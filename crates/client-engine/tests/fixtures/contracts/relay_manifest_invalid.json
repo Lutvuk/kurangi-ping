@@ -1,0 +1,14 @@
+{
+  "version": "2026.08.0",
+  "valid_until": "2026-08-02T00:00:00Z",
+  "signature": "known-good",
+  "relays": [
+    {
+      "relay_id": "sin-01",
+      "region": "sin",
+      "hostname": "sin-01.example.net",
+      "priority": 0
+    }
+  ]
+}
+

@@ -12,16 +12,16 @@
 Refine DB schema fields supporting executable-based allowlist matching and metadata validity.
 
 ## Technical Specifications
-*   **Proposed Files:** `db/migrations/0004_supported_games_refine.sql`
+*   **Proposed Files:** `db/migrations/0004_supported_games_refine.up.sql`
 *   **Functions/Classes:** N/A
 *   **API Endpoints:** N/A
 *   **Data Models:** `supported_games`
 
 ## Acceptance Criteria (Technical)
-*   [ ] Allowlist fields required for matching are present and constrained.
-*   [ ] Existing seed compatibility is preserved.
-*   [ ] Migration is forward-only and idempotent on replay.
-*   [ ] Schema notes updated in DB docs.
+*   [x] Allowlist fields required for matching are present and constrained.
+*   [x] Existing seed compatibility is preserved.
+*   [x] Migration is forward-only and idempotent on replay.
+*   [x] Schema notes updated in DB docs.
 
 ## Business Rules & Logic
 *   Detection accuracy starts from strict allowlist data quality.
@@ -30,6 +30,6 @@ Refine DB schema fields supporting executable-based allowlist matching and metad
 *   Depends on: KP-011, KP-012
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

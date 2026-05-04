@@ -48,12 +48,16 @@
 |---|---|---|---|
 | game_id | TEXT | PK, NOT NULL | ID game (mis. ffxiv) |
 | display_name | TEXT | NOT NULL | Nama game untuk UI |
-| executable_name | TEXT | NOT NULL, UNIQUE | Nama executable allowlist |
+| executable_name | TEXT | NOT NULL, UNIQUE, lowercase `.exe`, no path separator | Nama executable allowlist |
+| match_mode | TEXT | NOT NULL, default `exact` | Mode matching executable |
+| catalog_version | TEXT | NOT NULL, format `v<number>` | Versi katalog allowlist saat row dibuat/diupdate |
 | enabled | INTEGER | NOT NULL, CHECK (0/1) | Status support aktif |
 | updated_at | DATETIME | NOT NULL | Waktu update definisi game |
 
 **Business Rules:**
 - Hanya executable pada allowlist yang boleh dianggap valid detection.
+- `game_id` wajib lowercase snake-ish (`[a-z0-9_]`) untuk konsistensi pencocokan internal.
+- `executable_name` harus nama file executable saja (bukan full path) untuk mencegah false positive berbasis path.
 
 ### RelayManifest
 **Description:** Metadata manifest relay yang diterima client.

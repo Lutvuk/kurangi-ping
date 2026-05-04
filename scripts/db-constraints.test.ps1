@@ -134,6 +134,44 @@ assert_fails(
 
 assert_fails(
     """
+    INSERT INTO supported_games(game_id, display_name, executable_name, enabled, updated_at)
+    VALUES (?, ?, ?, ?, ?)
+    """,
+    ("BadGame", "Bad Game", "badgame.exe", 1, "2026-08-01T00:00:00Z"),
+    "CHECK constraint failed",
+)
+
+assert_fails(
+    """
+    INSERT INTO supported_games(game_id, display_name, executable_name, enabled, updated_at)
+    VALUES (?, ?, ?, ?, ?)
+    """,
+    ("badgame2", "Bad Game 2", "games/badgame2.exe", 1, "2026-08-01T00:00:00Z"),
+    "CHECK constraint failed",
+)
+
+assert_fails(
+    """
+    INSERT INTO supported_games(
+      game_id, display_name, executable_name, match_mode, enabled, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?)
+    """,
+    ("badgame3", "Bad Game 3", "badgame3.exe", "prefix", 1, "2026-08-01T00:00:00Z"),
+    "CHECK constraint failed",
+)
+
+assert_fails(
+    """
+    INSERT INTO supported_games(
+      game_id, display_name, executable_name, catalog_version, enabled, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?)
+    """,
+    ("badgame4", "Bad Game 4", "badgame4.exe", "catalog-1", 1, "2026-08-01T00:00:00Z"),
+    "CHECK constraint failed",
+)
+
+assert_fails(
+    """
     INSERT INTO telemetry_event(event_id, batch_id, session_id, event_name, payload_json, occurred_at)
     VALUES (?, ?, ?, ?, ?, ?)
     """,

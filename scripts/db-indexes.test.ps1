@@ -20,6 +20,7 @@ db = sqlite3.connect(sys.argv[1])
 db.execute("PRAGMA foreign_keys = ON")
 
 expected_indexes = {
+    "idx_supported_games_enabled_executable",
     "idx_route_session_installation_started_at",
     "idx_route_session_game_started_at",
     "idx_ping_sample_session_sampled_at",
@@ -39,6 +40,10 @@ def assert_uses_index(sql, expected_index):
     if expected_index not in detail_text:
         raise SystemExit(f"query plan does not use {expected_index}: {detail_text}")
 
+assert_uses_index(
+    "SELECT game_id FROM supported_games WHERE enabled = 1 ORDER BY executable_name LIMIT 5",
+    "idx_supported_games_enabled_executable",
+)
 assert_uses_index(
     "SELECT session_id FROM route_session WHERE installation_id = 'inst-1' ORDER BY started_at DESC LIMIT 5",
     "idx_route_session_installation_started_at",

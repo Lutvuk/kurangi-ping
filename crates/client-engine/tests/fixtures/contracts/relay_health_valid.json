@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "relay_id": "sin-01",
+      "status": "ok",
+      "latency_ms": 42,
+      "updated_at": "2026-08-01T00:00:10Z"
+    },
+    {
+      "relay_id": "nrt-01",
+      "status": "warn",
+      "latency_ms": 120,
+      "updated_at": "2026-08-01T00:00:11Z"
+    }
+  ],
+  "page": {
+    "next_cursor": null,
+    "limit": 50
+  }
+}
+

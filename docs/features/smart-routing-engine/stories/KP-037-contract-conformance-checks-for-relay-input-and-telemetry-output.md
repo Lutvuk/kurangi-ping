@@ -18,10 +18,10 @@ Verify routing engine IO remains conformant with relay public contract inputs an
 *   **Data Models:** Contract fixture payloads
 
 ## Acceptance Criteria (Technical)
-*   [ ] Relay manifest input parsing matches OpenAPI schema expectations.
-*   [ ] Relay health input parsing matches OpenAPI schema expectations.
-*   [ ] Emitted routing lifecycle events conform to telemetry allowlist rules.
-*   [ ] Contract regressions fail CI gate.
+*   [x] Relay manifest input parsing matches OpenAPI schema expectations.
+*   [x] Relay health input parsing matches OpenAPI schema expectations.
+*   [x] Emitted routing lifecycle events conform to telemetry allowlist rules.
+*   [x] Contract regressions fail CI gate.
 
 ## Business Rules & Logic
 *   Contract drift must be detected early.
@@ -30,6 +30,6 @@ Verify routing engine IO remains conformant with relay public contract inputs an
 *   Depends on: KP-034, KP-036
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
