@@ -18,10 +18,10 @@ Add baseline UI tests to guard rendering, keyboard accessibility, and semantic s
 *   **Data Models:** Mock props for state matrix
 
 ## Acceptance Criteria (Technical)
-*   [ ] Render tests cover key primitives and module components.
-*   [ ] Keyboard interaction tests cover toggle/modal/navigation essentials.
-*   [ ] Semantic status color/state mapping has regression coverage.
-*   [ ] Test suite integrates with CI baseline.
+*   [x] Render tests cover key primitives and module components.
+*   [x] Keyboard interaction tests cover toggle/modal/navigation essentials.
+*   [x] Semantic status color/state mapping has regression coverage.
+*   [x] Test suite integrates with CI baseline.
 
 ## Business Rules & Logic
 *   UI consistency and operational clarity must be protected against regressions.
@@ -30,6 +30,6 @@ Add baseline UI tests to guard rendering, keyboard accessibility, and semantic s
 *   Depends on: KP-023, KP-027
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
