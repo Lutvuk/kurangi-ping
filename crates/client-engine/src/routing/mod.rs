@@ -1,6 +1,7 @@
 //! Routing and manifest verification boundaries.
 
 mod config;
+mod integration;
 mod manifest_gate;
 mod orchestrator;
 mod policy;
@@ -9,6 +10,10 @@ mod scoring;
 mod state_machine;
 
 pub use config::{RoutingConfig, RoutingConfigError};
+pub use integration::{
+    close_route_session, start_route_session, transition_with_session_hooks,
+    RouteSessionPersistence, SessionHookResult, SessionHookStatus,
+};
 pub use manifest_gate::{
     verify_manifest_or_fail, ManifestFailureCode, ManifestGateResult, RelayManifestDto,
     RelayNodeDto, RouteCandidate,

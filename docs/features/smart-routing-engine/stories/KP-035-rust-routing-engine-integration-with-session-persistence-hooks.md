@@ -18,10 +18,10 @@ Integrate orchestrator/state machine with DB session hooks for route session lif
 *   **Data Models:** `route_session` mapping model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Session start/end hooks persist consistent timestamps.
-*   [ ] Failed sessions capture end reason code.
-*   [ ] Persistence failures do not crash routing engine loop.
-*   [ ] Integration path is test-covered with DB mock/fixture.
+*   [x] Session start/end hooks persist consistent timestamps.
+*   [x] Failed sessions capture end reason code.
+*   [x] Persistence failures do not crash routing engine loop.
+*   [x] Integration path is test-covered with DB mock/fixture.
 
 ## Business Rules & Logic
 *   Persistence is supportive; routing loop stability remains highest priority.
@@ -30,6 +30,6 @@ Integrate orchestrator/state machine with DB session hooks for route session lif
 *   Depends on: KP-015, KP-034
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

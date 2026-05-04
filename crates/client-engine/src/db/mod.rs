@@ -6,8 +6,13 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 mod migrate;
+mod route_session_repo;
 
 pub use migrate::{run_migrations, MigrationError, MigrationSummary};
+pub use route_session_repo::{
+    RouteSessionCloseRecord, RouteSessionRepoError, RouteSessionStartRecord,
+    SqliteRouteSessionRepo,
+};
 
 #[derive(Debug)]
 pub struct EngineDb {
