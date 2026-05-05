@@ -18,10 +18,10 @@ Implement ON activation gate chain before routing starts.
 *   **Data Models:** ON precheck result model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Detection gate required and enforced.
-*   [ ] Manifest verification gate required and enforced.
-*   [ ] Route prechecks run before activation attempt.
-*   [ ] Failure returns normalized reason codes for UI.
+*   [x] Detection gate required and enforced.
+*   [x] Manifest verification gate required and enforced.
+*   [x] Route prechecks run before activation attempt.
+*   [x] Failure returns normalized reason codes for UI.
 
 ## Business Rules & Logic
 *   Activation must never bypass integrity/safety gates.
@@ -30,6 +30,6 @@ Implement ON activation gate chain before routing starts.
 *   Depends on: KP-044, KP-030, KP-058
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

@@ -9,6 +9,7 @@ mod health_classification;
 mod health_scheduler;
 mod integration;
 mod manifest_gate;
+mod on_pipeline;
 mod orchestrator;
 mod policy;
 mod retry;
@@ -48,6 +49,10 @@ pub use integration::{
 pub use manifest_gate::{
     verify_manifest_or_fail, ManifestFailureCode, ManifestGateResult, RelayManifestDto,
     RelayNodeDto, RouteCandidate,
+};
+pub use on_pipeline::{
+    execute_on_pipeline, OnPipelineFailure, OnPipelineReasonCode, OnPipelineResult,
+    OnPipelineStage, OnPipelineStatus, RoutePrecheckResult,
 };
 pub use policy::{
     ProtocolPriority, RetryPolicy, RouteProtocol, RoutingPolicy, DEFAULT_PROTOCOL_ORDER,
