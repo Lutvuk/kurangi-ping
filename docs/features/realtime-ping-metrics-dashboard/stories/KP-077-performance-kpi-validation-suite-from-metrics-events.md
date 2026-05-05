@@ -18,10 +18,10 @@ Validate that persisted samples and telemetry events can derive KPI indicators u
 *   **Data Models:** Metrics/event sequence fixtures
 
 ## Acceptance Criteria (Technical)
-*   [ ] Derived metrics include avg reduction, degraded ratio, measurement continuity.
-*   [ ] Missing/inconsistent event sequences fail validation.
-*   [ ] KPI extraction logic is deterministic across runs.
-*   [ ] Output is actionable for product analytics review.
+*   [x] Derived metrics include avg reduction, degraded ratio, measurement continuity.
+*   [x] Missing/inconsistent event sequences fail validation.
+*   [x] KPI extraction logic is deterministic across runs.
+*   [x] Output is actionable for product analytics review.
 
 ## Business Rules & Logic
 *   KPI integrity is required for launch decision confidence.
@@ -30,6 +30,6 @@ Validate that persisted samples and telemetry events can derive KPI indicators u
 *   Depends on: KP-072, KP-076, KP-067
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

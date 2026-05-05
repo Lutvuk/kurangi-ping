@@ -1,0 +1,4 @@
+name=missing_recovery_metrics_kpi
+sample_interval_ms=1000
+samples=1000|210|160|4|0;2000|211|159|4|0;3000|209|157|5|0;4000|208|156|5|0
+events=2500|relay_failed|1
