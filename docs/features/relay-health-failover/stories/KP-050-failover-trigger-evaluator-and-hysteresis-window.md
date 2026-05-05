@@ -18,10 +18,10 @@ Decide when failover is triggered using health transitions with grace window/hys
 *   **Data Models:** Failover decision model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Degraded states do not trigger immediate oscillation.
-*   [ ] Trigger conditions are deterministic and explainable.
-*   [ ] Grace window is configurable.
-*   [ ] Edge cases (rapid fluctuation) are test-covered.
+*   [x] Degraded states do not trigger immediate oscillation.
+*   [x] Trigger conditions are deterministic and explainable.
+*   [x] Grace window is configurable.
+*   [x] Edge cases (rapid fluctuation) are test-covered.
 
 ## Business Rules & Logic
 *   Failover reliability must not create instability loops.
@@ -30,6 +30,6 @@ Decide when failover is triggered using health transitions with grace window/hys
 *   Depends on: KP-049, KP-033
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

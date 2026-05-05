@@ -2,6 +2,7 @@
 
 mod config;
 mod detection_gate;
+mod failover_trigger;
 mod health_classification;
 mod health_scheduler;
 mod integration;
@@ -14,6 +15,10 @@ mod state_machine;
 
 pub use config::{RoutingConfig, RoutingConfigError};
 pub use detection_gate::{can_activate_routing, DetectionGateDecision, DetectionGateReasonCode};
+pub use failover_trigger::{
+    apply_hysteresis_window, should_failover, FailoverDecision, FailoverEvaluationInput,
+    FailoverReasonCode, FailoverTriggerConfig, FailoverTriggerState, HysteresisWindowResult,
+};
 pub use health_classification::{
     classify_relay_health, HealthClassificationThresholds, RelayHealthMetrics, RelayHealthStatus,
 };
