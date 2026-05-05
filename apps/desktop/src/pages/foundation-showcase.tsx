@@ -8,6 +8,7 @@ import {
   RelayHealthListItem
 } from "../components/modules";
 import { DetectionPanel, type DetectionViewModel } from "../features/detection";
+import { RelayHealthPanel } from "../features/relay";
 import { AppShell } from "../layout/AppShell";
 import { Panel } from "../layout/Panel";
 import "./foundation-showcase.css";
@@ -105,6 +106,37 @@ function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean
           />
           <RelayHealthListItem hostname="lax-01.relay.local" latencyMs={null} region="lax" health="dead" />
         </div>
+        <RelayHealthPanel
+          failover={{
+            currentState: "switching",
+            previousRelayId: "sin-01",
+            nextRelayId: "nrt-01",
+            reasonCode: "dead_relay_detected"
+          }}
+          relays={[
+            {
+              relayId: "sin-01",
+              hostname: "sin-01.relay.local",
+              latencyMs: 35,
+              region: "sin",
+              health: "dead"
+            },
+            {
+              relayId: "nrt-01",
+              hostname: "nrt-01.relay.local",
+              latencyMs: 74,
+              region: "nrt",
+              health: "ok"
+            },
+            {
+              relayId: "lax-01",
+              hostname: "lax-01.relay.local",
+              latencyMs: 121,
+              region: "lax",
+              health: "warn"
+            }
+          ]}
+        />
       </div>
 
       <div className="kp-showcase-group">
@@ -138,7 +170,7 @@ export function FoundationShowcasePage() {
   return (
     <AppShell
       sidebar={{ activeId: "routing", title: "Kurangi Ping 2" }}
-      topBar={{ statusLabel: "Build", statusValue: "Foundation Showcase", meta: "KP-024 to KP-028" }}
+      topBar={{ statusLabel: "Build", statusValue: "Foundation Showcase", meta: "KP-024 to KP-054" }}
       contentClassName="kp-showcase-content"
     >
       <Panel eyebrow="Foundation QA" title="UI Composition Showcase">

@@ -49,6 +49,7 @@ describe("module components", () => {
         <ConnectionStatusBadge state="connecting" />
         <ConnectionStatusBadge state="on" />
         <ConnectionStatusBadge state="degraded" />
+        <ConnectionStatusBadge state="error" />
       </div>
     );
 
@@ -57,6 +58,7 @@ describe("module components", () => {
     expect(badges[1]).toHaveClass("kp-connection-badge--connecting");
     expect(badges[2]).toHaveClass("kp-connection-badge--on");
     expect(badges[3]).toHaveClass("kp-connection-badge--degraded");
+    expect(badges[4]).toHaveClass("kp-connection-badge--error");
   });
 
   it("renders ping metric card with distinct values and units", () => {

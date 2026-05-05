@@ -18,10 +18,10 @@ Wire backend health and failover state into relay list and status badge componen
 *   **Data Models:** Relay health/failover view model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Relay list reflects live health classification.
-*   [ ] Active relay highlight syncs with engine state.
-*   [ ] Badge transitions reflect failover lifecycle correctly.
-*   [ ] Visual semantics follow design system color rules.
+*   [x] Relay list reflects live health classification.
+*   [x] Active relay highlight syncs with engine state.
+*   [x] Badge transitions reflect failover lifecycle correctly.
+*   [x] Visual semantics follow design system color rules.
 
 ## Business Rules & Logic
 *   UI must make failover behavior understandable at a glance.
@@ -30,6 +30,6 @@ Wire backend health and failover state into relay list and status badge componen
 *   Depends on: KP-052, KP-025
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

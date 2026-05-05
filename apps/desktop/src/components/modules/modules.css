@@ -151,6 +151,16 @@
   background: var(--color-probe-dim);
 }
 
+.kp-connection-badge--error {
+  color: var(--color-relay-dead);
+  border: 1px solid rgba(232, 64, 64, 0.35);
+  background: rgba(232, 64, 64, 0.12);
+}
+
+.kp-connection-badge--error .kp-connection-badge-dot {
+  background: var(--color-relay-dead);
+}
+
 @keyframes kp-connection-pulse {
   0% {
     opacity: 1;

@@ -3,7 +3,7 @@ import type { PrimitiveStatusState } from "../primitives/shared/types";
 
 export type ConnectionStatusState = Extract<
   PrimitiveStatusState,
-  "off" | "connecting" | "on" | "degraded"
+  "off" | "connecting" | "on" | "degraded" | "error"
 >;
 
 export type ConnectionStatusBadgeProps = HTMLAttributes<HTMLSpanElement> & {
@@ -15,7 +15,8 @@ const labelByState: Record<ConnectionStatusState, string> = {
   off: "Offline",
   connecting: "Connecting...",
   on: "Routing Active",
-  degraded: "Routing Degraded"
+  degraded: "Routing Degraded",
+  error: "No Relay Available"
 };
 
 export function ConnectionStatusBadge({
