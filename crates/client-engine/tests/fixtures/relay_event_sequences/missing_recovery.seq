@@ -1,0 +1,2 @@
+name=missing_recovery
+steps=1000|relay_failed|switching|sin-01|nrt-01|dead_relay_detected|2;5000|relay_failed|switching|nrt-01|lax-01|degraded_grace_exceeded|3

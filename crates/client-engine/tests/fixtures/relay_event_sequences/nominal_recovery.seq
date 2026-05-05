@@ -1,0 +1,2 @@
+name=nominal_recovery
+steps=1000|relay_failed|switching|sin-01|nrt-01|dead_relay_detected|2;2200|relay_recovered|recovered|sin-01|nrt-01|switch_successful|2;5000|relay_failed|switching|nrt-01|lax-01|degraded_grace_exceeded|3;6700|relay_recovered|recovered|nrt-01|lax-01|switch_successful|3

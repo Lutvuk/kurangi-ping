@@ -1,0 +1,2 @@
+name=invalid_recovered_first
+steps=1000|relay_recovered|recovered|sin-01|nrt-01|switch_successful|1;2000|relay_failed|switching|nrt-01|lax-01|dead_relay_detected|2

@@ -18,10 +18,10 @@ Validate relay event stream supports KPI aggregation for failure rate, recovery 
 *   **Data Models:** Relay event sequence fixtures
 
 ## Acceptance Criteria (Technical)
-*   [ ] Event sequences can derive failover frequency metrics.
-*   [ ] Event sequences can derive recovery duration metrics.
-*   [ ] Missing/invalid events are detected by assertions.
-*   [ ] Test output is actionable for release readiness review.
+*   [x] Event sequences can derive failover frequency metrics.
+*   [x] Event sequences can derive recovery duration metrics.
+*   [x] Missing/invalid events are detected by assertions.
+*   [x] Test output is actionable for release readiness review.
 
 ## Business Rules & Logic
 *   Reliability KPIs should be derivable from telemetry without manual data patching.
@@ -30,6 +30,6 @@ Validate relay event stream supports KPI aggregation for failure rate, recovery 
 *   Depends on: KP-053, KP-056
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
