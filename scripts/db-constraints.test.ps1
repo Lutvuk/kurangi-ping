@@ -84,6 +84,47 @@ db.execute(
 )
 db.commit()
 
+required_batch_columns = {
+    "retry_backoff_ms",
+    "last_attempt_at",
+    "next_retry_at",
+    "expired_at",
+    "last_error_code",
+}
+required_event_columns = {
+    "drop_reason_code",
+    "dropped_at",
+}
+
+batch_columns = {row[1] for row in db.execute("PRAGMA table_info(telemetry_batch)")}
+event_columns = {row[1] for row in db.execute("PRAGMA table_info(telemetry_event)")}
+if not required_batch_columns.issubset(batch_columns):
+    missing = sorted(required_batch_columns - batch_columns)
+    raise SystemExit(f"missing telemetry_batch diagnostic columns: {missing}")
+if not required_event_columns.issubset(event_columns):
+    missing = sorted(required_event_columns - event_columns)
+    raise SystemExit(f"missing telemetry_event diagnostic columns: {missing}")
+
+batch_defaults = db.execute(
+    """
+    SELECT retry_backoff_ms, last_attempt_at, next_retry_at, expired_at, last_error_code
+    FROM telemetry_batch
+    WHERE batch_id = 'batch-1'
+    """
+).fetchone()
+if batch_defaults != (0, None, None, None, "none"):
+    raise SystemExit(f"unexpected telemetry_batch defaults: {batch_defaults}")
+
+event_defaults = db.execute(
+    """
+    SELECT drop_reason_code, dropped_at
+    FROM telemetry_event
+    WHERE event_id = 'evt-1'
+    """
+).fetchone()
+if event_defaults != ("none", None):
+    raise SystemExit(f"unexpected telemetry_event defaults: {event_defaults}")
+
 assert_fails(
     """
     INSERT INTO route_session(

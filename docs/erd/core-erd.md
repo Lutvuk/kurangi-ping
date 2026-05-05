@@ -136,8 +136,13 @@
 | batch_id | TEXT | PK, NOT NULL | ID batch |
 | created_at | DATETIME | NOT NULL | Waktu batch dibuat |
 | retry_count | INTEGER | NOT NULL, CHECK >= 0 | Jumlah retry |
+| retry_backoff_ms | INTEGER | NOT NULL, CHECK >= 0, default 0 | Backoff terakhir yang dijadwalkan (ms) |
+| last_attempt_at | DATETIME | NULL | Waktu attempt delivery terakhir |
+| next_retry_at | DATETIME | NULL | Waktu retry berikutnya terjadwal |
 | expires_at | DATETIME | NOT NULL | Batas batch dianggap stale |
+| expired_at | DATETIME | NULL | Waktu batch ditandai expired |
 | delivery_status | TEXT | NOT NULL, CHECK enum(queued,sent,failed,expired) | Status batch |
+| last_error_code | TEXT | NOT NULL, default `none` | Kode error delivery terakhir (non-sensitive) |
 
 **Business Rules:**
 - Retry dibatasi sesuai kebijakan fail-safe.
@@ -154,6 +159,8 @@
 | event_name | TEXT | NOT NULL | Nama event |
 | payload_json | TEXT | NOT NULL | Payload event |
 | occurred_at | DATETIME | NOT NULL | Waktu event |
+| drop_reason_code | TEXT | NOT NULL, default `none` | Alasan drop event (non-sensitive) |
+| dropped_at | DATETIME | NULL | Waktu event didrop |
 
 **Business Rules:**
 - Payload hanya boleh field allowlist; PII tidak boleh tersimpan.
@@ -245,8 +252,13 @@ erDiagram
         text batch_id PK
         datetime created_at
         int retry_count
+        int retry_backoff_ms
+        datetime last_attempt_at
+        datetime next_retry_at
         datetime expires_at
+        datetime expired_at
         text delivery_status
+        text last_error_code
     }
 
     TelemetryEvent {
@@ -256,6 +268,8 @@ erDiagram
         text event_name
         text payload_json
         datetime occurred_at
+        text drop_reason_code
+        datetime dropped_at
     }
 ```
 

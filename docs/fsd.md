@@ -304,7 +304,12 @@ sequenceDiagram
 | created_at | TEXT | Yes | ISO-8601 UTC | Queue insertion time |
 | payload_json | TEXT | Yes | Allowlisted schema only | Event payload batch |
 | retry_count | INTEGER | Yes | >=0 <= max policy | Delivery retry counter |
+| retry_backoff_ms | INTEGER | Yes | >=0, default 0 | Backoff retry terakhir (ms) |
+| last_attempt_at | TEXT | No | ISO-8601 UTC | Waktu attempt delivery terakhir |
+| next_retry_at | TEXT | No | ISO-8601 UTC | Waktu retry berikutnya |
 | expires_at | TEXT | Yes | ISO-8601 UTC | Drop-after timestamp |
+| expired_at | TEXT | No | ISO-8601 UTC | Waktu batch ditandai expired |
+| last_error_code | TEXT | Yes | lowercase safe code, default `none` | Error delivery terakhir (tanpa data sensitif) |
 
 ### 7.2 Data Relationships
 

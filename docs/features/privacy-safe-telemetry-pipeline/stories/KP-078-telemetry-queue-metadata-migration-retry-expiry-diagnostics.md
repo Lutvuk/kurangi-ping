@@ -18,10 +18,10 @@ Extend telemetry queue persistence metadata for retry and expiry diagnostics.
 *   **Data Models:** `telemetry_batch`, `telemetry_event`
 
 ## Acceptance Criteria (Technical)
-*   [ ] Migration adds needed diagnostic columns without breaking existing reads.
-*   [ ] Migration is idempotent and forward-compatible.
-*   [ ] Default values preserve existing pipeline behavior.
-*   [ ] Schema docs updated.
+*   [x] Migration adds needed diagnostic columns without breaking existing reads.
+*   [x] Migration is idempotent and forward-compatible.
+*   [x] Default values preserve existing pipeline behavior.
+*   [x] Schema docs updated.
 
 ## Business Rules & Logic
 *   Telemetry diagnostics should improve observability without collecting sensitive data.
@@ -30,6 +30,6 @@ Extend telemetry queue persistence metadata for retry and expiry diagnostics.
 *   Depends on: KP-011, KP-012
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
