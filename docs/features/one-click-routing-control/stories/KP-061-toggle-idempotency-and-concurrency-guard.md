@@ -18,10 +18,10 @@ Prevent inconsistent lifecycle from rapid repeated ON/OFF commands.
 *   **Data Models:** Command guard state model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Concurrent commands are serialized or rejected by policy.
-*   [ ] Duplicate ON/OFF commands are idempotent.
-*   [ ] Guard release is guaranteed on success/failure paths.
-*   [ ] Race-condition test cases are covered.
+*   [x] Concurrent commands are serialized or rejected by policy.
+*   [x] Duplicate ON/OFF commands are idempotent.
+*   [x] Guard release is guaranteed on success/failure paths.
+*   [x] Race-condition test cases are covered.
 
 ## Business Rules & Logic
 *   Command safety is required for non-technical users.
@@ -30,6 +30,6 @@ Prevent inconsistent lifecycle from rapid repeated ON/OFF commands.
 *   Depends on: KP-058
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

@@ -1,6 +1,7 @@
 //! Routing and manifest verification boundaries.
 
 mod config;
+mod command_guard;
 mod detection_gate;
 mod failover_executor;
 mod failover_state;
@@ -19,6 +20,11 @@ mod state_machine;
 mod toggle_orchestrator;
 
 pub use config::{RoutingConfig, RoutingConfigError};
+pub use command_guard::{
+    acquire_toggle_lock, dedupe_toggle_command, ToggleCommandGuard, ToggleDedupeDecision,
+    ToggleDedupeReasonCode, ToggleLockError, ToggleLockErrorCode, ToggleLockLease,
+    ToggleLockPolicy,
+};
 pub use detection_gate::{can_activate_routing, DetectionGateDecision, DetectionGateReasonCode};
 pub use failover_executor::{
     switch_active_relay, ActiveRelaySwitchAdapter, FailoverExecutionContext, FailoverExecutionLog,
