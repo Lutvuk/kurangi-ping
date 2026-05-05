@@ -18,10 +18,10 @@ Expose normalized failover state and reason metadata for frontend consumption.
 *   **Data Models:** Failover UI state payload model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Payload includes current state, previous relay, next relay, reason code.
-*   [ ] Unknown reasons map to safe default explanation code.
-*   [ ] Payload is serializable and versionable.
-*   [ ] Mapping consistency is unit-tested.
+*   [x] Payload includes current state, previous relay, next relay, reason code.
+*   [x] Unknown reasons map to safe default explanation code.
+*   [x] Payload is serializable and versionable.
+*   [x] Mapping consistency is unit-tested.
 
 ## Business Rules & Logic
 *   User messaging should be clear and non-technical by default.
@@ -30,6 +30,6 @@ Expose normalized failover state and reason metadata for frontend consumption.
 *   Depends on: KP-051, KP-034
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

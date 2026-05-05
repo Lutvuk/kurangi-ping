@@ -3,6 +3,7 @@
 mod config;
 mod detection_gate;
 mod failover_executor;
+mod failover_state;
 mod failover_trigger;
 mod health_classification;
 mod health_scheduler;
@@ -20,6 +21,11 @@ pub use failover_executor::{
     switch_active_relay, ActiveRelaySwitchAdapter, FailoverExecutionContext, FailoverExecutionLog,
     FailoverExecutionState, FailoverFallbackState, FailoverSwitchError, FailoverSwitchErrorCode,
     FailoverSwitchFailureCode, FailoverSwitchResult,
+};
+pub use failover_state::{
+    build_failover_state_payload, build_failover_state_payload_from_switch_result,
+    normalize_reason_code, FailoverStatePayload, FailoverUiReasonCode, FailoverUiState,
+    FAILOVER_STATE_SCHEMA_VERSION,
 };
 pub use failover_trigger::{
     apply_hysteresis_window, should_failover, FailoverDecision, FailoverEvaluationInput,
