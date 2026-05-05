@@ -18,10 +18,10 @@ Define timeout thresholds and standardized error transitions for arming/disarmin
 *   **Data Models:** Timeout policy config
 
 ## Acceptance Criteria (Technical)
-*   [ ] Arming/disarming timeout thresholds are configurable.
-*   [ ] Timeout transitions produce stable error state + reason.
-*   [ ] Timeout metrics are available for telemetry.
-*   [ ] Behavior is covered by deterministic tests.
+*   [x] Arming/disarming timeout thresholds are configurable.
+*   [x] Timeout transitions produce stable error state + reason.
+*   [x] Timeout metrics are available for telemetry.
+*   [x] Behavior is covered by deterministic tests.
 
 ## Business Rules & Logic
 *   Users need clear failures instead of silent hanging states.
@@ -30,6 +30,6 @@ Define timeout thresholds and standardized error transitions for arming/disarmin
 *   Depends on: KP-059, KP-060
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

@@ -9,6 +9,7 @@ mod failover_trigger;
 mod health_classification;
 mod health_scheduler;
 mod integration;
+mod lifecycle_timeout;
 mod manifest_gate;
 mod on_pipeline;
 mod off_pipeline;
@@ -52,6 +53,11 @@ pub use health_scheduler::{
 pub use integration::{
     close_route_session, start_route_session, transition_with_session_hooks,
     RouteSessionPersistence, SessionHookResult, SessionHookStatus,
+};
+pub use lifecycle_timeout::{
+    evaluate_lifecycle_timeout, LifecyclePhase, LifecycleTimeoutMetrics,
+    LifecycleTimeoutPolicyConfig, LifecycleTimeoutReasonCode, LifecycleTimeoutResult,
+    LifecycleTimeoutStatus,
 };
 pub use manifest_gate::{
     verify_manifest_or_fail, ManifestFailureCode, ManifestGateResult, RelayManifestDto,
