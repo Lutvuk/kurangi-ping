@@ -18,10 +18,10 @@ Execute controlled active relay switch sequence when failover decision is approv
 *   **Data Models:** Failover execution context model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Switch sequence tears down old path safely before promoting new route.
-*   [ ] Failover switch respects retry budget and backoff.
-*   [ ] Partial switch failure returns deterministic fallback/terminal state.
-*   [ ] Execution logs produce non-sensitive diagnostics.
+*   [x] Switch sequence tears down old path safely before promoting new route.
+*   [x] Failover switch respects retry budget and backoff.
+*   [x] Partial switch failure returns deterministic fallback/terminal state.
+*   [x] Execution logs produce non-sensitive diagnostics.
 
 ## Business Rules & Logic
 *   Seamless continuity is prioritized, but bounded failure behavior is mandatory.
@@ -30,6 +30,6 @@ Execute controlled active relay switch sequence when failover decision is approv
 *   Depends on: KP-050, KP-032
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
