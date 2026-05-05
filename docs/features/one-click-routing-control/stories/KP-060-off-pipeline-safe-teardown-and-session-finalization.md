@@ -18,10 +18,10 @@ Implement OFF flow that safely tears down route and finalizes session state.
 *   **Data Models:** OFF result model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Active route teardown always attempted.
-*   [ ] Session close hook is invoked with end reason.
-*   [ ] Partial teardown failures move lifecycle to deterministic error state.
-*   [ ] OFF from non-active state is safely idempotent.
+*   [x] Active route teardown always attempted.
+*   [x] Session close hook is invoked with end reason.
+*   [x] Partial teardown failures move lifecycle to deterministic error state.
+*   [x] OFF from non-active state is safely idempotent.
 
 ## Business Rules & Logic
 *   OFF must be safe and trusted as emergency stop.
@@ -30,6 +30,6 @@ Implement OFF flow that safely tears down route and finalizes session state.
 *   Depends on: KP-058, KP-035
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

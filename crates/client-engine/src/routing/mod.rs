@@ -10,6 +10,7 @@ mod health_scheduler;
 mod integration;
 mod manifest_gate;
 mod on_pipeline;
+mod off_pipeline;
 mod orchestrator;
 mod policy;
 mod retry;
@@ -53,6 +54,10 @@ pub use manifest_gate::{
 pub use on_pipeline::{
     execute_on_pipeline, OnPipelineFailure, OnPipelineReasonCode, OnPipelineResult,
     OnPipelineStage, OnPipelineStatus, RoutePrecheckResult,
+};
+pub use off_pipeline::{
+    execute_off_pipeline, OffPipelineReasonCode, OffPipelineResult, OffPipelineStatus,
+    OffRouteTeardown, OffTeardownError, OffTeardownErrorCode,
 };
 pub use policy::{
     ProtocolPriority, RetryPolicy, RouteProtocol, RoutingPolicy, DEFAULT_PROTOCOL_ORDER,
