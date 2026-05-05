@@ -18,10 +18,10 @@ Validate end-to-end event sequencing from detection to activation/deactivation l
 *   **Data Models:** Event timeline fixtures
 
 ## Acceptance Criteria (Technical)
-*   [ ] Success flow includes expected event order and payload fields.
-*   [ ] Failure/off paths do not emit impossible sequence states.
-*   [ ] Sequence validation fails on missing/duplicated critical events.
-*   [ ] Output is useful for KPI diagnostics.
+*   [x] Success flow includes expected event order and payload fields.
+*   [x] Failure/off paths do not emit impossible sequence states.
+*   [x] Sequence validation fails on missing/duplicated critical events.
+*   [x] Output is useful for KPI diagnostics.
 
 ## Business Rules & Logic
 *   Reliable funnel telemetry is required for product tuning.
@@ -30,6 +30,6 @@ Validate end-to-end event sequencing from detection to activation/deactivation l
 *   Depends on: KP-063, KP-066, KP-047
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
