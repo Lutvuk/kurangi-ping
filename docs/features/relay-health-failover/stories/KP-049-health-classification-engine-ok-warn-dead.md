@@ -18,10 +18,10 @@ Map relay metrics into normalized health buckets used by routing and UI.
 *   **Data Models:** `RelayHealthStatus` enum
 
 ## Acceptance Criteria (Technical)
-*   [ ] Classification outputs only `ok`, `warn`, `dead`.
-*   [ ] Threshold configuration is centralized and typed.
-*   [ ] Unknown/missing metrics map to deterministic fallback state.
-*   [ ] Unit tests cover threshold boundaries.
+*   [x] Classification outputs only `ok`, `warn`, `dead`.
+*   [x] Threshold configuration is centralized and typed.
+*   [x] Unknown/missing metrics map to deterministic fallback state.
+*   [x] Unit tests cover threshold boundaries.
 
 ## Business Rules & Logic
 *   Health labels must be stable and interpretable by users.
@@ -30,6 +30,6 @@ Map relay metrics into normalized health buckets used by routing and UI.
 *   Depends on: KP-048
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

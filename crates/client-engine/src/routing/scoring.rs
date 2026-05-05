@@ -1,13 +1,7 @@
 //! Deterministic relay candidate scoring.
 
 use super::RouteCandidate;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum RelayHealthStatus {
-    Ok,
-    Warn,
-    Dead,
-}
+use super::RelayHealthStatus;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RelayHealthSnapshot {
