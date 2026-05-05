@@ -14,6 +14,7 @@ mod policy;
 mod retry;
 mod scoring;
 mod state_machine;
+mod toggle_orchestrator;
 
 pub use config::{RoutingConfig, RoutingConfigError};
 pub use detection_gate::{can_activate_routing, DetectionGateDecision, DetectionGateReasonCode};
@@ -64,6 +65,10 @@ pub use scoring::{
 pub use state_machine::{
     IllegalTransitionError, RoutingState, RoutingStateMachine, RoutingStateView,
     RoutingTransition, RoutingTrigger,
+};
+pub use toggle_orchestrator::{
+    handle_toggle_command, ToggleCommand, ToggleCommandResult, ToggleOrchestrator,
+    ToggleRejectionKind, ToggleResultCode,
 };
 
 use crate::security::signature::ManifestSignatureVerifier;
@@ -319,3 +324,4 @@ mod tests {
         }
     }
 }
+

@@ -18,10 +18,10 @@ Implement central orchestrator for ON/OFF lifecycle commands and state transitio
 *   **Data Models:** Toggle command + lifecycle state model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Orchestrator supports ON and OFF command paths.
-*   [ ] Lifecycle transitions are explicit and validated.
-*   [ ] Illegal transitions are rejected safely.
-*   [ ] Orchestrator exposes deterministic result contract.
+*   [x] Orchestrator supports ON and OFF command paths.
+*   [x] Lifecycle transitions are explicit and validated.
+*   [x] Illegal transitions are rejected safely.
+*   [x] Orchestrator exposes deterministic result contract.
 
 ## Business Rules & Logic
 *   One-click behavior must remain predictable under all command timings.
@@ -30,6 +30,6 @@ Implement central orchestrator for ON/OFF lifecycle commands and state transitio
 *   Depends on: KP-034
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
