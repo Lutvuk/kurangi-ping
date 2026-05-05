@@ -18,10 +18,10 @@ Implement measurement loop scheduler bound to routing lifecycle start/stop hooks
 *   **Data Models:** Probe scheduler context
 
 ## Acceptance Criteria (Technical)
-*   [ ] Probe loop starts only when routing lifecycle is active.
-*   [ ] Probe loop stops cleanly on OFF/disconnect.
-*   [ ] Interval is configurable and bounded.
-*   [ ] Concurrent loop duplication is prevented.
+*   [x] Probe loop starts only when routing lifecycle is active.
+*   [x] Probe loop stops cleanly on OFF/disconnect.
+*   [x] Interval is configurable and bounded.
+*   [x] Concurrent loop duplication is prevented.
 
 ## Business Rules & Logic
 *   Measurement cadence should be responsive without resource spikes.
@@ -30,6 +30,6 @@ Implement measurement loop scheduler bound to routing lifecycle start/stop hooks
 *   Depends on: KP-060, KP-034
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

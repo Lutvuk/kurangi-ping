@@ -5,6 +5,7 @@ use std::path::{Path, PathBuf};
 
 pub mod db;
 pub mod detection;
+pub mod metrics;
 pub mod routing;
 pub mod security;
 pub mod telemetry;
