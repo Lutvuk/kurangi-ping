@@ -18,10 +18,10 @@ Bind primary toggle interaction to backend ON/OFF command lifecycle with lock-aw
 *   **Data Models:** Toggle command/result view model
 
 ## Acceptance Criteria (Technical)
-*   [ ] ON click triggers ON pipeline command.
-*   [ ] OFF click triggers OFF pipeline command.
-*   [ ] UI blocks/queues duplicate commands per guard policy.
-*   [ ] Error feedback is surfaced without technical overload.
+*   [x] ON click triggers ON pipeline command.
+*   [x] OFF click triggers OFF pipeline command.
+*   [x] UI blocks/queues duplicate commands per guard policy.
+*   [x] Error feedback is surfaced without technical overload.
 
 ## Business Rules & Logic
 *   One-click UX should feel decisive and safe.
@@ -30,6 +30,6 @@ Bind primary toggle interaction to backend ON/OFF command lifecycle with lock-aw
 *   Depends on: KP-061, KP-024
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

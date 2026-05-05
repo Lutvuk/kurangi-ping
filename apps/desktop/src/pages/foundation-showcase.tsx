@@ -9,6 +9,7 @@ import {
 } from "../components/modules";
 import { DetectionPanel, type DetectionViewModel } from "../features/detection";
 import { RelayHealthPanel } from "../features/relay";
+import { ToggleController } from "../features/routing";
 import { AppShell } from "../layout/AppShell";
 import { Panel } from "../layout/Panel";
 import "./foundation-showcase.css";
@@ -70,6 +71,13 @@ function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean
 
       <div className="kp-showcase-group">
         <h3 className="kp-showcase-subtitle">Connection Controls</h3>
+        <div className="kp-showcase-inline">
+          <ToggleController
+            initialState="off"
+            onEnableRouting={async () => ({ ok: true, nextState: "on" })}
+            onDisableRouting={async () => ({ ok: true, nextState: "off" })}
+          />
+        </div>
         <div className="kp-showcase-inline">
           <PrimaryToggle state="off" />
           <PrimaryToggle state="connecting" />
@@ -170,7 +178,7 @@ export function FoundationShowcasePage() {
   return (
     <AppShell
       sidebar={{ activeId: "routing", title: "Kurangi Ping 2" }}
-      topBar={{ statusLabel: "Build", statusValue: "Foundation Showcase", meta: "KP-024 to KP-054" }}
+      topBar={{ statusLabel: "Build", statusValue: "Foundation Showcase", meta: "KP-024 to KP-064" }}
       contentClassName="kp-showcase-content"
     >
       <Panel eyebrow="Foundation QA" title="UI Composition Showcase">
