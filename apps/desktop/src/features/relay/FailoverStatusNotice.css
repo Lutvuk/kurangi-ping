@@ -1,0 +1,39 @@
+.kp-failover-notice {
+  border: var(--border-subtle);
+  border-left-width: 2px;
+  border-left-style: solid;
+  border-radius: var(--radius-xs);
+  padding: var(--space-3);
+  background: var(--color-surface-02);
+}
+
+.kp-failover-notice--neutral {
+  border-left-color: var(--color-border-default);
+}
+
+.kp-failover-notice--probe {
+  border-left-color: var(--color-probe);
+  background: var(--color-probe-dim);
+}
+
+.kp-failover-notice--signal {
+  border-left-color: var(--color-signal);
+  background: var(--color-signal-dim);
+}
+
+.kp-failover-notice--error {
+  border-left-color: var(--color-relay-dead);
+  background: rgba(232, 64, 64, 0.12);
+}
+
+.kp-failover-notice-title {
+  margin: 0;
+  font: var(--text-display-sm);
+  color: var(--color-text-primary);
+}
+
+.kp-failover-notice-message {
+  margin: var(--space-2) 0 0;
+  font: var(--text-body-sm);
+  color: var(--color-text-secondary);
+}

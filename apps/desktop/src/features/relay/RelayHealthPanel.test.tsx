@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { RelayHealthPanel, type RelayFailoverViewModel, type RelayHealthViewModel } from "./RelayHealthPanel";
+import { RelayHealthPanel } from "./RelayHealthPanel";
+import type { RelayFailoverViewModel, RelayHealthViewModel } from "./model";
 
 function relays(): RelayHealthViewModel[] {
   return [
@@ -73,12 +74,12 @@ describe("RelayHealthPanel", () => {
     const { rerender } = render(
       <RelayHealthPanel relays={relays()} failover={failover("switching")} />
     );
-    let status = screen.getByRole("status");
+    let status = screen.getAllByRole("status")[0];
     expect(status).toHaveClass("kp-connection-badge--connecting");
     expect(status).toHaveTextContent("Switching Relay...");
 
     rerender(<RelayHealthPanel relays={relays()} failover={failover("recovered")} />);
-    status = screen.getByRole("status");
+    status = screen.getAllByRole("status")[0];
     expect(status).toHaveClass("kp-connection-badge--on");
     expect(status).toHaveTextContent("Relay Recovered");
 
@@ -96,6 +97,6 @@ describe("RelayHealthPanel", () => {
       />
     );
 
-    expect(screen.getByText("Switch Retry Exhausted")).toBeInTheDocument();
+    expect(screen.getByText(/percobaan perpindahan relay sudah habis/i)).toBeInTheDocument();
   });
 });

@@ -2,28 +2,12 @@ import { useMemo } from "react";
 import {
   ConnectionStatusBadge,
   type ConnectionStatusState,
-  RelayHealthListItem,
-  type RelayHealthState
+  RelayHealthListItem
 } from "../../components/modules";
 import { Card } from "../../components/primitives";
+import { FailoverStatusNotice } from "./FailoverStatusNotice";
+import type { RelayFailoverViewModel, RelayFailoverState, RelayHealthViewModel } from "./model";
 import "./RelayHealthPanel.css";
-
-export type RelayHealthViewModel = {
-  relayId: string;
-  hostname: string;
-  region: string;
-  latencyMs: number | null;
-  health: RelayHealthState;
-};
-
-export type RelayFailoverState = "stable" | "switching" | "recovered" | "failed";
-
-export type RelayFailoverViewModel = {
-  currentState: RelayFailoverState;
-  previousRelayId?: string | null;
-  nextRelayId?: string | null;
-  reasonCode?: string;
-};
 
 export type RelayHealthPanelProps = {
   relays: RelayHealthViewModel[];
@@ -62,18 +46,6 @@ function resolveBadgeLabel(failoverState: RelayFailoverState): string {
   }
 }
 
-function normalizeReason(reasonCode?: string): string {
-  if (!reasonCode) {
-    return "Status update unavailable";
-  }
-
-  return reasonCode
-    .split("_")
-    .filter(Boolean)
-    .map((segment) => segment[0].toUpperCase() + segment.slice(1))
-    .join(" ");
-}
-
 function resolveActiveRelayId(
   explicitActiveRelayId: string | null | undefined,
   failover: RelayFailoverViewModel
@@ -108,8 +80,6 @@ export function RelayHealthPanel({
     [activeRelayId, failover]
   );
 
-  const reasonMessage = normalizeReason(failover.reasonCode);
-
   return (
     <Card as="section" className="kp-relay-health-panel" aria-label="Relay health panel">
       <header className="kp-relay-health-panel-header">
@@ -118,12 +88,10 @@ export function RelayHealthPanel({
       </header>
 
       <p className="kp-relay-health-panel-copy">
-        {failover.previousRelayId ? `Previous: ${failover.previousRelayId}` : "Previous: none"} â€¢{" "}
+        {failover.previousRelayId ? `Previous: ${failover.previousRelayId}` : "Previous: none"} •{" "}
         {failover.nextRelayId ? `Next: ${failover.nextRelayId}` : "Next: none"}
       </p>
-      <p className="kp-relay-health-panel-copy kp-relay-health-panel-copy--reason">
-        Reason: <code>{reasonMessage}</code>
-      </p>
+      <FailoverStatusNotice failover={failover} />
 
       <div role="list" className="kp-relay-health-panel-list">
         {relays.map((relay) => (

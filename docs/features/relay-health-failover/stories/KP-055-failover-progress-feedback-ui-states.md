@@ -18,10 +18,10 @@ Add explicit failover progress and outcome messaging states to reduce user uncer
 *   **Data Models:** Failover reason/message mapping model
 
 ## Acceptance Criteria (Technical)
-*   [ ] UI shows reconnecting/recovered/no-relay states with clear text.
-*   [ ] Messaging maps to backend reason codes consistently.
-*   [ ] Error states avoid exposing technical internals unnecessarily.
-*   [ ] Accessibility checks pass for state announcements.
+*   [x] UI shows reconnecting/recovered/no-relay states with clear text.
+*   [x] Messaging maps to backend reason codes consistently.
+*   [x] Error states avoid exposing technical internals unnecessarily.
+*   [x] Accessibility checks pass for state announcements.
 
 ## Business Rules & Logic
 *   Transparent status reduces panic and support burden.
@@ -30,6 +30,6 @@ Add explicit failover progress and outcome messaging states to reduce user uncer
 *   Depends on: KP-054
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
