@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ConnectionStatusBadge,
   GameDetectionRow,
@@ -8,7 +8,7 @@ import {
   RelayHealthListItem
 } from "../components/modules";
 import { DetectionPanel, type DetectionViewModel } from "../features/detection";
-import { PingMetricsPanel, type MetricsViewModel } from "../features/metrics";
+import { PingMetricsPanel, type MetricsTrendSample, type MetricsViewModel } from "../features/metrics";
 import { RelayHealthPanel } from "../features/relay";
 import { LifecycleStatusPresenter, ToggleController } from "../features/routing";
 import { AppShell } from "../layout/AppShell";
@@ -54,48 +54,63 @@ function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean
     }
   ];
   const [detectionStateIndex, setDetectionStateIndex] = useState(0);
-  const metricsCycle: MetricsViewModel[] = [
-    {
-      state: "live",
-      baselinePingMs: 214.8,
-      routedPingMs: 156.2,
-      jitterMs: 4.1,
-      packetLossPct: 0.0,
-      sampledAtUnixMs: 1_700_000_000_000
-    },
-    {
-      state: "measuring",
-      baselinePingMs: 214.8,
-      routedPingMs: null,
-      jitterMs: null,
-      packetLossPct: null,
-      sampledAtUnixMs: 1_700_000_001_000
-    },
-    {
-      state: "degraded",
-      baselinePingMs: 212.3,
-      routedPingMs: null,
-      jitterMs: null,
-      packetLossPct: null,
-      sampledAtUnixMs: 1_700_000_002_000,
-      reasonCode: "freshness_timeout"
-    },
-    {
-      state: "live",
-      baselinePingMs: 210.5,
-      routedPingMs: 149.8,
-      jitterMs: 2.9,
-      packetLossPct: 0.0,
-      sampledAtUnixMs: 1_700_000_003_000
-    }
-  ];
+  const metricsCycle: MetricsViewModel[] = useMemo(
+    () => [
+      {
+        state: "live",
+        baselinePingMs: 214.8,
+        routedPingMs: 156.2,
+        jitterMs: 4.1,
+        packetLossPct: 0.0,
+        sampledAtUnixMs: 1_700_000_000_000
+      },
+      {
+        state: "measuring",
+        baselinePingMs: 214.8,
+        routedPingMs: null,
+        jitterMs: null,
+        packetLossPct: null,
+        sampledAtUnixMs: 1_700_000_001_000
+      },
+      {
+        state: "degraded",
+        baselinePingMs: 212.3,
+        routedPingMs: null,
+        jitterMs: null,
+        packetLossPct: null,
+        sampledAtUnixMs: 1_700_000_002_000,
+        reasonCode: "freshness_timeout"
+      },
+      {
+        state: "live",
+        baselinePingMs: 210.5,
+        routedPingMs: 149.8,
+        jitterMs: 2.9,
+        packetLossPct: 0.0,
+        sampledAtUnixMs: 1_700_000_003_000
+      }
+    ],
+    []
+  );
   const [metricsIndex, setMetricsIndex] = useState(0);
+  const [trendSamples, setTrendSamples] = useState<MetricsTrendSample[]>([]);
 
   async function handleRescanMock() {
     const nextIndex = (detectionStateIndex + 1) % detectionCycle.length;
     setDetectionStateIndex(nextIndex);
     return detectionCycle[nextIndex];
   }
+
+  useEffect(() => {
+    setTrendSamples((previous) => {
+      const nextSample = {
+        sampledAtUnixMs: metricsCycle[metricsIndex].sampledAtUnixMs ?? Date.now(),
+        routedPingMs: metricsCycle[metricsIndex].routedPingMs
+      };
+      const merged = [...previous, nextSample];
+      return merged.slice(-24);
+    });
+  }, [metricsCycle, metricsIndex]);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -149,7 +164,7 @@ function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean
       <div className="kp-showcase-group">
         <h3 className="kp-showcase-subtitle">Ping and Relay Health</h3>
         <div className="kp-showcase-stack">
-          <PingMetricsPanel model={metricsCycle[metricsIndex]} />
+          <PingMetricsPanel model={metricsCycle[metricsIndex]} trendSamples={trendSamples} />
           <PingMetricCard state="on" currentPingMs={42} baselinePingMs={71} reductionPct={40.8} />
           <PingMetricCard
             state="degraded"
@@ -233,7 +248,7 @@ export function FoundationShowcasePage() {
   return (
     <AppShell
       sidebar={{ activeId: "routing", title: "Kurangi Ping 2" }}
-      topBar={{ statusLabel: "Build", statusValue: "Foundation Showcase", meta: "KP-024 to KP-074" }}
+      topBar={{ statusLabel: "Build", statusValue: "Foundation Showcase", meta: "KP-024 to KP-075" }}
       contentClassName="kp-showcase-content"
     >
       <Panel eyebrow="Foundation QA" title="UI Composition Showcase">

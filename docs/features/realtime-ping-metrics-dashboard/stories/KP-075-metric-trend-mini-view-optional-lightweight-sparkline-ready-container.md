@@ -18,10 +18,10 @@ Add lightweight trend container preparing future sparkline visualization without
 *   **Data Models:** Recent metrics trend model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Container supports rendering of recent sample sequence.
-*   [ ] Gracefully handles low sample counts.
-*   [ ] Optional module does not block core dashboard delivery.
-*   [ ] Performance overhead remains minimal.
+*   [x] Container supports rendering of recent sample sequence.
+*   [x] Gracefully handles low sample counts.
+*   [x] Optional module does not block core dashboard delivery.
+*   [x] Performance overhead remains minimal.
 
 ## Business Rules & Logic
 *   Trend view is additive and must not compromise baseline readability.
@@ -30,6 +30,6 @@ Add lightweight trend container preparing future sparkline visualization without
 *   Depends on: KP-071, KP-073
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

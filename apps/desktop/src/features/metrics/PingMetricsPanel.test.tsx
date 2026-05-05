@@ -81,4 +81,10 @@ describe("PingMetricsPanel", () => {
     expect(screen.getByTestId("metrics-packet-loss")).toHaveTextContent("0%");
     expect(screen.getByText("freshness_timeout")).toBeInTheDocument();
   });
+
+  it("keeps core dashboard delivery unblocked when optional trend module is omitted", () => {
+    render(<PingMetricsPanel model={model("live")} />);
+    expect(screen.getByLabelText("Ping metrics")).toBeInTheDocument();
+    expect(screen.queryByTestId("metrics-trend-mini")).not.toBeInTheDocument();
+  });
 });

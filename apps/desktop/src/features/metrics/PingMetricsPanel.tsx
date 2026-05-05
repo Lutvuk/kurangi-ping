@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { PingMetricCard, type PingMetricCardState } from "../../components/modules";
 import { MetricsStatePresenter } from "./MetricsStatePresenter";
+import { MetricsTrendMiniView, type MetricsTrendSample } from "./MetricsTrendMiniView";
 import "./PingMetricsPanel.css";
 
 export type MetricsPanelState = "idle" | "measuring" | "live" | "degraded" | "error";
@@ -18,6 +19,7 @@ export type MetricsViewModel = {
 export type PingMetricsPanelProps = {
   model: MetricsViewModel;
   title?: string;
+  trendSamples?: MetricsTrendSample[];
 };
 
 type StabilizedMetricsView = {
@@ -85,7 +87,11 @@ function toInitialView(model: MetricsViewModel): StabilizedMetricsView {
   };
 }
 
-export function PingMetricsPanel({ model, title = "Ping Metrics" }: PingMetricsPanelProps) {
+export function PingMetricsPanel({
+  model,
+  title = "Ping Metrics",
+  trendSamples
+}: PingMetricsPanelProps) {
   const [view, setView] = useState<StabilizedMetricsView>(() => toInitialView(model));
 
   useEffect(() => {
@@ -144,6 +150,8 @@ export function PingMetricsPanel({ model, title = "Ping Metrics" }: PingMetricsP
         baselinePingMs={view.baselinePingMs}
         reductionPct={reductionPct}
       />
+
+      {trendSamples ? <MetricsTrendMiniView state={view.state} samples={trendSamples} /> : null}
 
       <div className="kp-metrics-panel-meta">
         <p className="kp-metrics-panel-meta-item" data-testid="metrics-jitter">
