@@ -13,6 +13,8 @@ $constraintTestScript = Join-Path $PSScriptRoot "db-constraints.test.ps1"
 $indexTestScript = Join-Path $PSScriptRoot "db-indexes.test.ps1"
 $seedScript = Join-Path $PSScriptRoot "db-seed.ps1"
 $seedTestScript = Join-Path $PSScriptRoot "db-seed.test.ps1"
+$telemetryPruneScript = Join-Path $PSScriptRoot "db-telemetry-prune.ps1"
+$telemetryPruneTestScript = Join-Path $PSScriptRoot "db-telemetry-prune.test.ps1"
 $migrationsPath = Join-Path $repoRoot "db\migrations"
 $seedsPath = Join-Path $repoRoot "db\seeds"
 $logsDir = Join-Path $PSScriptRoot "logs"
@@ -71,6 +73,14 @@ Invoke-And-Capture -Label "constraints-validation-test" -ScriptBlock {
 
 Invoke-And-Capture -Label "indexes-validation-test" -ScriptBlock {
   & $indexTestScript
+}
+
+Invoke-And-Capture -Label "telemetry-prune-dry-run-smoke" -ScriptBlock {
+  & $telemetryPruneScript -DatabasePath $DatabasePath
+}
+
+Invoke-And-Capture -Label "telemetry-prune-validation-test" -ScriptBlock {
+  & $telemetryPruneTestScript
 }
 
 if (-not $SkipSeedVerification) {

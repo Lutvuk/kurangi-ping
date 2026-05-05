@@ -13,6 +13,8 @@
     "db:constraints:test": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/db-constraints.test.ps1",
     "db:indexes:test": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/db-indexes.test.ps1",
     "db:seed": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/db-seed.ps1",
-    "db:seed:test": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/db-seed.test.ps1"
+    "db:seed:test": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/db-seed.test.ps1",
+    "db:telemetry:prune": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/db-telemetry-prune.ps1",
+    "db:telemetry:prune:test": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/db-telemetry-prune.test.ps1"
   }
 }

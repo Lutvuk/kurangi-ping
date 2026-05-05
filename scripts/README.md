@@ -42,6 +42,8 @@ pnpm db:migrate
 pnpm db:migrate:test
 pnpm db:seed
 pnpm db:seed:test
+pnpm db:telemetry:prune
+pnpm db:telemetry:prune:test
 ./scripts/ci-verify-db.ps1
 ```
 
@@ -50,4 +52,6 @@ pnpm db:seed:test
 - `pnpm db:migrate:test` runs idempotency smoke test for the migration runner.
 - `pnpm db:seed` applies the catalog seed file selected by `db/seeds/catalog_version.json`.
 - `pnpm db:seed:test` verifies idempotent re-run behavior, update path safety, and catalog version tracking output.
+- `pnpm db:telemetry:prune` prunes expired telemetry batches/events and prints retention summary metrics.
+- `pnpm db:telemetry:prune:test` validates retention pruning policy (preserve retryable rows + idempotent re-run).
 - `./scripts/ci-verify-db.ps1` runs CI-style fresh DB verification (migrate + idempotency + constraint/index checks, plus optional seed checks).

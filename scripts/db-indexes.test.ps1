@@ -25,7 +25,10 @@ expected_indexes = {
     "idx_route_session_game_started_at",
     "idx_ping_sample_session_sampled_at",
     "idx_telemetry_batch_delivery_retry_expiry_created",
+    "idx_telemetry_batch_prune_expiry_status",
+    "idx_telemetry_batch_prune_next_retry",
     "idx_telemetry_event_batch_occurred_at",
+    "idx_telemetry_event_prune_dropped_at",
     "idx_telemetry_event_session_occurred_at",
 }
 
@@ -57,8 +60,16 @@ assert_uses_index(
     "idx_telemetry_batch_delivery_retry_expiry_created",
 )
 assert_uses_index(
+    "SELECT batch_id FROM telemetry_batch WHERE delivery_status = 'expired' OR expires_at <= '2026-08-01T00:00:00Z'",
+    "idx_telemetry_batch_prune_expiry_status",
+)
+assert_uses_index(
     "SELECT event_id FROM telemetry_event WHERE batch_id = 'batch-1' ORDER BY occurred_at DESC LIMIT 50",
     "idx_telemetry_event_batch_occurred_at",
+)
+assert_uses_index(
+    "SELECT event_id FROM telemetry_event WHERE dropped_at IS NOT NULL AND dropped_at <= '2026-08-01T00:00:00Z' ORDER BY occurred_at DESC LIMIT 50",
+    "idx_telemetry_event_prune_dropped_at",
 )
 
 print("db_indexes_test=pass")

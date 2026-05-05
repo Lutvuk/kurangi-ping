@@ -18,10 +18,10 @@ Implement retention cleanup SQL paths for expired telemetry batches/events.
 *   **Data Models:** `telemetry_batch`, `telemetry_event`
 
 ## Acceptance Criteria (Technical)
-*   [ ] Expired telemetry rows are pruned by policy.
-*   [ ] Active/retryable rows are preserved.
-*   [ ] Purge operation is safe to re-run.
-*   [ ] Purge summary metrics are logged.
+*   [x] Expired telemetry rows are pruned by policy.
+*   [x] Active/retryable rows are preserved.
+*   [x] Purge operation is safe to re-run.
+*   [x] Purge summary metrics are logged.
 
 ## Business Rules & Logic
 *   Storage growth must stay bounded over time.
@@ -30,6 +30,6 @@ Implement retention cleanup SQL paths for expired telemetry batches/events.
 *   Depends on: KP-078
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
