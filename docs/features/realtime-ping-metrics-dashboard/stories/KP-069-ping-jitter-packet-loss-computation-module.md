@@ -18,10 +18,10 @@ Compute baseline/routed ping plus jitter and packet loss from probe observations
 *   **Data Models:** Metric sample model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Baseline and routed ping values computed consistently.
-*   [ ] Jitter and packet loss formulas are deterministic and tested.
-*   [ ] Invalid/missing sample windows are handled safely.
-*   [ ] Output format is compatible with UI and persistence modules.
+*   [x] Baseline and routed ping values computed consistently.
+*   [x] Jitter and packet loss formulas are deterministic and tested.
+*   [x] Invalid/missing sample windows are handled safely.
+*   [x] Output format is compatible with UI and persistence modules.
 
 ## Business Rules & Logic
 *   Accuracy and consistency of metrics are critical for user trust.
@@ -30,6 +30,6 @@ Compute baseline/routed ping plus jitter and packet loss from probe observations
 *   Depends on: KP-068
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
