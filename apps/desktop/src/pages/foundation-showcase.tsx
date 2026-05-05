@@ -9,7 +9,7 @@ import {
 } from "../components/modules";
 import { DetectionPanel, type DetectionViewModel } from "../features/detection";
 import { RelayHealthPanel } from "../features/relay";
-import { ToggleController } from "../features/routing";
+import { LifecycleStatusPresenter, ToggleController } from "../features/routing";
 import { AppShell } from "../layout/AppShell";
 import { Panel } from "../layout/Panel";
 import "./foundation-showcase.css";
@@ -77,6 +77,13 @@ function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean
             onEnableRouting={async () => ({ ok: true, nextState: "on" })}
             onDisableRouting={async () => ({ ok: true, nextState: "off" })}
           />
+        </div>
+        <div className="kp-showcase-stack">
+          <LifecycleStatusPresenter model={{ state: "idle" }} />
+          <LifecycleStatusPresenter model={{ state: "arming" }} />
+          <LifecycleStatusPresenter model={{ state: "active" }} />
+          <LifecycleStatusPresenter model={{ state: "disarming" }} />
+          <LifecycleStatusPresenter model={{ state: "error", reasonCode: "arming_timeout" }} />
         </div>
         <div className="kp-showcase-inline">
           <PrimaryToggle state="off" />

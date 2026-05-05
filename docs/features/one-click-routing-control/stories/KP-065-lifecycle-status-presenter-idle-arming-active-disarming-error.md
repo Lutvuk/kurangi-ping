@@ -18,10 +18,10 @@ Present normalized routing lifecycle states consistently in UI status regions.
 *   **Data Models:** Lifecycle state view model
 
 ## Acceptance Criteria (Technical)
-*   [ ] All five lifecycle states are rendered with semantic styling.
-*   [ ] State transitions are visually coherent with motion tokens.
-*   [ ] Reason codes map to user-friendly text.
-*   [ ] Accessibility support for status announcements is present.
+*   [x] All five lifecycle states are rendered with semantic styling.
+*   [x] State transitions are visually coherent with motion tokens.
+*   [x] Reason codes map to user-friendly text.
+*   [x] Accessibility support for status announcements is present.
 
 ## Business Rules & Logic
 *   Status visibility is core to user trust.
@@ -30,6 +30,6 @@ Present normalized routing lifecycle states consistently in UI status regions.
 *   Depends on: KP-062, KP-064
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
