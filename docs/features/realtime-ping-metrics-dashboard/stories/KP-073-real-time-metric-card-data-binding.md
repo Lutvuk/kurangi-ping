@@ -18,10 +18,10 @@ Bind live metric stream into ping metric card UI components.
 *   **Data Models:** Metrics view-model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Baseline/routed/reduction values update in near real-time.
-*   [ ] Numeric formatting is stable and legible.
-*   [ ] Color semantics align with live/degraded state.
-*   [ ] Render updates avoid flicker under rapid samples.
+*   [x] Baseline/routed/reduction values update in near real-time.
+*   [x] Numeric formatting is stable and legible.
+*   [x] Color semantics align with live/degraded state.
+*   [x] Render updates avoid flicker under rapid samples.
 
 ## Business Rules & Logic
 *   Primary value readability is highest UI priority.
@@ -30,6 +30,6 @@ Bind live metric stream into ping metric card UI components.
 *   Depends on: KP-070, KP-025
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
