@@ -1,0 +1,7 @@
+name=hard_failure_recovery
+kind=trigger
+grace_polls=3
+poll_failure_threshold=2
+hysteresis_ms=3000
+dead_immediate=true
+steps=1000|dead|0;1500|dead|0;4500|ok|0;5500|ok|0

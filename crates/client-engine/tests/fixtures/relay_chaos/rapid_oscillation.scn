@@ -1,0 +1,7 @@
+name=rapid_oscillation
+kind=trigger
+grace_polls=2
+poll_failure_threshold=2
+hysteresis_ms=4000
+dead_immediate=true
+steps=1000|warn|0;1500|ok|0;2000|warn|0;2500|dead|0;2600|warn|0;2700|dead|0;7000|dead|0;7100|dead|0

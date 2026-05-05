@@ -1,0 +1,7 @@
+name=degraded_spike_recovery
+kind=trigger
+grace_polls=3
+poll_failure_threshold=2
+hysteresis_ms=4000
+dead_immediate=true
+steps=1000|warn|0;2000|warn|0;3000|ok|0;4000|warn|0;5000|warn|0;6000|warn|0;11000|ok|0

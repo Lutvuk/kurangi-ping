@@ -18,10 +18,10 @@ Build integration harness simulating relay degradation/failure chaos scenarios t
 *   **Data Models:** Chaos scenario configs
 
 ## Acceptance Criteria (Technical)
-*   [ ] Harness covers degraded spikes, hard failures, and recovery sequences.
-*   [ ] Anti-flapping logic is validated under rapid oscillation scenarios.
-*   [ ] Retry budget exhaustion path is verified.
-*   [ ] Output provides deterministic trace for debugging.
+*   [x] Harness covers degraded spikes, hard failures, and recovery sequences.
+*   [x] Anti-flapping logic is validated under rapid oscillation scenarios.
+*   [x] Retry budget exhaustion path is verified.
+*   [x] Output provides deterministic trace for debugging.
 
 ## Business Rules & Logic
 *   Failover resilience must be verified before broader rollout.
@@ -30,6 +30,6 @@ Build integration harness simulating relay degradation/failure chaos scenarios t
 *   Depends on: KP-053
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

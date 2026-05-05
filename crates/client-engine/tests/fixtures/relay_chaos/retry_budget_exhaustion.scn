@@ -1,0 +1,9 @@
+name=retry_budget_exhaustion
+kind=executor
+active_relay_id=sin-01
+candidates=nrt-01|nrt|nrt-01.relay.local|1
+protocols=wireguard,tcp_tls,quic
+max_attempts_per_protocol=2
+base_backoff_ms=250
+max_backoff_ms=3000
+outcomes=timeout,timeout,timeout,timeout,timeout,timeout,timeout,timeout,timeout
