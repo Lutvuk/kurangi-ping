@@ -1,0 +1,4 @@
+name=intermittent_probe_failure_recovery
+stale_after_ms=3000
+probe_interval_ms=1000
+steps=1000|success|210|152|true|_;2000|failure_timeout|_|_|_|_;3000|failure_transport_unavailable|_|_|_|_;4000|success|208|150|true|_

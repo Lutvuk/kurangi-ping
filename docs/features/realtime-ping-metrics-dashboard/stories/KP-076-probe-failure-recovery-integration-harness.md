@@ -18,10 +18,10 @@ Validate dashboard and backend recovery behavior under probe failure and resume 
 *   **Data Models:** Probe failure scenario fixtures
 
 ## Acceptance Criteria (Technical)
-*   [ ] Harness simulates intermittent probe failure and recovery.
-*   [ ] Degraded -> live recovery path is deterministic.
-*   [ ] Last-known values persist during failure window.
-*   [ ] Recovery trace output is reproducible.
+*   [x] Harness simulates intermittent probe failure and recovery.
+*   [x] Degraded -> live recovery path is deterministic.
+*   [x] Last-known values persist during failure window.
+*   [x] Recovery trace output is reproducible.
 
 ## Business Rules & Logic
 *   Measurement resilience must be proven before release.
@@ -30,6 +30,6 @@ Validate dashboard and backend recovery behavior under probe failure and resume 
 *   Depends on: KP-070, KP-074
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
