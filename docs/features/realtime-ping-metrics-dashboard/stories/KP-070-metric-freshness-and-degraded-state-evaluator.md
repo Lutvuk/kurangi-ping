@@ -18,10 +18,10 @@ Evaluate sample freshness and trigger degraded state when probe signals become s
 *   **Data Models:** Metrics state enum
 
 ## Acceptance Criteria (Technical)
-*   [ ] Freshness timeout is configurable.
-*   [ ] Stale metrics transition to degraded state deterministically.
-*   [ ] Last-known values remain available for UI rendering.
-*   [ ] Error states include reason codes for diagnostics.
+*   [x] Freshness timeout is configurable.
+*   [x] Stale metrics transition to degraded state deterministically.
+*   [x] Last-known values remain available for UI rendering.
+*   [x] Error states include reason codes for diagnostics.
 
 ## Business Rules & Logic
 *   Dashboard must remain readable during transient probe issues.
@@ -30,6 +30,6 @@ Evaluate sample freshness and trigger degraded state when probe signals become s
 *   Depends on: KP-069
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
