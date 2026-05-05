@@ -18,10 +18,10 @@ Emit routing activation/deactivation telemetry with normalized reason codes and 
 *   **Data Models:** ON/OFF telemetry payload model
 
 ## Acceptance Criteria (Technical)
-*   [ ] `routing_enabled` emitted on successful ON completion.
-*   [ ] `routing_disabled` emitted on successful OFF completion.
-*   [ ] Failure cases include reason codes without sensitive fields.
-*   [ ] Payloads are validated against telemetry allowlist.
+*   [x] `routing_enabled` emitted on successful ON completion.
+*   [x] `routing_disabled` emitted on successful OFF completion.
+*   [x] Failure cases include reason codes without sensitive fields.
+*   [x] Payloads are validated against telemetry allowlist.
 
 ## Business Rules & Logic
 *   Lifecycle analytics depend on clean, reason-aware events.
@@ -30,6 +30,6 @@ Emit routing activation/deactivation telemetry with normalized reason codes and 
 *   Depends on: KP-059, KP-060, KP-043
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
