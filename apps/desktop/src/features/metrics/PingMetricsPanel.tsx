@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { PingMetricCard, type PingMetricCardState } from "../../components/modules";
+import { MetricsStatePresenter } from "./MetricsStatePresenter";
 import "./PingMetricsPanel.css";
 
-export type MetricsPanelState = "idle" | "live" | "degraded" | "error";
+export type MetricsPanelState = "idle" | "measuring" | "live" | "degraded" | "error";
 
 export type MetricsViewModel = {
   state: MetricsPanelState;
@@ -31,6 +32,7 @@ type StabilizedMetricsView = {
 
 const statusLabelByState: Record<MetricsPanelState, string> = {
   idle: "Idle",
+  measuring: "Measuring",
   live: "Live",
   degraded: "Degraded",
   error: "Error"
@@ -38,6 +40,7 @@ const statusLabelByState: Record<MetricsPanelState, string> = {
 
 const cardStateByMetricsState: Record<MetricsPanelState, PingMetricCardState> = {
   idle: "off",
+  measuring: "connecting",
   live: "on",
   degraded: "degraded",
   error: "degraded"
@@ -132,6 +135,8 @@ export function PingMetricsPanel({ model, title = "Ping Metrics" }: PingMetricsP
           {statusLabelByState[view.state]}
         </p>
       </header>
+
+      <MetricsStatePresenter model={{ state: view.state, reasonCode: view.reasonCode }} />
 
       <PingMetricCard
         state={cardStateByMetricsState[view.state]}

@@ -1,0 +1,85 @@
+.kp-metrics-state {
+  display: grid;
+  gap: var(--space-2);
+  border: var(--border-default);
+  border-radius: var(--radius-xs);
+  background: var(--color-surface-01);
+  padding: var(--space-3) var(--space-4);
+  transition: border-color var(--duration-normal) var(--ease-out),
+    background-color var(--duration-normal) var(--ease-out),
+    color var(--duration-normal) var(--ease-out);
+}
+
+.kp-metrics-state-eyebrow {
+  margin: 0;
+  color: var(--color-text-muted);
+  font: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.kp-metrics-state-title {
+  margin: 0;
+  color: var(--color-text-primary);
+  font: var(--text-display-sm);
+}
+
+.kp-metrics-state-detail {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font: var(--text-body-sm);
+}
+
+.kp-metrics-state-reason {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font: var(--text-body-sm);
+}
+
+.kp-metrics-state-reason-code {
+  color: var(--color-text-muted);
+  font: var(--text-mono-sm);
+}
+
+.kp-metrics-state--idle {
+  border-color: var(--color-border-default);
+  background: var(--color-surface-01);
+}
+
+.kp-metrics-state--measuring {
+  border-color: rgba(232, 160, 32, 0.2);
+  background: var(--color-probe-dim);
+}
+
+.kp-metrics-state--measuring .kp-metrics-state-title {
+  color: var(--color-text-probe);
+}
+
+.kp-metrics-state--live {
+  border-color: var(--color-signal-border);
+  background: var(--color-signal-dim);
+}
+
+.kp-metrics-state--live .kp-metrics-state-title {
+  color: var(--color-text-signal);
+}
+
+.kp-metrics-state--degraded {
+  border-color: rgba(232, 160, 32, 0.25);
+  background: var(--color-probe-dim);
+}
+
+.kp-metrics-state--degraded .kp-metrics-state-title,
+.kp-metrics-state--degraded .kp-metrics-state-reason {
+  color: var(--color-probe);
+}
+
+.kp-metrics-state--error {
+  border-color: rgba(232, 64, 64, 0.35);
+  background: rgba(232, 64, 64, 0.1);
+}
+
+.kp-metrics-state--error .kp-metrics-state-title,
+.kp-metrics-state--error .kp-metrics-state-reason {
+  color: var(--color-relay-dead);
+}

@@ -53,6 +53,10 @@ describe("PingMetricsPanel", () => {
     expect(screen.getByLabelText("Ping metrics").className).toContain("kp-ping-card--on");
     expect(screen.getByTestId("metrics-panel-status")).toHaveTextContent("Live");
 
+    rerender(<PingMetricsPanel model={model("measuring")} />);
+    expect(screen.getByLabelText("Ping metrics").className).toContain("kp-ping-card--connecting");
+    expect(screen.getByTestId("metrics-panel-status")).toHaveTextContent("Measuring");
+
     rerender(<PingMetricsPanel model={model("degraded")} />);
     expect(screen.getByLabelText("Ping metrics").className).toContain("kp-ping-card--degraded");
     expect(screen.getByTestId("metrics-panel-status")).toHaveTextContent("Degraded");

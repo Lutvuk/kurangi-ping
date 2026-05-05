@@ -64,11 +64,11 @@ function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean
       sampledAtUnixMs: 1_700_000_000_000
     },
     {
-      state: "live",
-      baselinePingMs: 212.3,
-      routedPingMs: 152.9,
-      jitterMs: 3.7,
-      packetLossPct: 0.4,
+      state: "measuring",
+      baselinePingMs: 214.8,
+      routedPingMs: null,
+      jitterMs: null,
+      packetLossPct: null,
       sampledAtUnixMs: 1_700_000_001_000
     },
     {
@@ -233,7 +233,7 @@ export function FoundationShowcasePage() {
   return (
     <AppShell
       sidebar={{ activeId: "routing", title: "Kurangi Ping 2" }}
-      topBar={{ statusLabel: "Build", statusValue: "Foundation Showcase", meta: "KP-024 to KP-073" }}
+      topBar={{ statusLabel: "Build", statusValue: "Foundation Showcase", meta: "KP-024 to KP-074" }}
       contentClassName="kp-showcase-content"
     >
       <Panel eyebrow="Foundation QA" title="UI Composition Showcase">
