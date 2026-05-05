@@ -2,6 +2,7 @@
 
 mod config;
 mod detection_gate;
+mod health_scheduler;
 mod integration;
 mod manifest_gate;
 mod orchestrator;
@@ -12,6 +13,12 @@ mod state_machine;
 
 pub use config::{RoutingConfig, RoutingConfigError};
 pub use detection_gate::{can_activate_routing, DetectionGateDecision, DetectionGateReasonCode};
+pub use health_scheduler::{
+    start_health_polling, stop_health_polling, FailoverEvaluatorSink, HealthPollCompletion,
+    HealthPollDecision, HealthPollError, HealthPollErrorCode, HealthPollSkipReason,
+    HealthPollingConfig, HealthPollingContext, HealthPollingLease, HealthPollingScheduler,
+    RelayHealthPoller, RELAY_HEALTH_ENDPOINT_PATH,
+};
 pub use integration::{
     close_route_session, start_route_session, transition_with_session_hooks,
     RouteSessionPersistence, SessionHookResult, SessionHookStatus,

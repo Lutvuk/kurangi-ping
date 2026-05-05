@@ -18,10 +18,10 @@ Implement periodic scheduler for relay health refresh with bounded polling caden
 *   **Data Models:** Health polling context model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Polling interval is configurable and bounded.
-*   [ ] Scheduler avoids concurrent overlapping polls.
-*   [ ] Poll failures propagate to failover evaluator path.
-*   [ ] Polling can be paused/resumed by routing lifecycle.
+*   [x] Polling interval is configurable and bounded.
+*   [x] Scheduler avoids concurrent overlapping polls.
+*   [x] Poll failures propagate to failover evaluator path.
+*   [x] Polling can be paused/resumed by routing lifecycle.
 
 ## Business Rules & Logic
 *   Polling cadence should balance responsiveness and overhead.
@@ -30,6 +30,6 @@ Implement periodic scheduler for relay health refresh with bounded polling caden
 *   Depends on: KP-031
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
