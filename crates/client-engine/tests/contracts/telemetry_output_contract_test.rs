@@ -1,5 +1,10 @@
 use client_engine::routing::{RoutingState, RoutingTransition, RoutingTrigger};
+use client_engine::routing::{build_failover_state_payload, FailoverUiState};
+use client_engine::telemetry::events::relay_failover::{
+    emit_relay_failed, emit_relay_recovered, RelayFailoverEmissionPolicy,
+};
 use client_engine::telemetry::events::routing::emit_routing_event;
+use client_engine::telemetry::TelemetryService;
 use std::collections::HashSet;
 
 fn telemetry_allowlist() -> HashSet<&'static str> {
@@ -11,6 +16,7 @@ fn telemetry_allowlist() -> HashSet<&'static str> {
         "routing_disabled",
         "crash_reported",
         "relay_failed",
+        "relay_recovered",
         "onboarding_completed",
     ])
 }
@@ -78,5 +84,34 @@ fn emitted_routing_events_keep_contract_payload_shape() {
         event.payload.failure_code.as_deref(),
         Some("ROUTE_RETRY_BUDGET_EXHAUSTED")
     );
+}
+
+#[test]
+fn emitted_relay_failover_events_conform_to_telemetry_allowlist() {
+    let allowlist = telemetry_allowlist();
+    let mut telemetry = TelemetryService::new();
+    let policy = RelayFailoverEmissionPolicy::default();
+
+    let failed_payload = build_failover_state_payload(
+        FailoverUiState::Failed,
+        Some("sin-01"),
+        Some("nrt-01"),
+        Some("dead_relay_detected"),
+    );
+    let recovered_payload = build_failover_state_payload(
+        FailoverUiState::Recovered,
+        Some("sin-01"),
+        Some("nrt-01"),
+        Some("switch_successful"),
+    );
+
+    emit_relay_failed(&mut telemetry, &failed_payload, 2, policy)
+        .expect("relay_failed should emit");
+    emit_relay_recovered(&mut telemetry, &recovered_payload, 1, policy)
+        .expect("relay_recovered should emit");
+
+    let events = telemetry.drain_batch(10);
+    assert_eq!(events.len(), 2);
+    assert!(events.iter().all(|event| allowlist.contains(event.name.as_str())));
 }
 
