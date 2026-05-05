@@ -4,11 +4,25 @@ pub mod events;
 
 use std::collections::BTreeMap;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 pub enum TelemetryValue {
     Text(String),
     Integer(i64),
+    Float(f64),
 }
+
+impl PartialEq for TelemetryValue {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Text(left), Self::Text(right)) => left == right,
+            (Self::Integer(left), Self::Integer(right)) => left == right,
+            (Self::Float(left), Self::Float(right)) => left.to_bits() == right.to_bits(),
+            _ => false,
+        }
+    }
+}
+
+impl Eq for TelemetryValue {}
 
 pub type TelemetryPayload = BTreeMap<String, TelemetryValue>;
 
