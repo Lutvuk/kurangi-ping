@@ -6,9 +6,11 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 mod migrate;
+mod metrics_repo;
 mod route_session_repo;
 
 pub use migrate::{run_migrations, MigrationError, MigrationSummary};
+pub use metrics_repo::{MetricSampleRecord, MetricsRepoError, SqliteMetricsRepo};
 pub use route_session_repo::{
     RouteSessionCloseRecord, RouteSessionRepoError, RouteSessionStartRecord,
     SqliteRouteSessionRepo,

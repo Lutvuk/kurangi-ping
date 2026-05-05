@@ -18,10 +18,10 @@ Persist recent metric samples into ring-buffer storage with bounded retention.
 *   **Data Models:** `ping_sample` persistence mapping
 
 ## Acceptance Criteria (Technical)
-*   [ ] Samples persist with session context and timestamp.
-*   [ ] Retention cap enforces oldest-first eviction.
-*   [ ] Persistence failure does not crash probe loop.
-*   [ ] Query helper supports recent trend retrieval.
+*   [x] Samples persist with session context and timestamp.
+*   [x] Retention cap enforces oldest-first eviction.
+*   [x] Persistence failure does not crash probe loop.
+*   [x] Query helper supports recent trend retrieval.
 
 ## Business Rules & Logic
 *   Short history supports diagnostics without long-term heavy storage.
@@ -30,6 +30,6 @@ Persist recent metric samples into ring-buffer storage with bounded retention.
 *   Depends on: KP-069, KP-015
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
