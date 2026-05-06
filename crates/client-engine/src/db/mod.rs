@@ -7,10 +7,14 @@ use std::path::{Path, PathBuf};
 
 mod metrics_repo;
 mod migrate;
+mod onboarding_repo;
 mod route_session_repo;
 
 pub use metrics_repo::{MetricSampleRecord, MetricsRepoError, SqliteMetricsRepo};
 pub use migrate::{run_migrations, MigrationError, MigrationSummary};
+pub use onboarding_repo::{
+    load_onboarding_checkpoint, save_onboarding_checkpoint, OnboardingRepoError,
+};
 pub use route_session_repo::{
     RouteSessionCloseRecord, RouteSessionRepoError, RouteSessionStartRecord, SqliteRouteSessionRepo,
 };

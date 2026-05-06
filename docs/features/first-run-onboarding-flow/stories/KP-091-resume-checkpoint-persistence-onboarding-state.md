@@ -18,10 +18,10 @@ Persist onboarding progress checkpoints so flow can resume after app interruptio
 *   **Data Models:** `user_settings.onboarding_state` mapping
 
 ## Acceptance Criteria (Technical)
-*   [ ] Progress checkpoint persists after each completed step.
-*   [ ] Reload restores correct next step on restart.
-*   [ ] Corrupt/unknown state falls back to safe restart strategy.
-*   [ ] Persistence failures are surfaced without crash.
+*   [x] Progress checkpoint persists after each completed step.
+*   [x] Reload restores correct next step on restart.
+*   [x] Corrupt/unknown state falls back to safe restart strategy.
+*   [x] Persistence failures are surfaced without crash.
 
 ## Business Rules & Logic
 *   Users should not repeat already completed onboarding steps unnecessarily.
@@ -30,6 +30,6 @@ Persist onboarding progress checkpoints so flow can resume after app interruptio
 *   Depends on: KP-089, KP-015
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
