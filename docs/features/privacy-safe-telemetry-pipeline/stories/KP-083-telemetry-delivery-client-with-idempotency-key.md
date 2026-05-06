@@ -18,10 +18,10 @@ Implement telemetry HTTP delivery client with idempotency headers and robust res
 *   **Data Models:** Delivery request/response model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Requests include idempotency key.
-*   [ ] Response handling supports accepted/partial/failure outcomes.
-*   [ ] Transport errors propagate to retry state machine.
-*   [ ] Sensitive payload data is not leaked in logs.
+*   [x] Requests include idempotency key.
+*   [x] Response handling supports accepted/partial/failure outcomes.
+*   [x] Transport errors propagate to retry state machine.
+*   [x] Sensitive payload data is not leaked in logs.
 
 ## Business Rules & Logic
 *   Delivery must be resilient and non-duplicative.
@@ -30,6 +30,6 @@ Implement telemetry HTTP delivery client with idempotency headers and robust res
 *   Depends on: KP-082
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

@@ -1,6 +1,7 @@
 //! Telemetry batching boundary for privacy-safe event delivery.
 
 pub mod batch_queue;
+pub mod delivery_client;
 pub mod events;
 pub mod scrubber;
 pub mod validator;
