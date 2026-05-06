@@ -18,10 +18,10 @@ Validate complete onboarding journey including success, interruption, and failur
 *   **Data Models:** Journey scenario fixtures
 
 ## Acceptance Criteria (Technical)
-*   [ ] Happy path completes and sets onboarding completed state.
-*   [ ] Interruption path resumes correctly.
-*   [ ] Failure branch paths remain recoverable.
-*   [ ] Test traces are deterministic and debuggable.
+*   [x] Happy path completes and sets onboarding completed state.
+*   [x] Interruption path resumes correctly.
+*   [x] Failure branch paths remain recoverable.
+*   [x] Test traces are deterministic and debuggable.
 
 ## Business Rules & Logic
 *   Onboarding reliability is a core adoption gate.
@@ -30,6 +30,6 @@ Validate complete onboarding journey including success, interruption, and failur
 *   Depends on: KP-092, KP-096
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
