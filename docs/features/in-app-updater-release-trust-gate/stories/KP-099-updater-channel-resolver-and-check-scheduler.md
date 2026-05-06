@@ -18,10 +18,10 @@ Resolve updater channel policy and schedule update checks with bounded cadence.
 *   **Data Models:** Updater check context model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Supports `beta` and `stable` channels.
-*   [ ] Check cadence is configurable and bounded.
-*   [ ] Manual check trigger coexists safely with scheduled checks.
-*   [ ] Last-check metadata persists when configured.
+*   [x] Supports `beta` and `stable` channels.
+*   [x] Check cadence is configurable and bounded.
+*   [x] Manual check trigger coexists safely with scheduled checks.
+*   [x] Last-check metadata persists when configured.
 
 ## Business Rules & Logic
 *   Update checks should be timely but not noisy.
@@ -30,6 +30,6 @@ Resolve updater channel policy and schedule update checks with bounded cadence.
 *   Depends on: KP-002, KP-062
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

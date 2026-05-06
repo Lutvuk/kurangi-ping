@@ -10,6 +10,7 @@ pub mod onboarding;
 pub mod routing;
 pub mod security;
 pub mod telemetry;
+pub mod updater;
 
 /// High-level entry point state for dependent modules.
 #[derive(Debug, Clone)]
