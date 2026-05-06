@@ -18,10 +18,10 @@ Validate that telemetry delivery lifecycle emits enough information to compute r
 *   **Data Models:** Delivery lifecycle fixture events
 
 ## Acceptance Criteria (Technical)
-*   [ ] KPI derivation for success rate, retry rate, drop rate is possible.
-*   [ ] Missing delivery transitions are detected by assertions.
-*   [ ] Metrics are reproducible across test runs.
-*   [ ] Report output is actionable for release readiness.
+*   [x] KPI derivation for success rate, retry rate, drop rate is possible.
+*   [x] Missing delivery transitions are detected by assertions.
+*   [x] Metrics are reproducible across test runs.
+*   [x] Report output is actionable for release readiness.
 
 ## Business Rules & Logic
 *   Reliability KPIs must be trustworthy for operational decisions.
@@ -30,6 +30,6 @@ Validate that telemetry delivery lifecycle emits enough information to compute r
 *   Depends on: KP-085, KP-086, KP-087
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
