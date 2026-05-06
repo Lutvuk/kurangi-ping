@@ -18,10 +18,10 @@ Manage retry progression and expiry transitions for queued telemetry batches.
 *   **Data Models:** Telemetry batch lifecycle state model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Retry budget is respected.
-*   [ ] Expired batches transition and purge eligibility is marked.
-*   [ ] Backoff schedule is deterministic.
-*   [ ] State transitions are test-covered.
+*   [x] Retry budget is respected.
+*   [x] Expired batches transition and purge eligibility is marked.
+*   [x] Backoff schedule is deterministic.
+*   [x] State transitions are test-covered.
 
 ## Business Rules & Logic
 *   Retrying must be bounded to avoid infinite resource drain.
@@ -30,6 +30,6 @@ Manage retry progression and expiry transitions for queued telemetry batches.
 *   Depends on: KP-082, KP-083, KP-079
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

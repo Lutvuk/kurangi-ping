@@ -3,6 +3,7 @@
 pub mod batch_queue;
 pub mod delivery_client;
 pub mod events;
+pub mod retry_state_machine;
 pub mod scrubber;
 pub mod validator;
 
