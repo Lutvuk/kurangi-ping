@@ -18,10 +18,10 @@ Validate updater accepts trusted artifacts and rejects tampered/unsigned artifac
 *   **Data Models:** Artifact trust scenario fixtures
 
 ## Acceptance Criteria (Technical)
-*   [ ] Trusted signed artifact path passes.
-*   [ ] Unsigned/tampered artifact path fails deterministically.
-*   [ ] Failure reasons map to updater error taxonomy.
-*   [ ] Harness output is reproducible.
+*   [x] Trusted signed artifact path passes.
+*   [x] Unsigned/tampered artifact path fails deterministically.
+*   [x] Failure reasons map to updater error taxonomy.
+*   [x] Harness output is reproducible.
 
 ## Business Rules & Logic
 *   Trust verification should fail closed.
@@ -30,6 +30,6 @@ Validate updater accepts trusted artifacts and rejects tampered/unsigned artifac
 *   Depends on: KP-100, KP-105
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
