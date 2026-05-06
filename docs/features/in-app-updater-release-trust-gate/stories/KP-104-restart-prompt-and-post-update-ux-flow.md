@@ -18,10 +18,10 @@ Implement restart-ready prompt and post-update confirmation UX flow.
 *   **Data Models:** Restart prompt model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Prompt appears only when update is ready-to-restart.
-*   [ ] User can defer restart safely.
-*   [ ] Post-update confirmation state is visible on relaunch.
-*   [ ] Accessibility checks pass for modal/prompt interactions.
+*   [x] Prompt appears only when update is ready-to-restart.
+*   [x] User can defer restart safely.
+*   [x] Post-update confirmation state is visible on relaunch.
+*   [x] Accessibility checks pass for modal/prompt interactions.
 
 ## Business Rules & Logic
 *   Restart UX should be explicit and low-friction.
@@ -30,6 +30,6 @@ Implement restart-ready prompt and post-update confirmation UX flow.
 *   Depends on: KP-103
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

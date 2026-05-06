@@ -162,7 +162,7 @@ export function UpdaterPanel({
         <div className="kp-updater-panel-title-wrap">
           <h2 className="kp-updater-panel-title">{title}</h2>
           <p className="kp-updater-panel-meta">
-            Channel <code>{viewModel.channel}</code> · v{normalizeVersion(viewModel.currentVersion)}
+            Channel <code>{viewModel.channel}</code> - v{normalizeVersion(viewModel.currentVersion)}
           </p>
         </div>
         <StatusBadge state={badgeState} label={badgeLabel} />

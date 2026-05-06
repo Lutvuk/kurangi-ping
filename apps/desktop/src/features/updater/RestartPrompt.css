@@ -1,0 +1,71 @@
+.kp-restart-prompt-modal {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.kp-restart-prompt-copy {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font: var(--text-body-md);
+}
+
+.kp-restart-prompt-copy code {
+  color: var(--color-text-primary);
+  font: var(--text-mono-sm);
+}
+
+.kp-restart-prompt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.kp-restart-prompt-deferred,
+.kp-restart-prompt-confirmation {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.kp-restart-prompt-deferred {
+  border-color: rgba(232, 160, 32, 0.2);
+  background: var(--color-probe-dim);
+}
+
+.kp-restart-prompt-confirmation {
+  border-color: var(--color-signal-border);
+  background: var(--color-signal-dim);
+}
+
+.kp-restart-prompt-deferred-header,
+.kp-restart-prompt-confirmation-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.kp-restart-prompt-deferred-title,
+.kp-restart-prompt-confirmation-title {
+  margin: 0;
+  color: var(--color-text-primary);
+  font: var(--text-display-sm);
+}
+
+.kp-restart-prompt-deferred-copy,
+.kp-restart-prompt-confirmation-copy {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font: var(--text-body-sm);
+}
+
+.kp-restart-prompt-deferred-copy code,
+.kp-restart-prompt-confirmation-copy code {
+  color: var(--color-text-primary);
+  font: var(--text-mono-sm);
+}
+
+.kp-restart-prompt-deferred-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

@@ -11,7 +11,12 @@ import { PingMetricsPanel, type MetricsTrendSample, type MetricsViewModel } from
 import { OnboardingFlow, type OnboardingStateMachineView } from "../features/onboarding";
 import { RelayHealthPanel } from "../features/relay";
 import { LifecycleStatusPresenter, ToggleController } from "../features/routing";
-import { UpdaterPanel, type UpdaterActionResult, type UpdaterViewModel } from "../features/updater";
+import {
+  RestartPrompt,
+  type UpdaterActionResult,
+  UpdaterPanel,
+  type UpdaterViewModel
+} from "../features/updater";
 import { AppShell } from "../layout/AppShell";
 import { Panel } from "../layout/Panel";
 import "./foundation-showcase.css";
@@ -105,6 +110,9 @@ function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean
     currentVersion: "1.0.0",
     lastCheckedAtLabel: "just now"
   });
+  const [relaunchConfirmationVersion, setRelaunchConfirmationVersion] = useState<string | undefined>(
+    undefined
+  );
 
   async function handleRescanMock() {
     const nextIndex = (detectionStateIndex + 1) % detectionCycle.length;
@@ -205,6 +213,7 @@ function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean
   }
 
   async function handleCheckForUpdate(): Promise<UpdaterActionResult> {
+    setRelaunchConfirmationVersion(undefined);
     if (updaterModel.state === "ready_to_restart") {
       const nextModel: UpdaterViewModel = {
         ...updaterModel,
@@ -285,6 +294,25 @@ function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean
       ok: true,
       nextModel
     };
+  }
+
+  async function handleDeferRestart() {
+    setUpdaterModel((previous) => ({
+      ...previous,
+      message: "Restart ditunda. Kamu bisa lanjut bermain dan restart nanti."
+    }));
+  }
+
+  async function handleRestartNow() {
+    const nextVersion = updaterModel.targetVersion ?? updaterModel.currentVersion;
+    setUpdaterModel({
+      state: "up_to_date",
+      channel: updaterModel.channel,
+      currentVersion: nextVersion,
+      lastCheckedAtLabel: "after relaunch",
+      message: "Update berhasil diterapkan."
+    });
+    setRelaunchConfirmationVersion(nextVersion);
   }
 
   return (
@@ -426,6 +454,16 @@ function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean
             onApplyUpdate={handleApplyUpdate}
             onRetry={handleRetryUpdate}
           />
+          <RestartPrompt
+            model={{
+              updaterState: updaterModel.state,
+              currentVersion: updaterModel.currentVersion,
+              targetVersion: updaterModel.targetVersion,
+              relaunchConfirmationVersion
+            }}
+            onDeferRestart={handleDeferRestart}
+            onRestartNow={handleRestartNow}
+          />
           <UpdaterPanel
             model={{
               state: "update_error",
@@ -449,7 +487,7 @@ export function FoundationShowcasePage() {
   return (
     <AppShell
       sidebar={{ activeId: "routing", title: "Kurangi Ping 2" }}
-      topBar={{ statusLabel: "Build", statusValue: "Foundation Showcase", meta: "KP-024 to KP-103" }}
+      topBar={{ statusLabel: "Build", statusValue: "Foundation Showcase", meta: "KP-024 to KP-104" }}
       contentClassName="kp-showcase-content"
     >
       <Panel eyebrow="Foundation QA" title="UI Composition Showcase">
