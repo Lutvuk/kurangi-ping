@@ -56,10 +56,7 @@ pub struct SchemaAllowlist {
 impl SchemaAllowlist {
     pub fn default_v1() -> Self {
         let mut by_event = BTreeMap::new();
-        by_event.insert(
-            "app_opened",
-            schema_with_required(&[], &[]),
-        );
+        by_event.insert("app_opened", schema_with_required(&[], &[]));
         by_event.insert(
             "game_detected",
             schema_with_required(
@@ -77,8 +74,18 @@ impl SchemaAllowlist {
         by_event.insert(
             "ping_measured",
             schema_with_required(
-                &["baseline_ping_ms", "routed_ping_ms", "jitter_ms", "packet_loss_pct"],
-                &["baseline_ping_ms", "routed_ping_ms", "jitter_ms", "packet_loss_pct"],
+                &[
+                    "baseline_ping_ms",
+                    "routed_ping_ms",
+                    "jitter_ms",
+                    "packet_loss_pct",
+                ],
+                &[
+                    "baseline_ping_ms",
+                    "routed_ping_ms",
+                    "jitter_ms",
+                    "packet_loss_pct",
+                ],
             ),
         );
         by_event.insert(
@@ -88,10 +95,7 @@ impl SchemaAllowlist {
                 &["result", "reason_code", "lifecycle_state"],
             ),
         );
-        by_event.insert(
-            "crash_reported",
-            schema_with_required(&[], &[]),
-        );
+        by_event.insert("crash_reported", schema_with_required(&[], &[]));
         by_event.insert(
             "relay_failed",
             schema_with_required(
@@ -130,10 +134,7 @@ impl SchemaAllowlist {
                 ],
             ),
         );
-        by_event.insert(
-            "onboarding_completed",
-            schema_with_required(&[], &[]),
-        );
+        by_event.insert("onboarding_completed", schema_with_required(&[], &[]));
 
         Self { by_event }
     }
@@ -152,19 +153,16 @@ pub fn validate_event_payload(
     policy: UnknownKeyPolicy,
 ) -> Result<TelemetryPayload, TelemetryValidationError> {
     let allowlist = SchemaAllowlist::default_v1();
-    let schema = allowlist
-        .by_event
-        .get(event_name)
-        .ok_or_else(|| {
-            TelemetryValidationError::new(
-                TelemetryValidationErrorCode::UnknownEventName,
-                format!(
-                    "{}: telemetry event '{}' is not in allowlist",
-                    TelemetryValidationErrorCode::UnknownEventName.as_str(),
-                    event_name
-                ),
-            )
-        })?;
+    let schema = allowlist.by_event.get(event_name).ok_or_else(|| {
+        TelemetryValidationError::new(
+            TelemetryValidationErrorCode::UnknownEventName,
+            format!(
+                "{}: telemetry event '{}' is not in allowlist",
+                TelemetryValidationErrorCode::UnknownEventName.as_str(),
+                event_name
+            ),
+        )
+    })?;
 
     let mut unknown = payload
         .keys()
@@ -220,14 +218,8 @@ mod tests {
     #[test]
     fn allowlist_enforces_event_specific_keys() {
         let payload = TelemetryPayload::from([
-            (
-                "baseline_ping_ms".to_string(),
-                TelemetryValue::Float(210.0),
-            ),
-            (
-                "routed_ping_ms".to_string(),
-                TelemetryValue::Float(160.0),
-            ),
+            ("baseline_ping_ms".to_string(), TelemetryValue::Float(210.0)),
+            ("routed_ping_ms".to_string(), TelemetryValue::Float(160.0)),
             ("jitter_ms".to_string(), TelemetryValue::Float(5.0)),
             ("packet_loss_pct".to_string(), TelemetryValue::Float(0.0)),
             (
@@ -244,7 +236,10 @@ mod tests {
     #[test]
     fn unknown_keys_can_be_dropped_under_policy_mode() {
         let payload = TelemetryPayload::from([
-            ("result".to_string(), TelemetryValue::Text("success".to_string())),
+            (
+                "result".to_string(),
+                TelemetryValue::Text("success".to_string()),
+            ),
             (
                 "reason_code".to_string(),
                 TelemetryValue::Text("none".to_string()),

@@ -1,7 +1,9 @@
 use client_engine::detection::state_resolver::{
     DetectionMetadata, DetectionReasonCode, DetectionResolution, DetectionState,
 };
-use client_engine::routing::{can_activate_routing, RoutingState, RoutingTransition, RoutingTrigger};
+use client_engine::routing::{
+    can_activate_routing, RoutingState, RoutingTransition, RoutingTrigger,
+};
 use client_engine::telemetry::events::detection::{
     emit_game_detected_event, validate_game_detected_payload,
 };
@@ -139,9 +141,7 @@ fn validate_routing_payload_shape(event: &TelemetryEvent) -> Result<(), String> 
             if let Some(value) = event.payload.get("failure_code") {
                 match value {
                     TelemetryValue::Text(v) if !v.trim().is_empty() => {}
-                    _ => {
-                        return Err("relay_failed failure_code must be non-empty text".to_string())
-                    }
+                    _ => return Err("relay_failed failure_code must be non-empty text".to_string()),
                 }
             }
         }
@@ -156,8 +156,7 @@ fn assert_funnel_event_schema(event: &TelemetryEvent) {
         validate_game_detected_payload(&event.payload)
             .expect("game_detected payload schema must stay compliant");
     } else {
-        validate_routing_payload_shape(event)
-            .expect("routing payload schema must stay compliant");
+        validate_routing_payload_shape(event).expect("routing payload schema must stay compliant");
     }
 }
 
@@ -235,8 +234,8 @@ fn success_flow_emits_game_detected_before_routing_activation() {
                 report.checkpoints, report.drop_off_point
             )
         });
-    let routing_enabled_idx =
-        find_event_index(&report.event_names, "routing_enabled").unwrap_or_else(|| {
+    let routing_enabled_idx = find_event_index(&report.event_names, "routing_enabled")
+        .unwrap_or_else(|| {
             panic!(
                 "missing routing_enabled event; checkpoints={:?}; drop_off={:?}",
                 report.checkpoints, report.drop_off_point
@@ -289,7 +288,8 @@ fn negative_flows_do_not_emit_invalid_activation_events() {
 fn funnel_payload_schema_stays_compliant_for_all_emitted_events() {
     let report = run_detection_activation_funnel(FunnelScenario::Success);
 
-    let expected_events = BTreeSet::from(["game_detected".to_string(), "routing_enabled".to_string()]);
+    let expected_events =
+        BTreeSet::from(["game_detected".to_string(), "routing_enabled".to_string()]);
     let actual_events = report.event_names.into_iter().collect::<BTreeSet<_>>();
     assert_eq!(
         actual_events, expected_events,

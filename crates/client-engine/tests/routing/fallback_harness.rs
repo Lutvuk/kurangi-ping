@@ -45,7 +45,11 @@ fn run_fallback_scenario(scenario: &FallbackScenario) -> HarnessResult {
         }
     };
 
-    let scored = score_candidates(&candidates, &scenario.health, &RelayScoringConfig::default());
+    let scored = score_candidates(
+        &candidates,
+        &scenario.health,
+        &RelayScoringConfig::default(),
+    );
     let dialer = ScenarioDialer {
         fail_protocols: scenario.fail_protocols.clone(),
     };
@@ -63,9 +67,9 @@ fn run_fallback_scenario(scenario: &FallbackScenario) -> HarnessResult {
     let trace = build_trace(&result.attempts);
     let terminal_state = match result.status {
         AttemptStatus::Connected { protocol, .. } => HarnessTerminalState::Connected { protocol },
-        AttemptStatus::Exhausted { failure_code } => HarnessTerminalState::Failed {
-            code: failure_code,
-        },
+        AttemptStatus::Exhausted { failure_code } => {
+            HarnessTerminalState::Failed { code: failure_code }
+        }
     };
 
     HarnessResult {
@@ -109,7 +113,11 @@ fn build_trace(attempts: &[client_engine::routing::AttemptRecord]) -> Vec<String
 
 fn load_scenario(path: &str) -> FallbackScenario {
     let base = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let full_path = base.join("tests").join("fixtures").join("relay_scenarios").join(path);
+    let full_path = base
+        .join("tests")
+        .join("fixtures")
+        .join("relay_scenarios")
+        .join(path);
     let raw = fs::read_to_string(&full_path).expect("scenario fixture should be readable");
 
     let mut name = String::new();
@@ -138,7 +146,9 @@ fn load_scenario(path: &str) -> FallbackScenario {
             "relay_id" => relay_id = value.to_string(),
             "relay_region" => relay_region = value.to_string(),
             "relay_host" => relay_host = value.to_string(),
-            "relay_priority" => relay_priority = value.parse().expect("relay_priority should parse"),
+            "relay_priority" => {
+                relay_priority = value.parse().expect("relay_priority should parse")
+            }
             "health_status" => {
                 health_status = match value {
                     "ok" => RelayHealthStatus::Ok,

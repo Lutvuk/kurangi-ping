@@ -71,7 +71,9 @@ enum KpiAggregationError {
     MissingAttemptCount { at_ms: u64, event_name: String },
 }
 
-fn run_relay_reliability_kpi(sequence: &FixtureSequence) -> Result<ReliabilityKpiReport, KpiAggregationError> {
+fn run_relay_reliability_kpi(
+    sequence: &FixtureSequence,
+) -> Result<ReliabilityKpiReport, KpiAggregationError> {
     let emitted = simulate_sequence_emission(sequence);
     derive_kpis(&emitted)
 }
@@ -79,7 +81,9 @@ fn run_relay_reliability_kpi(sequence: &FixtureSequence) -> Result<ReliabilityKp
 fn simulate_sequence_emission(sequence: &FixtureSequence) -> Vec<TimedRelayEvent> {
     let mut telemetry = TelemetryService::new();
     let mut stream = Vec::new();
-    let policy = RelayFailoverEmissionPolicy { max_queue_depth: 10_000 };
+    let policy = RelayFailoverEmissionPolicy {
+        max_queue_depth: 10_000,
+    };
 
     for step in &sequence.steps {
         let state = parse_failover_state(&step.state);
@@ -91,8 +95,10 @@ fn simulate_sequence_emission(sequence: &FixtureSequence) -> Vec<TimedRelayEvent
         );
 
         let status = match step.event_name.as_str() {
-            "relay_failed" => emit_relay_failed(&mut telemetry, &payload, step.attempt_count, policy)
-                .expect("relay_failed emission should not fail"),
+            "relay_failed" => {
+                emit_relay_failed(&mut telemetry, &payload, step.attempt_count, policy)
+                    .expect("relay_failed emission should not fail")
+            }
             "relay_recovered" => {
                 emit_relay_recovered(&mut telemetry, &payload, step.attempt_count, policy)
                     .expect("relay_recovered emission should not fail")
@@ -169,10 +175,8 @@ fn derive_kpis(events: &[TimedRelayEvent]) -> Result<ReliabilityKpiReport, KpiAg
             }
             "relay_recovered" => {
                 recovered_count = recovered_count.saturating_add(1);
-                let failed_at =
-                    last_failure_at.ok_or(KpiAggregationError::RecoveryWithoutFailure {
-                        at_ms: entry.at_ms,
-                    })?;
+                let failed_at = last_failure_at
+                    .ok_or(KpiAggregationError::RecoveryWithoutFailure { at_ms: entry.at_ms })?;
                 recovery_durations.push(entry.at_ms.saturating_sub(failed_at));
                 last_failure_at = None;
             }
@@ -304,8 +308,7 @@ fn missing_or_invalid_events_are_detected_by_assertions() {
     );
 
     let invalid = load_sequence("invalid_recovered_first.seq");
-    let err =
-        run_relay_reliability_kpi(&invalid).expect_err("recovered before failed must fail");
+    let err = run_relay_reliability_kpi(&invalid).expect_err("recovered before failed must fail");
     assert_eq!(
         err,
         KpiAggregationError::RecoveryWithoutFailure { at_ms: 1_000 }

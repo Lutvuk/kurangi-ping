@@ -106,9 +106,7 @@ impl ToggleDedupeReasonCode {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ToggleDedupeDecision {
     Execute,
-    IdempotentNoOp {
-        reason_code: ToggleDedupeReasonCode,
-    },
+    IdempotentNoOp { reason_code: ToggleDedupeReasonCode },
 }
 
 pub fn dedupe_toggle_command(command: ToggleCommand, state: RoutingState) -> ToggleDedupeDecision {

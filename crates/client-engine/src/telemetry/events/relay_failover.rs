@@ -1,10 +1,10 @@
 use std::collections::BTreeMap;
 
 use crate::routing::{normalize_reason_code, FailoverStatePayload};
-use crate::telemetry::{TelemetryPayload, TelemetryService, TelemetryValue};
 use crate::telemetry::validator::{
     validate_event_payload, TelemetryValidationErrorCode, UnknownKeyPolicy,
 };
+use crate::telemetry::{TelemetryPayload, TelemetryService, TelemetryValue};
 
 pub const RELAY_FAILED_EVENT_NAME: &str = "relay_failed";
 pub const RELAY_RECOVERED_EVENT_NAME: &str = "relay_recovered";
@@ -147,7 +147,10 @@ fn build_payload(
             "failover_state".to_string(),
             TelemetryValue::Text(failover_state),
         ),
-        ("attempt_count".to_string(), TelemetryValue::Integer(attempts)),
+        (
+            "attempt_count".to_string(),
+            TelemetryValue::Integer(attempts),
+        ),
     ]))
 }
 
@@ -160,7 +163,10 @@ fn sanitize_relay_reference(value: Option<&str>) -> String {
         return "none".to_string();
     }
 
-    if trimmed.chars().all(|ch| ch.is_ascii_alphanumeric() || ch == '-' || ch == '_') {
+    if trimmed
+        .chars()
+        .all(|ch| ch.is_ascii_alphanumeric() || ch == '-' || ch == '_')
+    {
         trimmed.to_string()
     } else {
         "unknown_relay".to_string()

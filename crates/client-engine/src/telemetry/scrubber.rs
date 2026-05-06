@@ -271,7 +271,10 @@ mod tests {
                 .expect_err("reject mode should block prohibited fields");
         assert_eq!(error.event_name, "relay_failed");
         assert_eq!(error.violation.path, "username");
-        assert_eq!(error.violation.code, SensitiveFieldViolationCode::UsernameField);
+        assert_eq!(
+            error.violation.code,
+            SensitiveFieldViolationCode::UsernameField
+        );
     }
 
     #[test]
@@ -322,7 +325,10 @@ mod tests {
                 .and_then(|value| value.get("ip_address")),
             None
         );
-        assert_eq!(json.get("exe").and_then(|value| value.as_str()), Some("ffxiv_dx11.exe"));
+        assert_eq!(
+            json.get("exe").and_then(|value| value.as_str()),
+            Some("ffxiv_dx11.exe")
+        );
     }
 
     #[test]

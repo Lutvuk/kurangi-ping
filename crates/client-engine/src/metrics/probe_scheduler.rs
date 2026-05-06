@@ -158,8 +158,11 @@ impl ProbeLoopScheduler {
 
         self.context.probe_in_flight = false;
         self.context.last_probed_at_unix_ms = Some(lease.started_at_unix_ms);
-        self.context.next_probe_due_at_unix_ms =
-            Some(lease.started_at_unix_ms.saturating_add(self.context.interval_ms));
+        self.context.next_probe_due_at_unix_ms = Some(
+            lease
+                .started_at_unix_ms
+                .saturating_add(self.context.interval_ms),
+        );
 
         match result {
             Ok(()) => {
@@ -168,7 +171,8 @@ impl ProbeLoopScheduler {
                 ProbeExecutionCompletion::Success
             }
             Err(error) => {
-                self.context.consecutive_failures = self.context.consecutive_failures.saturating_add(1);
+                self.context.consecutive_failures =
+                    self.context.consecutive_failures.saturating_add(1);
                 self.context.last_error_code = Some(error.code);
                 ProbeExecutionCompletion::Failed {
                     error_code: error.code,
@@ -183,7 +187,10 @@ pub fn start_probe_loop(
     routing_state: RoutingState,
     now_unix_ms: u64,
 ) -> bool {
-    if !matches!(routing_state, RoutingState::Connected | RoutingState::Degraded) {
+    if !matches!(
+        routing_state,
+        RoutingState::Connected | RoutingState::Degraded
+    ) {
         return false;
     }
 
@@ -225,7 +232,11 @@ mod tests {
         assert!(!start_probe_loop(&mut scheduler, RoutingState::Failed, now));
         assert!(!scheduler.context().running);
 
-        assert!(start_probe_loop(&mut scheduler, RoutingState::Connected, now));
+        assert!(start_probe_loop(
+            &mut scheduler,
+            RoutingState::Connected,
+            now
+        ));
         assert!(scheduler.context().running);
         assert_eq!(scheduler.context().next_probe_due_at_unix_ms, Some(now));
     }
@@ -235,7 +246,11 @@ mod tests {
         let mut scheduler = ProbeLoopScheduler::new(ProbeLoopConfig::default());
         let now = 1_700_000_010_000;
 
-        assert!(start_probe_loop(&mut scheduler, RoutingState::Connected, now));
+        assert!(start_probe_loop(
+            &mut scheduler,
+            RoutingState::Connected,
+            now
+        ));
         let lease = match scheduler.begin_probe(now) {
             ProbeLoopDecision::Started(lease) => lease,
             _ => panic!("probe should start when due"),
@@ -292,7 +307,11 @@ mod tests {
         let mut scheduler = ProbeLoopScheduler::new(ProbeLoopConfig::default());
         let now = 1_700_000_020_000;
 
-        assert!(start_probe_loop(&mut scheduler, RoutingState::Connected, now));
+        assert!(start_probe_loop(
+            &mut scheduler,
+            RoutingState::Connected,
+            now
+        ));
         assert!(!start_probe_loop(
             &mut scheduler,
             RoutingState::Connected,

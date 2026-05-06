@@ -5,15 +5,14 @@ use std::fmt::{Display, Formatter};
 use std::fs;
 use std::path::{Path, PathBuf};
 
-mod migrate;
 mod metrics_repo;
+mod migrate;
 mod route_session_repo;
 
-pub use migrate::{run_migrations, MigrationError, MigrationSummary};
 pub use metrics_repo::{MetricSampleRecord, MetricsRepoError, SqliteMetricsRepo};
+pub use migrate::{run_migrations, MigrationError, MigrationSummary};
 pub use route_session_repo::{
-    RouteSessionCloseRecord, RouteSessionRepoError, RouteSessionStartRecord,
-    SqliteRouteSessionRepo,
+    RouteSessionCloseRecord, RouteSessionRepoError, RouteSessionStartRecord, SqliteRouteSessionRepo,
 };
 
 #[derive(Debug)]
@@ -30,11 +29,21 @@ impl EngineDb {
 
 #[derive(Debug)]
 pub enum DbInitError {
-    CreateDbDirectory { path: PathBuf, source: std::io::Error },
-    OpenConnection { path: PathBuf, source: rusqlite::Error },
-    EnableForeignKeys { source: rusqlite::Error },
+    CreateDbDirectory {
+        path: PathBuf,
+        source: std::io::Error,
+    },
+    OpenConnection {
+        path: PathBuf,
+        source: rusqlite::Error,
+    },
+    EnableForeignKeys {
+        source: rusqlite::Error,
+    },
     ForeignKeysNotEnabled,
-    MigrationFailed { source: MigrationError },
+    MigrationFailed {
+        source: MigrationError,
+    },
 }
 
 impl Display for DbInitError {
@@ -49,7 +58,12 @@ impl Display for DbInitError {
                 )
             }
             Self::OpenConnection { path, source } => {
-                write!(f, "failed to open sqlite database {}: {}", path.display(), source)
+                write!(
+                    f,
+                    "failed to open sqlite database {}: {}",
+                    path.display(),
+                    source
+                )
             }
             Self::EnableForeignKeys { source } => {
                 write!(f, "failed to enable sqlite foreign keys: {source}")
@@ -85,10 +99,11 @@ pub fn init_db(db_path: &Path, migrations_path: &Path) -> Result<EngineDb, DbIni
         })?;
     }
 
-    let mut connection = Connection::open(db_path).map_err(|source| DbInitError::OpenConnection {
-        path: db_path.to_path_buf(),
-        source,
-    })?;
+    let mut connection =
+        Connection::open(db_path).map_err(|source| DbInitError::OpenConnection {
+            path: db_path.to_path_buf(),
+            source,
+        })?;
     enforce_foreign_keys(&connection)?;
 
     let migration_summary = run_migrations(&mut connection, migrations_path)

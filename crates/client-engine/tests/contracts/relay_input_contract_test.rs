@@ -4,7 +4,11 @@ use std::path::PathBuf;
 
 fn fixture_text(relative: &str) -> String {
     let base = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let path = base.join("tests").join("fixtures").join("contracts").join(relative);
+    let path = base
+        .join("tests")
+        .join("fixtures")
+        .join("contracts")
+        .join(relative);
     fs::read_to_string(path).expect("fixture should be readable")
 }
 
@@ -172,4 +176,3 @@ fn relay_health_input_parsing_matches_openapi_expectations() {
         "expected status/latency schema failure, got: {err}"
     );
 }
-

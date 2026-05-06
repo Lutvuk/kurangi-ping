@@ -193,7 +193,10 @@ mod tests {
 
         let metrics = compute_ping_metrics(&window).expect("valid window should compute");
         approx_eq(metrics.baseline_ping_ms, 211.25);
-        approx_eq(metrics.routed_ping_ms.expect("routed avg should exist"), 154.666_666_666_7);
+        approx_eq(
+            metrics.routed_ping_ms.expect("routed avg should exist"),
+            154.666_666_666_7,
+        );
         approx_eq(metrics.jitter_ms.expect("jitter should exist"), 5.0);
         approx_eq(
             metrics

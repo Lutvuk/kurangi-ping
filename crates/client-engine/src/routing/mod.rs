@@ -1,7 +1,7 @@
 //! Routing and manifest verification boundaries.
 
-mod config;
 mod command_guard;
+mod config;
 mod detection_gate;
 mod failover_executor;
 mod failover_state;
@@ -11,8 +11,8 @@ mod health_scheduler;
 mod integration;
 mod lifecycle_timeout;
 mod manifest_gate;
-mod on_pipeline;
 mod off_pipeline;
+mod on_pipeline;
 mod orchestrator;
 mod policy;
 mod retry;
@@ -20,12 +20,12 @@ mod scoring;
 mod state_machine;
 mod toggle_orchestrator;
 
-pub use config::{RoutingConfig, RoutingConfigError};
 pub use command_guard::{
     acquire_toggle_lock, dedupe_toggle_command, ToggleCommandGuard, ToggleDedupeDecision,
     ToggleDedupeReasonCode, ToggleLockError, ToggleLockErrorCode, ToggleLockLease,
     ToggleLockPolicy,
 };
+pub use config::{RoutingConfig, RoutingConfigError};
 pub use detection_gate::{can_activate_routing, DetectionGateDecision, DetectionGateReasonCode};
 pub use failover_executor::{
     switch_active_relay, ActiveRelaySwitchAdapter, FailoverExecutionContext, FailoverExecutionLog,
@@ -63,21 +63,21 @@ pub use manifest_gate::{
     verify_manifest_or_fail, ManifestFailureCode, ManifestGateResult, RelayManifestDto,
     RelayNodeDto, RouteCandidate,
 };
-pub use on_pipeline::{
-    execute_on_pipeline, OnPipelineFailure, OnPipelineReasonCode, OnPipelineResult,
-    OnPipelineStage, OnPipelineStatus, RoutePrecheckResult,
-};
 pub use off_pipeline::{
     execute_off_pipeline, OffPipelineReasonCode, OffPipelineResult, OffPipelineStatus,
     OffRouteTeardown, OffTeardownError, OffTeardownErrorCode,
 };
-pub use policy::{
-    ProtocolPriority, RetryPolicy, RouteProtocol, RoutingPolicy, DEFAULT_PROTOCOL_ORDER,
+pub use on_pipeline::{
+    execute_on_pipeline, OnPipelineFailure, OnPipelineReasonCode, OnPipelineResult,
+    OnPipelineStage, OnPipelineStatus, RoutePrecheckResult,
 };
 pub use orchestrator::{
     attempt_route, attempt_route_with_retry, AttemptFailureReason, AttemptPlan, AttemptRecord,
     AttemptResult, AttemptStatus, AttemptStepOutcome, RetryOrchestrationResult,
     RouteAttemptFailureCode, RouteDialer,
+};
+pub use policy::{
+    ProtocolPriority, RetryPolicy, RouteProtocol, RoutingPolicy, DEFAULT_PROTOCOL_ORDER,
 };
 pub use retry::{next_retry_delay, RetryBudget, RetryMetadata};
 pub use scoring::{
@@ -85,16 +85,16 @@ pub use scoring::{
     RelayScoringConfig, ScoreBreakdown, ScoreExclusionReason, ScoringWeights,
 };
 pub use state_machine::{
-    IllegalTransitionError, RoutingState, RoutingStateMachine, RoutingStateView,
-    RoutingTransition, RoutingTrigger,
+    IllegalTransitionError, RoutingState, RoutingStateMachine, RoutingStateView, RoutingTransition,
+    RoutingTrigger,
 };
 pub use toggle_orchestrator::{
     handle_toggle_command, ToggleCommand, ToggleCommandResult, ToggleOrchestrator,
     ToggleRejectionKind, ToggleResultCode,
 };
 
-use crate::security::signature::ManifestSignatureVerifier;
 use crate::detection::state_resolver::DetectionResolution;
+use crate::security::signature::ManifestSignatureVerifier;
 
 /// Public routing service API.
 #[derive(Debug, Clone)]
@@ -120,7 +120,11 @@ impl RoutingService {
     }
 
     pub fn state(&self) -> &'static str {
-        if self.active { "enabled" } else { "disabled" }
+        if self.active {
+            "enabled"
+        } else {
+            "disabled"
+        }
     }
 
     pub fn policy(&self) -> RoutingPolicy {
@@ -138,17 +142,18 @@ impl RoutingService {
         now_unix_s: u64,
     ) -> RoutePlan {
         let manifest_gate = verify_manifest_or_fail(verifier, manifest, now_unix_s);
-        let (manifest_valid, attempted_protocols, route_candidates, failure_code) = match &manifest_gate {
-            ManifestGateResult::Passed { candidates, .. } => (
-                true,
-                self.protocol_order().to_vec(),
-                candidates.clone(),
-                None,
-            ),
-            ManifestGateResult::Blocked { failure_code } => {
-                (false, Vec::new(), Vec::new(), Some(*failure_code))
-            }
-        };
+        let (manifest_valid, attempted_protocols, route_candidates, failure_code) =
+            match &manifest_gate {
+                ManifestGateResult::Passed { candidates, .. } => (
+                    true,
+                    self.protocol_order().to_vec(),
+                    candidates.clone(),
+                    None,
+                ),
+                ManifestGateResult::Blocked { failure_code } => {
+                    (false, Vec::new(), Vec::new(), Some(*failure_code))
+                }
+            };
 
         RoutePlan {
             manifest_valid,
@@ -278,7 +283,10 @@ mod tests {
 
         let plan = service.plan_activation(&verifier, &manifest, 1_700_000_000);
         assert!(plan.manifest_valid);
-        assert!(matches!(plan.manifest_gate, ManifestGateResult::Passed { .. }));
+        assert!(matches!(
+            plan.manifest_gate,
+            ManifestGateResult::Passed { .. }
+        ));
         assert_eq!(plan.attempted_protocols, DEFAULT_PROTOCOL_ORDER.to_vec());
         assert_eq!(plan.route_candidates.len(), 1);
         assert_eq!(plan.failure_code, None);
@@ -294,7 +302,10 @@ mod tests {
         assert!(!plan.manifest_valid);
         assert!(plan.attempted_protocols.is_empty());
         assert!(plan.route_candidates.is_empty());
-        assert_eq!(plan.failure_code, Some(ManifestFailureCode::SignatureInvalid));
+        assert_eq!(
+            plan.failure_code,
+            Some(ManifestFailureCode::SignatureInvalid)
+        );
     }
 
     #[test]
@@ -329,12 +340,8 @@ mod tests {
         let manifest = sample_manifest("known-good", 1_800_000_000);
         let detected = detection_resolution(DetectionState::Detected, None);
 
-        let gated = service.plan_activation_with_detection(
-            &detected,
-            &verifier,
-            &manifest,
-            1_700_000_000,
-        );
+        let gated =
+            service.plan_activation_with_detection(&detected, &verifier, &manifest, 1_700_000_000);
         match gated {
             RouteActivationGateResult::Allowed(plan) => {
                 assert!(plan.manifest_valid);
@@ -346,4 +353,3 @@ mod tests {
         }
     }
 }
-

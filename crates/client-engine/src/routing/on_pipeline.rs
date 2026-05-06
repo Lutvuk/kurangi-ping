@@ -1,9 +1,9 @@
 //! ON activation gate chain: detection -> manifest -> route precheck.
 
 use super::{
-    can_activate_routing, DetectionGateDecision, DetectionGateReasonCode, DetectionResolution,
-    ManifestFailureCode, ManifestGateResult, RelayManifestDto, RouteCandidate, RouteProtocol,
-    verify_manifest_or_fail,
+    can_activate_routing, verify_manifest_or_fail, DetectionGateDecision, DetectionGateReasonCode,
+    DetectionResolution, ManifestFailureCode, ManifestGateResult, RelayManifestDto, RouteCandidate,
+    RouteProtocol,
 };
 use crate::security::signature::ManifestSignatureVerifier;
 
@@ -172,7 +172,10 @@ pub fn execute_on_pipeline<V: ManifestSignatureVerifier>(
     }
 }
 
-fn run_route_precheck(candidates: &[RouteCandidate], protocol_order: &[RouteProtocol]) -> RoutePrecheckResult {
+fn run_route_precheck(
+    candidates: &[RouteCandidate],
+    protocol_order: &[RouteProtocol],
+) -> RoutePrecheckResult {
     if protocol_order.is_empty() {
         return RoutePrecheckResult {
             ready_for_activation: false,
@@ -215,7 +218,9 @@ fn map_detection_reason(reason: DetectionGateReasonCode) -> OnPipelineReasonCode
         DetectionGateReasonCode::DetectionErrorUnsupportedPlatform => {
             OnPipelineReasonCode::DetectionErrorUnsupportedPlatform
         }
-        DetectionGateReasonCode::DetectionErrorUnknown => OnPipelineReasonCode::DetectionErrorUnknown,
+        DetectionGateReasonCode::DetectionErrorUnknown => {
+            OnPipelineReasonCode::DetectionErrorUnknown
+        }
     }
 }
 
@@ -301,7 +306,9 @@ mod tests {
                 assert_eq!(failure.reason_code, OnPipelineReasonCode::DetectionNotFound);
                 assert_eq!(failure.reason_code.as_str(), "detection_not_found");
             }
-            OnPipelineStatus::Ready { .. } => panic!("detection block should not return ready state"),
+            OnPipelineStatus::Ready { .. } => {
+                panic!("detection block should not return ready state")
+            }
         }
     }
 
@@ -331,7 +338,9 @@ mod tests {
                 );
                 assert_eq!(failure.reason_code.as_str(), "manifest_signature_invalid");
             }
-            OnPipelineStatus::Ready { .. } => panic!("manifest block should not return ready state"),
+            OnPipelineStatus::Ready { .. } => {
+                panic!("manifest block should not return ready state")
+            }
         }
     }
 
@@ -366,7 +375,9 @@ mod tests {
                     "precheck_no_protocols_configured"
                 );
             }
-            OnPipelineStatus::Ready { .. } => panic!("precheck block should not return ready state"),
+            OnPipelineStatus::Ready { .. } => {
+                panic!("precheck block should not return ready state")
+            }
         }
     }
 

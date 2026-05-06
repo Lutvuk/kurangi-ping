@@ -1,5 +1,5 @@
-use client_engine::routing::{RoutingState, RoutingTransition, RoutingTrigger};
 use client_engine::routing::{build_failover_state_payload, FailoverUiState};
+use client_engine::routing::{RoutingState, RoutingTransition, RoutingTrigger};
 use client_engine::telemetry::events::relay_failover::{
     emit_relay_failed, emit_relay_recovered, RelayFailoverEmissionPolicy,
 };
@@ -112,6 +112,7 @@ fn emitted_relay_failover_events_conform_to_telemetry_allowlist() {
 
     let events = telemetry.drain_batch(10);
     assert_eq!(events.len(), 2);
-    assert!(events.iter().all(|event| allowlist.contains(event.name.as_str())));
+    assert!(events
+        .iter()
+        .all(|event| allowlist.contains(event.name.as_str())));
 }
-

@@ -95,8 +95,9 @@ mod tests {
         assert_eq!(second.retry_index, 2);
         assert_eq!(second.retries_remaining, 0);
 
-        assert!(budget.consume_retry(250, 3_000, "ROUTE_ALL_ATTEMPTS_FAILED").is_none());
+        assert!(budget
+            .consume_retry(250, 3_000, "ROUTE_ALL_ATTEMPTS_FAILED")
+            .is_none());
         assert!(budget.exhausted());
     }
 }
-

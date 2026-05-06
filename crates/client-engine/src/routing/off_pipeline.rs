@@ -126,7 +126,8 @@ pub fn execute_off_pipeline<T: OffRouteTeardown, P: RouteSessionPersistence>(
         }
         Err(error) => {
             let reason_code = OffPipelineReasonCode::OffTeardownFailed;
-            let transitions = force_deterministic_failed_state(machine, reason_code.as_failure_code());
+            let transitions =
+                force_deterministic_failed_state(machine, reason_code.as_failure_code());
             let close_record = with_end_reason(close_record_template, reason_code);
             let session_hook = close_route_session(persistence, &close_record);
 
@@ -184,10 +185,9 @@ fn force_deterministic_failed_state(
             if let Ok(transition) = machine.transition(RoutingTrigger::HealthDegraded, None) {
                 transitions.push(transition);
             }
-            if let Ok(transition) = machine.transition(
-                RoutingTrigger::RelayFailure,
-                Some(failure_code.to_string()),
-            ) {
+            if let Ok(transition) =
+                machine.transition(RoutingTrigger::RelayFailure, Some(failure_code.to_string()))
+            {
                 transitions.push(transition);
             }
         }
@@ -311,8 +311,14 @@ mod tests {
         );
 
         assert_eq!(result.reason_code, OffPipelineReasonCode::OffRequested);
-        assert_eq!(result.close_record.end_reason.as_deref(), Some("OFF_REQUESTED"));
-        assert!(matches!(result.session_hook.status, SessionHookStatus::Persisted));
+        assert_eq!(
+            result.close_record.end_reason.as_deref(),
+            Some("OFF_REQUESTED")
+        );
+        assert!(matches!(
+            result.session_hook.status,
+            SessionHookStatus::Persisted
+        ));
 
         let close_calls = persistence.close_calls.borrow();
         assert_eq!(close_calls.len(), 1);
@@ -365,7 +371,10 @@ mod tests {
         );
 
         assert_eq!(result.status, OffPipelineStatus::Idempotent);
-        assert_eq!(result.reason_code, OffPipelineReasonCode::OffAlreadyDisabled);
+        assert_eq!(
+            result.reason_code,
+            OffPipelineReasonCode::OffAlreadyDisabled
+        );
         assert!(!result.teardown_attempted);
         assert_eq!(teardown.calls, 0);
         assert_eq!(result.final_state, RoutingState::Off);

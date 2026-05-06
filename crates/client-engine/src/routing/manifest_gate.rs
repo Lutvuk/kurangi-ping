@@ -32,7 +32,10 @@ impl RelayManifestDto {
             .collect::<Vec<_>>()
             .join(";");
 
-        format!("{}|{}|{}", self.version, self.valid_until_unix_s, relay_lines)
+        format!(
+            "{}|{}|{}",
+            self.version, self.valid_until_unix_s, relay_lines
+        )
     }
 }
 
@@ -167,7 +170,10 @@ mod tests {
             }
         );
         assert_eq!(
-            result.failure_code().expect("failure code should exist").as_code(),
+            result
+                .failure_code()
+                .expect("failure code should exist")
+                .as_code(),
             "MANIFEST_SIGNATURE_INVALID"
         );
     }
@@ -185,7 +191,10 @@ mod tests {
             }
         );
         assert_eq!(
-            result.failure_code().expect("failure code should exist").as_code(),
+            result
+                .failure_code()
+                .expect("failure code should exist")
+                .as_code(),
             "MANIFEST_EXPIRED"
         );
     }
@@ -206,4 +215,3 @@ mod tests {
         assert_eq!(candidates[1].relay_id, "nrt-01");
     }
 }
-

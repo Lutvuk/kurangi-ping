@@ -48,7 +48,10 @@ impl<'conn> SqliteMetricsRepo<'conn> {
         Self { conn }
     }
 
-    pub fn append_metric_sample(&self, record: &MetricSampleRecord) -> Result<(), MetricsRepoError> {
+    pub fn append_metric_sample(
+        &self,
+        record: &MetricSampleRecord,
+    ) -> Result<(), MetricsRepoError> {
         self.conn
             .execute(
                 r#"
@@ -82,11 +85,10 @@ impl<'conn> SqliteMetricsRepo<'conn> {
         session_id: &str,
         retention_limit: usize,
     ) -> Result<usize, MetricsRepoError> {
-        let retention_limit_i64 = i64::try_from(retention_limit).map_err(|_| {
-            MetricsRepoError::PruneFailed {
+        let retention_limit_i64 =
+            i64::try_from(retention_limit).map_err(|_| MetricsRepoError::PruneFailed {
                 source: rusqlite::Error::InvalidQuery,
-            }
-        })?;
+            })?;
 
         let deleted = if retention_limit == 0 {
             self.conn
@@ -305,7 +307,10 @@ mod tests {
         ));
 
         let follow_up = repo.prune_old_samples("sess-1", 10);
-        assert!(follow_up.is_ok(), "repo remains callable after insert error");
+        assert!(
+            follow_up.is_ok(),
+            "repo remains callable after insert error"
+        );
     }
 
     #[test]

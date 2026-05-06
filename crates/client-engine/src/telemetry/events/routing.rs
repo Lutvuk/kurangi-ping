@@ -104,4 +104,3 @@ mod tests {
         assert!(event.is_none());
     }
 }
-

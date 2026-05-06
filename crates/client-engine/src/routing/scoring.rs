@@ -1,7 +1,7 @@
 //! Deterministic relay candidate scoring.
 
-use super::RouteCandidate;
 use super::RelayHealthStatus;
+use super::RouteCandidate;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RelayHealthSnapshot {
@@ -103,7 +103,12 @@ pub fn score_candidates(
         right
             .is_eligible()
             .cmp(&left.is_eligible())
-            .then_with(|| right.breakdown.total_points.cmp(&left.breakdown.total_points))
+            .then_with(|| {
+                right
+                    .breakdown
+                    .total_points
+                    .cmp(&left.breakdown.total_points)
+            })
             .then_with(|| left.candidate.priority.cmp(&right.candidate.priority))
             .then_with(|| left.candidate.relay_id.cmp(&right.candidate.relay_id))
     });
@@ -143,7 +148,8 @@ fn score_single_candidate(
             let latency_penalty_points =
                 config.weights.latency_penalty_per_ms * (snapshot.latency_ms as i32);
 
-            let dead_excluded = config.exclude_dead_relays && snapshot.status == RelayHealthStatus::Dead;
+            let dead_excluded =
+                config.exclude_dead_relays && snapshot.status == RelayHealthStatus::Dead;
             let latency_excluded = config
                 .exclude_latency_over_ms
                 .map(|threshold| snapshot.latency_ms > threshold)
@@ -171,7 +177,8 @@ fn score_single_candidate(
         ),
     };
 
-    let total_points = health_points + region_bonus_points + priority_points - latency_penalty_points;
+    let total_points =
+        health_points + region_bonus_points + priority_points - latency_penalty_points;
     CandidateScore {
         candidate: candidate.clone(),
         health_status: health.map(|snapshot| snapshot.status),
@@ -229,8 +236,14 @@ mod tests {
         let first = score_candidates(&candidates, &healths, &config);
         let second = score_candidates(&candidates, &healths, &config);
 
-        let first_ids = first.iter().map(|entry| entry.candidate.relay_id.clone()).collect::<Vec<_>>();
-        let second_ids = second.iter().map(|entry| entry.candidate.relay_id.clone()).collect::<Vec<_>>();
+        let first_ids = first
+            .iter()
+            .map(|entry| entry.candidate.relay_id.clone())
+            .collect::<Vec<_>>();
+        let second_ids = second
+            .iter()
+            .map(|entry| entry.candidate.relay_id.clone())
+            .collect::<Vec<_>>();
         assert_eq!(first_ids, second_ids);
         assert_eq!(first_ids, vec!["lax-01", "nrt-01", "sin-01"]);
     }

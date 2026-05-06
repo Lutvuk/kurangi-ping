@@ -1,6 +1,8 @@
 //! Route attempt orchestrator across protocol priority and scored candidates.
 
-use super::{CandidateScore, RetryBudget, RetryMetadata, RetryPolicy, RouteCandidate, RouteProtocol};
+use super::{
+    CandidateScore, RetryBudget, RetryMetadata, RetryPolicy, RouteCandidate, RouteProtocol,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AttemptFailureReason {
@@ -212,11 +214,11 @@ pub fn attempt_route_with_retry<D: RouteDialer>(
 mod tests {
     use super::{
         attempt_route, attempt_route_with_retry, AttemptFailureReason, AttemptStatus,
-        AttemptStepOutcome, RetryOrchestrationResult, RouteDialer, RouteAttemptFailureCode,
+        AttemptStepOutcome, RetryOrchestrationResult, RouteAttemptFailureCode, RouteDialer,
     };
     use crate::routing::{
-        CandidateDisposition, CandidateScore, RelayHealthStatus, RouteCandidate, RouteProtocol,
-        RetryPolicy, ScoreBreakdown,
+        CandidateDisposition, CandidateScore, RelayHealthStatus, RetryPolicy, RouteCandidate,
+        RouteProtocol, ScoreBreakdown,
     };
     use std::cell::RefCell;
 
@@ -236,7 +238,11 @@ mod tests {
     }
 
     impl RouteDialer for TestDialer {
-        fn attempt(&self, protocol: RouteProtocol, candidate: &RouteCandidate) -> AttemptStepOutcome {
+        fn attempt(
+            &self,
+            protocol: RouteProtocol,
+            candidate: &RouteCandidate,
+        ) -> AttemptStepOutcome {
             self.calls
                 .borrow_mut()
                 .push((protocol, candidate.relay_id.clone()));
@@ -279,7 +285,10 @@ mod tests {
     #[test]
     fn orchestrator_attempts_protocols_in_priority_order() {
         let dialer = TestDialer::with_success_on(RouteProtocol::TcpTls, "nrt-01");
-        let scored = vec![scored_candidate("sin-01", true), scored_candidate("nrt-01", true)];
+        let scored = vec![
+            scored_candidate("sin-01", true),
+            scored_candidate("nrt-01", true),
+        ];
         let protocols = [
             RouteProtocol::WireGuard,
             RouteProtocol::TcpTls,
@@ -310,7 +319,10 @@ mod tests {
     #[test]
     fn candidate_iteration_follows_scoring_output_order() {
         let dialer = TestDialer::default();
-        let scored = vec![scored_candidate("preferred-01", true), scored_candidate("backup-02", true)];
+        let scored = vec![
+            scored_candidate("preferred-01", true),
+            scored_candidate("backup-02", true),
+        ];
         let protocols = [RouteProtocol::WireGuard];
 
         let _ = attempt_route(&protocols, &scored, &dialer);
@@ -343,10 +355,10 @@ mod tests {
         );
         assert_eq!(result.attempts.len(), 3);
         assert_eq!(result.plan.max_attempts, 3);
-        assert!(result.attempts.iter().all(|entry| matches!(
-            entry.outcome,
-            AttemptStepOutcome::Failed(_)
-        )));
+        assert!(result
+            .attempts
+            .iter()
+            .all(|entry| matches!(entry.outcome, AttemptStepOutcome::Failed(_))));
     }
 
     #[test]
@@ -417,7 +429,10 @@ mod tests {
 
         let result = attempt_route_with_retry(&protocols, &scored, retry_policy, &dialer);
         assert_eq!(result.retry_metadata.len(), 1);
-        assert_eq!(result.retry_metadata[0].trigger_code, "ROUTE_ALL_ATTEMPTS_FAILED");
+        assert_eq!(
+            result.retry_metadata[0].trigger_code,
+            "ROUTE_ALL_ATTEMPTS_FAILED"
+        );
         assert_eq!(result.retry_metadata[0].retries_remaining, 0);
     }
 }

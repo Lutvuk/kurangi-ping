@@ -16,14 +16,36 @@ pub struct MigrationSummary {
 
 #[derive(Debug)]
 pub enum MigrationError {
-    MigrationsPathNotFound { path: PathBuf },
-    ReadMigrationsDirectory { path: PathBuf, source: std::io::Error },
-    QueryAppliedMigrations { source: rusqlite::Error },
-    ReadMigrationFile { path: PathBuf, source: std::io::Error },
-    BeginTransaction { filename: String, source: rusqlite::Error },
-    ApplyMigration { filename: String, source: rusqlite::Error },
-    RecordMigrationVersion { filename: String, source: rusqlite::Error },
-    CommitMigration { filename: String, source: rusqlite::Error },
+    MigrationsPathNotFound {
+        path: PathBuf,
+    },
+    ReadMigrationsDirectory {
+        path: PathBuf,
+        source: std::io::Error,
+    },
+    QueryAppliedMigrations {
+        source: rusqlite::Error,
+    },
+    ReadMigrationFile {
+        path: PathBuf,
+        source: std::io::Error,
+    },
+    BeginTransaction {
+        filename: String,
+        source: rusqlite::Error,
+    },
+    ApplyMigration {
+        filename: String,
+        source: rusqlite::Error,
+    },
+    RecordMigrationVersion {
+        filename: String,
+        source: rusqlite::Error,
+    },
+    CommitMigration {
+        filename: String,
+        source: rusqlite::Error,
+    },
 }
 
 impl Display for MigrationError {
@@ -44,7 +66,12 @@ impl Display for MigrationError {
                 write!(f, "failed to query applied migrations: {source}")
             }
             Self::ReadMigrationFile { path, source } => {
-                write!(f, "failed to read migration file {}: {}", path.display(), source)
+                write!(
+                    f,
+                    "failed to read migration file {}: {}",
+                    path.display(),
+                    source
+                )
             }
             Self::BeginTransaction { filename, source } => {
                 write!(
@@ -121,10 +148,11 @@ pub fn run_migrations(
             continue;
         }
 
-        let sql = fs::read_to_string(&file_path).map_err(|source| MigrationError::ReadMigrationFile {
-            path: file_path.clone(),
-            source,
-        })?;
+        let sql =
+            fs::read_to_string(&file_path).map_err(|source| MigrationError::ReadMigrationFile {
+                path: file_path.clone(),
+                source,
+            })?;
 
         let tx = conn
             .transaction()
@@ -147,10 +175,11 @@ pub fn run_migrations(
             filename: file_name.clone(),
             source,
         })?;
-        tx.commit().map_err(|source| MigrationError::CommitMigration {
-            filename: file_name.clone(),
-            source,
-        })?;
+        tx.commit()
+            .map_err(|source| MigrationError::CommitMigration {
+                filename: file_name.clone(),
+                source,
+            })?;
 
         summary.applied_count += 1;
         summary.applied_files.push(file_name);
@@ -163,9 +192,11 @@ pub fn run_migrations(
 }
 
 fn collect_migration_files(migrations_path: &Path) -> Result<Vec<PathBuf>, MigrationError> {
-    let entries = fs::read_dir(migrations_path).map_err(|source| MigrationError::ReadMigrationsDirectory {
-        path: migrations_path.to_path_buf(),
-        source,
+    let entries = fs::read_dir(migrations_path).map_err(|source| {
+        MigrationError::ReadMigrationsDirectory {
+            path: migrations_path.to_path_buf(),
+            source,
+        }
     })?;
     let mut files = Vec::new();
 
@@ -243,8 +274,10 @@ mod tests {
         .expect("failed to write migration");
 
         let mut conn = Connection::open(&db_path).expect("failed to open sqlite db");
-        let first = run_migrations(&mut conn, &migrations_path).expect("first migration run failed");
-        let second = run_migrations(&mut conn, &migrations_path).expect("second migration run failed");
+        let first =
+            run_migrations(&mut conn, &migrations_path).expect("first migration run failed");
+        let second =
+            run_migrations(&mut conn, &migrations_path).expect("second migration run failed");
 
         assert_eq!(first.applied_count, 2);
         assert_eq!(first.skipped_count, 0);
@@ -252,7 +285,9 @@ mod tests {
         assert_eq!(second.skipped_count, 2);
 
         let applied_rows: i64 = conn
-            .query_row("SELECT COUNT(*) FROM schema_migrations", [], |row| row.get(0))
+            .query_row("SELECT COUNT(*) FROM schema_migrations", [], |row| {
+                row.get(0)
+            })
             .expect("failed to count schema_migrations");
         assert_eq!(applied_rows, 2);
         drop(conn);

@@ -126,7 +126,10 @@ fn run_sequence_stress_scenario() -> RapidToggleHarnessResult {
             machine
                 .transition(RoutingTrigger::ConnectionEstablished, None)
                 .expect("harness must be able to complete ON transition");
-            trace.push(format!("{index}:connection_established:{:?}", machine.state()));
+            trace.push(format!(
+                "{index}:connection_established:{:?}",
+                machine.state()
+            ));
         }
     }
 
@@ -146,7 +149,9 @@ fn run_contention_stress_scenario() -> GuardContentionResult {
     let attempts = 16_usize;
     let guard = Arc::new(ToggleCommandGuard::new());
     let barrier = Arc::new(Barrier::new(attempts + 1));
-    let outcomes = Arc::new(Mutex::new(Vec::<(usize, HarnessDecision)>::with_capacity(attempts)));
+    let outcomes = Arc::new(Mutex::new(Vec::<(usize, HarnessDecision)>::with_capacity(
+        attempts,
+    )));
 
     let mut workers = Vec::with_capacity(attempts);
     for worker_id in 0..attempts {
@@ -259,9 +264,18 @@ fn command_guard_behavior_is_validated_under_contention() {
 fn terminal_states_remain_deterministic() {
     let first = run_rapid_toggle_suite();
     let second = run_rapid_toggle_suite();
-    assert_eq!(first.sequence_stress.final_state, second.sequence_stress.final_state);
-    assert_eq!(first.contention_stress.accepted, second.contention_stress.accepted);
-    assert_eq!(first.contention_stress.rejected, second.contention_stress.rejected);
+    assert_eq!(
+        first.sequence_stress.final_state,
+        second.sequence_stress.final_state
+    );
+    assert_eq!(
+        first.contention_stress.accepted,
+        second.contention_stress.accepted
+    );
+    assert_eq!(
+        first.contention_stress.rejected,
+        second.contention_stress.rejected
+    );
 }
 
 #[test]
@@ -270,7 +284,10 @@ fn harness_outputs_reproducible_traces() {
     let second = run_rapid_toggle_suite();
 
     assert_eq!(first.sequence_stress.trace, second.sequence_stress.trace);
-    assert_eq!(first.contention_stress.trace, second.contention_stress.trace);
+    assert_eq!(
+        first.contention_stress.trace,
+        second.contention_stress.trace
+    );
     assert!(
         first
             .sequence_stress

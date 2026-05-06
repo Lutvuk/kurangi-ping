@@ -1,6 +1,8 @@
 //! Integration hooks between routing lifecycle and session persistence.
 
-use super::{IllegalTransitionError, RoutingState, RoutingStateMachine, RoutingTransition, RoutingTrigger};
+use super::{
+    IllegalTransitionError, RoutingState, RoutingStateMachine, RoutingTransition, RoutingTrigger,
+};
 use crate::db::{RouteSessionCloseRecord, RouteSessionStartRecord};
 
 pub trait RouteSessionPersistence {
@@ -81,8 +83,8 @@ pub fn transition_with_session_hooks<P: RouteSessionPersistence>(
 #[cfg(test)]
 mod tests {
     use super::{
-        close_route_session, start_route_session, transition_with_session_hooks, RouteSessionPersistence,
-        SessionHookStatus,
+        close_route_session, start_route_session, transition_with_session_hooks,
+        RouteSessionPersistence, SessionHookStatus,
     };
     use crate::db::{RouteSessionCloseRecord, RouteSessionStartRecord, SqliteRouteSessionRepo};
     use crate::routing::{RoutingStateMachine, RoutingTrigger};
@@ -280,4 +282,3 @@ mod tests {
         assert_eq!(end_reason.as_deref(), Some("ROUTE_ALL_ATTEMPTS_FAILED"));
     }
 }
-

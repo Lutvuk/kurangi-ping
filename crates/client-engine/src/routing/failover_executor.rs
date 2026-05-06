@@ -299,10 +299,13 @@ fn map_attempt_outcome_to_log_code(outcome: AttemptStepOutcome) -> &'static str 
 #[cfg(test)]
 mod tests {
     use super::{
-        switch_active_relay, ActiveRelaySwitchAdapter, FailoverExecutionContext, FailoverExecutionState,
-        FailoverFallbackState, FailoverSwitchError, FailoverSwitchErrorCode, FailoverSwitchFailureCode,
+        switch_active_relay, ActiveRelaySwitchAdapter, FailoverExecutionContext,
+        FailoverExecutionState, FailoverFallbackState, FailoverSwitchError,
+        FailoverSwitchErrorCode, FailoverSwitchFailureCode,
     };
-    use crate::routing::{AttemptFailureReason, AttemptStepOutcome, RetryPolicy, RouteCandidate, RouteProtocol};
+    use crate::routing::{
+        AttemptFailureReason, AttemptStepOutcome, RetryPolicy, RouteCandidate, RouteProtocol,
+    };
     use std::collections::VecDeque;
 
     #[derive(Default)]
@@ -315,7 +318,10 @@ mod tests {
     }
 
     impl ActiveRelaySwitchAdapter for MockSwitchAdapter {
-        fn teardown_active_path(&mut self, active_relay_id: &str) -> Result<(), FailoverSwitchError> {
+        fn teardown_active_path(
+            &mut self,
+            active_relay_id: &str,
+        ) -> Result<(), FailoverSwitchError> {
             self.operations.push(format!("teardown:{active_relay_id}"));
             self.teardown_result.clone().unwrap_or(Ok(()))
         }
@@ -343,7 +349,8 @@ mod tests {
         }
 
         fn rollback_candidate_path(&mut self, candidate: &RouteCandidate) {
-            self.operations.push(format!("rollback:{}", candidate.relay_id));
+            self.operations
+                .push(format!("rollback:{}", candidate.relay_id));
         }
 
         fn wait_backoff(&mut self, delay_ms: u64) {

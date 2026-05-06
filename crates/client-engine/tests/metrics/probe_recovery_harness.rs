@@ -56,7 +56,11 @@ fn run_probe_recovery_scenario(scenario: &ProbeRecoveryScenario) -> ProbeRecover
     let started = start_probe_loop(
         &mut scheduler,
         RoutingState::Connected,
-        scenario.steps.first().map(|step| step.at_unix_ms).unwrap_or(0),
+        scenario
+            .steps
+            .first()
+            .map(|step| step.at_unix_ms)
+            .unwrap_or(0),
     );
     assert!(started, "probe loop should start in connected state");
 
@@ -120,7 +124,10 @@ fn run_probe_recovery_scenario(scenario: &ProbeRecoveryScenario) -> ProbeRecover
                 };
                 let completion = scheduler.complete_probe(
                     lease,
-                    Err(ProbeLoopError::new(*code, format!("simulated probe failure: {code:?}"))),
+                    Err(ProbeLoopError::new(
+                        *code,
+                        format!("simulated probe failure: {code:?}"),
+                    )),
                 );
                 assert_eq!(
                     completion,
@@ -138,14 +145,16 @@ fn run_probe_recovery_scenario(scenario: &ProbeRecoveryScenario) -> ProbeRecover
                 stale_after_ms: scenario.stale_after_ms,
             },
         });
-        let snapshot = resolve_metrics_state(&client_engine::metrics::MetricsStateResolutionInput {
-            freshness,
-            latest_metrics: latest_metrics.clone(),
-            last_probe_failed: probe_failed,
-            computation_error_code,
-        });
+        let snapshot =
+            resolve_metrics_state(&client_engine::metrics::MetricsStateResolutionInput {
+                freshness,
+                latest_metrics: latest_metrics.clone(),
+                last_probe_failed: probe_failed,
+                computation_error_code,
+            });
 
-        if matches!(previous_state, MetricsState::Degraded) && snapshot.state == MetricsState::Live {
+        if matches!(previous_state, MetricsState::Degraded) && snapshot.state == MetricsState::Live
+        {
             recovery_count = recovery_count.saturating_add(1);
         }
 
@@ -215,8 +224,7 @@ fn load_probe_recovery_scenarios() -> Vec<ProbeRecoveryScenario> {
         .join("tests")
         .join("fixtures")
         .join("probe_recovery");
-    let entries =
-        fs::read_dir(base).expect("probe_recovery fixture directory should be readable");
+    let entries = fs::read_dir(base).expect("probe_recovery fixture directory should be readable");
 
     let mut scenarios = Vec::new();
     for entry in entries {
@@ -243,7 +251,9 @@ fn parse_probe_recovery_fixture(raw: &str) -> ProbeRecoveryScenario {
         let value = parts.next().expect("fixture value should exist").trim();
         match key {
             "name" => name = value.to_string(),
-            "stale_after_ms" => stale_after_ms = value.parse().expect("stale_after_ms should parse"),
+            "stale_after_ms" => {
+                stale_after_ms = value.parse().expect("stale_after_ms should parse")
+            }
             "probe_interval_ms" => {
                 probe_interval_ms = value.parse().expect("probe_interval_ms should parse")
             }
@@ -329,7 +339,10 @@ fn harness_simulates_intermittent_probe_failure_and_recovery() {
         .trace
         .iter()
         .any(|line| line.contains("failure_transport_unavailable:degraded:probe_failed")));
-    assert!(scenario.trace.iter().any(|line| line.contains(":success:live:none:")));
+    assert!(scenario
+        .trace
+        .iter()
+        .any(|line| line.contains(":success:live:none:")));
 }
 
 #[test]

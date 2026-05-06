@@ -139,7 +139,9 @@ fn map_switch_failure_code(code: FailoverSwitchFailureCode) -> FailoverUiReasonC
             FailoverUiReasonCode::SwitchPreparationFailed
         }
         FailoverSwitchFailureCode::PromoteNewPathFailed => FailoverUiReasonCode::SwitchApplyFailed,
-        FailoverSwitchFailureCode::RetryBudgetExhausted => FailoverUiReasonCode::SwitchRetryExhausted,
+        FailoverSwitchFailureCode::RetryBudgetExhausted => {
+            FailoverUiReasonCode::SwitchRetryExhausted
+        }
     }
 }
 
@@ -175,8 +177,12 @@ mod tests {
         let reason = normalize_reason_code(Some("INTERNAL_KERNEL_ERR_0xC000"));
         assert_eq!(reason, FailoverUiReasonCode::SafeGenericIssue);
 
-        let payload =
-            build_failover_state_payload(FailoverUiState::Failed, Some("sin-01"), None, Some("???"));
+        let payload = build_failover_state_payload(
+            FailoverUiState::Failed,
+            Some("sin-01"),
+            None,
+            Some("???"),
+        );
         assert_eq!(payload.reason_code, "safe_generic_issue");
     }
 

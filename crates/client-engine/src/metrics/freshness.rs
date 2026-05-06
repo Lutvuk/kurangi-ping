@@ -192,14 +192,18 @@ mod tests {
         let strict = evaluate_metric_freshness(&MetricFreshnessInput {
             now_unix_ms: now,
             last_sample_at_unix_ms: recent_sample,
-            config: MetricFreshnessConfig { stale_after_ms: 1_000 },
+            config: MetricFreshnessConfig {
+                stale_after_ms: 1_000,
+            },
         });
         assert_eq!(strict.status, MetricFreshnessStatus::Stale);
 
         let relaxed = evaluate_metric_freshness(&MetricFreshnessInput {
             now_unix_ms: now,
             last_sample_at_unix_ms: recent_sample,
-            config: MetricFreshnessConfig { stale_after_ms: 3_000 },
+            config: MetricFreshnessConfig {
+                stale_after_ms: 3_000,
+            },
         });
         assert_eq!(relaxed.status, MetricFreshnessStatus::Fresh);
     }
@@ -210,14 +214,18 @@ mod tests {
         let at_boundary = evaluate_metric_freshness(&MetricFreshnessInput {
             now_unix_ms: now,
             last_sample_at_unix_ms: Some(now.saturating_sub(5_000)),
-            config: MetricFreshnessConfig { stale_after_ms: 5_000 },
+            config: MetricFreshnessConfig {
+                stale_after_ms: 5_000,
+            },
         });
         assert_eq!(at_boundary.status, MetricFreshnessStatus::Fresh);
 
         let stale = evaluate_metric_freshness(&MetricFreshnessInput {
             now_unix_ms: now,
             last_sample_at_unix_ms: Some(now.saturating_sub(5_001)),
-            config: MetricFreshnessConfig { stale_after_ms: 5_000 },
+            config: MetricFreshnessConfig {
+                stale_after_ms: 5_000,
+            },
         });
         assert_eq!(stale.status, MetricFreshnessStatus::Stale);
 

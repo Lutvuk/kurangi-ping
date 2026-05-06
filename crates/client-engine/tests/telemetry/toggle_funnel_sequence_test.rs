@@ -48,8 +48,9 @@ fn run_toggle_funnel_scenario(scenario: Scenario) -> ToggleFunnelReport {
     let mut checkpoints = vec!["session_started".to_string()];
 
     let detection = detected_resolution();
-    let emitted_detection = emit_game_detected_event(&mut telemetry, DetectionState::NotFound, &detection)
-        .expect("game_detected emission should remain schema-safe");
+    let emitted_detection =
+        emit_game_detected_event(&mut telemetry, DetectionState::NotFound, &detection)
+            .expect("game_detected emission should remain schema-safe");
     checkpoints.push(format!("game_detected_emitted={emitted_detection}"));
 
     match scenario {
@@ -58,7 +59,10 @@ fn run_toggle_funnel_scenario(scenario: Scenario) -> ToggleFunnelReport {
                 .expect("routing_enabled success emission should be valid");
             let emitted_off = emit_routing_disabled(
                 &mut telemetry,
-                &off_result(OffPipelineStatus::Completed, OffPipelineReasonCode::OffRequested),
+                &off_result(
+                    OffPipelineStatus::Completed,
+                    OffPipelineReasonCode::OffRequested,
+                ),
             )
             .expect("routing_disabled success emission should be valid");
             checkpoints.push(format!("routing_enabled_emitted={emitted_on}"));
@@ -77,7 +81,10 @@ fn run_toggle_funnel_scenario(scenario: Scenario) -> ToggleFunnelReport {
                 .expect("routing_enabled success emission should be valid");
             let emitted_off = emit_routing_disabled(
                 &mut telemetry,
-                &off_result(OffPipelineStatus::Failed, OffPipelineReasonCode::OffTeardownFailed),
+                &off_result(
+                    OffPipelineStatus::Failed,
+                    OffPipelineReasonCode::OffTeardownFailed,
+                ),
             )
             .expect("routing_disabled failed emission should be valid");
             checkpoints.push(format!("routing_enabled_emitted={emitted_on}"));
@@ -87,13 +94,20 @@ fn run_toggle_funnel_scenario(scenario: Scenario) -> ToggleFunnelReport {
 
     let events = telemetry.drain_batch(32);
     validate_payloads(&events);
-    validate_impossible_states(&events).expect("scenario should not produce impossible sequence states");
+    validate_impossible_states(&events)
+        .expect("scenario should not produce impossible sequence states");
 
-    let event_names = events.iter().map(|event| event.name.clone()).collect::<Vec<_>>();
+    let event_names = events
+        .iter()
+        .map(|event| event.name.clone())
+        .collect::<Vec<_>>();
     let kpi = summarize_kpi(&events);
     checkpoints.push(format!("total_events={}", kpi.total_events));
     checkpoints.push(format!("activation_successes={}", kpi.activation_successes));
-    checkpoints.push(format!("deactivation_successes={}", kpi.deactivation_successes));
+    checkpoints.push(format!(
+        "deactivation_successes={}",
+        kpi.deactivation_successes
+    ));
     checkpoints.push(format!("failure_events={}", kpi.failure_events));
 
     ToggleFunnelReport {
@@ -200,7 +214,9 @@ fn summarize_kpi(events: &[TelemetryEvent]) -> FunnelKpi {
         .count();
     let deactivation_successes = events
         .iter()
-        .filter(|event| event.name == "routing_disabled" && payload_result(event) == Some("success"))
+        .filter(|event| {
+            event.name == "routing_disabled" && payload_result(event) == Some("success")
+        })
         .count();
     let failure_events = events
         .iter()
@@ -243,12 +259,12 @@ fn validate_impossible_states(events: &[TelemetryEvent]) -> Result<(), String> {
         .collect::<Vec<_>>();
 
     let game_detected_idx = names.iter().position(|name| name == "game_detected");
-    let routing_enabled_success_idx = events
-        .iter()
-        .position(|event| event.name == "routing_enabled" && payload_result(event) == Some("success"));
-    let routing_disabled_success_idx = events
-        .iter()
-        .position(|event| event.name == "routing_disabled" && payload_result(event) == Some("success"));
+    let routing_enabled_success_idx = events.iter().position(|event| {
+        event.name == "routing_enabled" && payload_result(event) == Some("success")
+    });
+    let routing_disabled_success_idx = events.iter().position(|event| {
+        event.name == "routing_disabled" && payload_result(event) == Some("success")
+    });
 
     if let Some(enabled_idx) = routing_enabled_success_idx {
         let Some(detected_idx) = game_detected_idx else {
@@ -261,10 +277,14 @@ fn validate_impossible_states(events: &[TelemetryEvent]) -> Result<(), String> {
 
     if let Some(disabled_idx) = routing_disabled_success_idx {
         let Some(enabled_idx) = routing_enabled_success_idx else {
-            return Err("routing_disabled success emitted without routing_enabled success".to_string());
+            return Err(
+                "routing_disabled success emitted without routing_enabled success".to_string(),
+            );
         };
         if enabled_idx > disabled_idx {
-            return Err("routing_disabled success emitted before routing_enabled success".to_string());
+            return Err(
+                "routing_disabled success emitted before routing_enabled success".to_string(),
+            );
         }
     }
 
@@ -274,7 +294,10 @@ fn validate_impossible_states(events: &[TelemetryEvent]) -> Result<(), String> {
 fn validate_missing_or_duplicate_critical(event_names: &[String]) -> Result<(), String> {
     let required = ["game_detected", "routing_enabled", "routing_disabled"];
     for name in required {
-        let count = event_names.iter().filter(|event_name| event_name.as_str() == name).count();
+        let count = event_names
+            .iter()
+            .filter(|event_name| event_name.as_str() == name)
+            .count();
         if count == 0 {
             return Err(format!("missing critical event: {name}"));
         }
@@ -343,11 +366,7 @@ fn sequence_validation_fails_on_missing_or_duplicated_critical_events() {
 #[test]
 fn funnel_report_output_is_useful_for_kpi_diagnostics() {
     let report = run_toggle_funnel_scenario(Scenario::Success);
-    let checkpoint_set = report
-        .checkpoints
-        .iter()
-        .cloned()
-        .collect::<BTreeSet<_>>();
+    let checkpoint_set = report.checkpoints.iter().cloned().collect::<BTreeSet<_>>();
 
     assert_eq!(report.scenario, "success");
     assert!(report.kpi.total_events >= 3);

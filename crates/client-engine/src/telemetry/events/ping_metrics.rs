@@ -1,10 +1,10 @@
 use std::collections::BTreeMap;
 
 use crate::metrics::PingMetrics;
-use crate::telemetry::{TelemetryPayload, TelemetryService, TelemetryValue};
 use crate::telemetry::validator::{
     validate_event_payload, TelemetryValidationErrorCode, UnknownKeyPolicy,
 };
+use crate::telemetry::{TelemetryPayload, TelemetryService, TelemetryValue};
 
 pub const PING_MEASURED_EVENT_NAME: &str = "ping_measured";
 pub const PING_MEASURED_ALLOWED_KEYS: [&str; 4] = [
@@ -195,8 +195,8 @@ fn validate_float_field(
 #[cfg(test)]
 mod tests {
     use super::{
-        emit_ping_measured_event, validate_ping_measured_payload, PingMeasuredEmitState,
-        PingMeasuredEmissionPolicy, PingMeasuredEmitStatus, PingMeasuredSchemaErrorCode,
+        emit_ping_measured_event, validate_ping_measured_payload, PingMeasuredEmissionPolicy,
+        PingMeasuredEmitState, PingMeasuredEmitStatus, PingMeasuredSchemaErrorCode,
     };
     use crate::metrics::PingMetrics;
     use crate::telemetry::{TelemetryEvent, TelemetryService, TelemetryValue};
@@ -246,7 +246,10 @@ mod tests {
             ("routed_ping_ms".to_string(), TelemetryValue::Float(155.0)),
             ("jitter_ms".to_string(), TelemetryValue::Float(4.0)),
             ("packet_loss_pct".to_string(), TelemetryValue::Float(1.0)),
-            ("relay_id".to_string(), TelemetryValue::Text("sin-01".to_string())),
+            (
+                "relay_id".to_string(),
+                TelemetryValue::Text("sin-01".to_string()),
+            ),
         ]);
 
         let error = validate_ping_measured_payload(&payload).expect_err("extra key must fail");
@@ -332,7 +335,10 @@ mod tests {
         )
         .expect_err("missing routed ping must fail before enqueue");
 
-        assert_eq!(error.code, PingMeasuredSchemaErrorCode::MissingRequiredField);
+        assert_eq!(
+            error.code,
+            PingMeasuredSchemaErrorCode::MissingRequiredField
+        );
         assert_eq!(telemetry.queue_depth(), 0);
     }
 }

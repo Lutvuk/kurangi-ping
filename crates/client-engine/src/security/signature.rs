@@ -14,7 +14,9 @@ pub struct AllowlistSignatureVerifier {
 
 impl AllowlistSignatureVerifier {
     pub fn new(accepted_signatures: Vec<String>) -> Self {
-        Self { accepted_signatures }
+        Self {
+            accepted_signatures,
+        }
     }
 }
 
@@ -63,4 +65,3 @@ mod tests {
         assert!(!verifier.verify(b"manifest-payload", "sig-abc"));
     }
 }
-

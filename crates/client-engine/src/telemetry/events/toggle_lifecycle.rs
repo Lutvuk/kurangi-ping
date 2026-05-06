@@ -1,17 +1,14 @@
 use std::collections::BTreeMap;
 
-use crate::routing::{
-    OffPipelineResult, OffPipelineStatus, OnPipelineResult, OnPipelineStatus,
-};
-use crate::telemetry::{TelemetryPayload, TelemetryService, TelemetryValue};
+use crate::routing::{OffPipelineResult, OffPipelineStatus, OnPipelineResult, OnPipelineStatus};
 use crate::telemetry::validator::{
     validate_event_payload, TelemetryValidationErrorCode, UnknownKeyPolicy,
 };
+use crate::telemetry::{TelemetryPayload, TelemetryService, TelemetryValue};
 
 pub const ROUTING_ENABLED_EVENT_NAME: &str = "routing_enabled";
 pub const ROUTING_DISABLED_EVENT_NAME: &str = "routing_disabled";
-pub const TOGGLE_LIFECYCLE_ALLOWED_KEYS: [&str; 3] =
-    ["result", "reason_code", "lifecycle_state"];
+pub const TOGGLE_LIFECYCLE_ALLOWED_KEYS: [&str; 3] = ["result", "reason_code", "lifecycle_state"];
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ToggleLifecycleSchemaErrorCode {
@@ -50,7 +47,11 @@ pub fn emit_routing_enabled(
     let payload = build_payload(outcome, &reason_code, lifecycle_state);
     validate_toggle_lifecycle_payload(&payload)?;
     telemetry
-        .enqueue_validated(ROUTING_ENABLED_EVENT_NAME, payload, UnknownKeyPolicy::Reject)
+        .enqueue_validated(
+            ROUTING_ENABLED_EVENT_NAME,
+            payload,
+            UnknownKeyPolicy::Reject,
+        )
         .map_err(map_validator_error)?;
     Ok(true)
 }
@@ -75,14 +76,21 @@ pub fn emit_routing_disabled(
     let payload = build_payload(outcome, &reason_code, lifecycle_state);
     validate_toggle_lifecycle_payload(&payload)?;
     telemetry
-        .enqueue_validated(ROUTING_DISABLED_EVENT_NAME, payload, UnknownKeyPolicy::Reject)
+        .enqueue_validated(
+            ROUTING_DISABLED_EVENT_NAME,
+            payload,
+            UnknownKeyPolicy::Reject,
+        )
         .map_err(map_validator_error)?;
     Ok(true)
 }
 
 fn build_payload(outcome: &str, reason_code: &str, lifecycle_state: &str) -> TelemetryPayload {
     BTreeMap::from([
-        ("result".to_string(), TelemetryValue::Text(outcome.to_string())),
+        (
+            "result".to_string(),
+            TelemetryValue::Text(outcome.to_string()),
+        ),
         (
             "reason_code".to_string(),
             TelemetryValue::Text(reason_code.to_string()),
@@ -113,8 +121,12 @@ fn sanitize_reason_code(raw: &str) -> String {
 pub fn validate_toggle_lifecycle_payload(
     payload: &TelemetryPayload,
 ) -> Result<(), ToggleLifecycleSchemaError> {
-    validate_event_payload(ROUTING_ENABLED_EVENT_NAME, payload, UnknownKeyPolicy::Reject)
-        .map_err(map_validator_error)?;
+    validate_event_payload(
+        ROUTING_ENABLED_EVENT_NAME,
+        payload,
+        UnknownKeyPolicy::Reject,
+    )
+    .map_err(map_validator_error)?;
 
     for key in TOGGLE_LIFECYCLE_ALLOWED_KEYS {
         match payload.get(key) {
@@ -198,7 +210,10 @@ mod tests {
         }
     }
 
-    fn off_result(status: OffPipelineStatus, reason_code: OffPipelineReasonCode) -> OffPipelineResult {
+    fn off_result(
+        status: OffPipelineStatus,
+        reason_code: OffPipelineReasonCode,
+    ) -> OffPipelineResult {
         OffPipelineResult {
             initial_state: RoutingState::Connected,
             final_state: if status == OffPipelineStatus::Failed {
@@ -248,7 +263,10 @@ mod tests {
     #[test]
     fn routing_disabled_is_emitted_on_successful_off_completion() {
         let mut telemetry = TelemetryService::new();
-        let result = off_result(OffPipelineStatus::Completed, OffPipelineReasonCode::OffRequested);
+        let result = off_result(
+            OffPipelineStatus::Completed,
+            OffPipelineReasonCode::OffRequested,
+        );
         let emitted = emit_routing_disabled(&mut telemetry, &result)
             .expect("routing_disabled emission should succeed");
         assert!(emitted);
@@ -307,7 +325,10 @@ mod tests {
     #[test]
     fn payload_validation_rejects_non_allowlisted_fields() {
         let payload = BTreeMap::from([
-            ("result".to_string(), TelemetryValue::Text("success".to_string())),
+            (
+                "result".to_string(),
+                TelemetryValue::Text("success".to_string()),
+            ),
             (
                 "reason_code".to_string(),
                 TelemetryValue::Text("none".to_string()),

@@ -80,7 +80,8 @@ pub fn classify_relay_health(
 #[cfg(test)]
 mod tests {
     use super::{
-        classify_relay_health, HealthClassificationThresholds, RelayHealthMetrics, RelayHealthStatus,
+        classify_relay_health, HealthClassificationThresholds, RelayHealthMetrics,
+        RelayHealthStatus,
     };
 
     fn thresholds() -> HealthClassificationThresholds {

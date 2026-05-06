@@ -177,8 +177,11 @@ impl HealthPollingScheduler {
 
         self.context.poll_in_flight = false;
         self.context.last_polled_at_unix_ms = Some(lease.started_at_unix_ms);
-        self.context.next_poll_due_at_unix_ms =
-            Some(lease.started_at_unix_ms.saturating_add(self.context.interval_ms));
+        self.context.next_poll_due_at_unix_ms = Some(
+            lease
+                .started_at_unix_ms
+                .saturating_add(self.context.interval_ms),
+        );
 
         match result {
             Ok(snapshots) => {
@@ -190,7 +193,8 @@ impl HealthPollingScheduler {
                 }
             }
             Err(error) => {
-                self.context.consecutive_failures = self.context.consecutive_failures.saturating_add(1);
+                self.context.consecutive_failures =
+                    self.context.consecutive_failures.saturating_add(1);
                 self.context.last_error_code = Some(error.code);
                 evaluator.on_health_poll_failure(&error, &self.context);
                 HealthPollCompletion::Failed {

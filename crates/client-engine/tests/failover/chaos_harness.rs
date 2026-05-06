@@ -2,7 +2,7 @@ use client_engine::routing::{
     should_failover, switch_active_relay, ActiveRelaySwitchAdapter, AttemptFailureReason,
     AttemptStepOutcome, FailoverEvaluationInput, FailoverExecutionContext, FailoverExecutionState,
     FailoverReasonCode, FailoverSwitchError, FailoverTriggerConfig, FailoverTriggerState,
-    RetryPolicy, RouteCandidate, RouteProtocol, RelayHealthStatus,
+    RelayHealthStatus, RetryPolicy, RouteCandidate, RouteProtocol,
 };
 use std::collections::VecDeque;
 use std::fs;
@@ -66,10 +66,11 @@ impl ActiveRelaySwitchAdapter for HarnessSwitchAdapter {
         protocol: RouteProtocol,
         candidate: &RouteCandidate,
     ) -> AttemptStepOutcome {
-        self.operations
-            .push(format!("establish:{}:{}",
-                protocol_as_str(protocol),
-                candidate.relay_id));
+        self.operations.push(format!(
+            "establish:{}:{}",
+            protocol_as_str(protocol),
+            candidate.relay_id
+        ));
         self.outcomes
             .pop_front()
             .unwrap_or(AttemptStepOutcome::Failed(AttemptFailureReason::Timeout))
@@ -89,7 +90,8 @@ impl ActiveRelaySwitchAdapter for HarnessSwitchAdapter {
     }
 
     fn rollback_candidate_path(&mut self, candidate: &RouteCandidate) {
-        self.operations.push(format!("rollback:{}", candidate.relay_id));
+        self.operations
+            .push(format!("rollback:{}", candidate.relay_id));
     }
 
     fn wait_backoff(&mut self, delay_ms: u64) {
@@ -251,11 +253,12 @@ fn parse_chaos_fixture(raw: &str) -> ChaosScenario {
             }
             "grace_polls" => grace_polls = value.parse().expect("grace_polls should parse"),
             "poll_failure_threshold" => {
-                poll_failure_threshold =
-                    value.parse().expect("poll_failure_threshold should parse")
+                poll_failure_threshold = value.parse().expect("poll_failure_threshold should parse")
             }
             "hysteresis_ms" => hysteresis_ms = value.parse().expect("hysteresis_ms should parse"),
-            "dead_immediate" => dead_immediate = value.parse().expect("dead_immediate should parse"),
+            "dead_immediate" => {
+                dead_immediate = value.parse().expect("dead_immediate should parse")
+            }
             "steps" => steps_raw = value.to_string(),
             "active_relay_id" => active_relay_id = value.to_string(),
             "candidates" => candidates_raw = value.to_string(),
@@ -268,7 +271,9 @@ fn parse_chaos_fixture(raw: &str) -> ChaosScenario {
             "base_backoff_ms" => {
                 base_backoff_ms = value.parse().expect("base_backoff_ms should parse")
             }
-            "max_backoff_ms" => max_backoff_ms = value.parse().expect("max_backoff_ms should parse"),
+            "max_backoff_ms" => {
+                max_backoff_ms = value.parse().expect("max_backoff_ms should parse")
+            }
             "outcomes" => outcomes_raw = value.to_string(),
             _ => panic!("unknown chaos fixture key: {key}"),
         }
@@ -383,7 +388,9 @@ fn parse_outcome(value: &str) -> AttemptStepOutcome {
         "timeout" => AttemptStepOutcome::Failed(AttemptFailureReason::Timeout),
         "handshake_failed" => AttemptStepOutcome::Failed(AttemptFailureReason::HandshakeFailed),
         "auth_rejected" => AttemptStepOutcome::Failed(AttemptFailureReason::AuthRejected),
-        "network_unreachable" => AttemptStepOutcome::Failed(AttemptFailureReason::NetworkUnreachable),
+        "network_unreachable" => {
+            AttemptStepOutcome::Failed(AttemptFailureReason::NetworkUnreachable)
+        }
         "unknown" => AttemptStepOutcome::Failed(AttemptFailureReason::Unknown),
         _ => panic!("unknown outcome: {value}"),
     }
@@ -427,7 +434,10 @@ fn harness_covers_degraded_spikes_hard_failures_and_recovery_sequences() {
     assert!(degraded.terminal.contains("failovers=1"));
     assert!(degraded.terminal.contains("recovered_after_failover=true"));
     assert!(hard.terminal.contains("failovers=1"));
-    assert!(hard.trace.iter().any(|step| step.contains("dead:0:dead_relay_detected:true")));
+    assert!(hard
+        .trace
+        .iter()
+        .any(|step| step.contains("dead:0:dead_relay_detected:true")));
 }
 
 #[test]

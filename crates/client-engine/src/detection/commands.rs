@@ -145,7 +145,8 @@ impl<E: ProcessEnumerator, T: TimeProvider> RescanCommandHandler<E, T> {
         });
 
         let has_live_match = !matches.is_empty();
-        let next_scheduled_scan_at_unix_ms = scanned_at_unix_ms.saturating_add(self.config.scan_interval_ms);
+        let next_scheduled_scan_at_unix_ms =
+            scanned_at_unix_ms.saturating_add(self.config.scan_interval_ms);
 
         {
             let mut runtime = self.runtime.lock().map_err(|_| {
@@ -169,15 +170,12 @@ impl<E: ProcessEnumerator, T: TimeProvider> RescanCommandHandler<E, T> {
     }
 
     pub fn snapshot_runtime(&self) -> Result<RescanRuntimeState, RescanCommandError> {
-        self.runtime
-            .lock()
-            .map(|state| *state)
-            .map_err(|_| {
-                RescanCommandError::new(
-                    RescanCommandErrorCode::InternalStateUnavailable,
-                    "failed to read rescan runtime state",
-                )
-            })
+        self.runtime.lock().map(|state| *state).map_err(|_| {
+            RescanCommandError::new(
+                RescanCommandErrorCode::InternalStateUnavailable,
+                "failed to read rescan runtime state",
+            )
+        })
     }
 }
 
@@ -204,7 +202,9 @@ mod tests {
     use crate::detection::scanner_windows::{
         ProcessEntry, ProcessEnumerator, ScanError, ScanErrorCode, SupportedGame,
     };
-    use crate::detection::state_resolver::{DetectionReasonCode, DetectionState, FreshnessWindowConfig};
+    use crate::detection::state_resolver::{
+        DetectionReasonCode, DetectionState, FreshnessWindowConfig,
+    };
 
     #[derive(Clone)]
     struct FixedClock {
@@ -310,7 +310,9 @@ mod tests {
                 }],
                 calls,
             },
-            FixedClock { now_unix_ms: 30_000 },
+            FixedClock {
+                now_unix_ms: 30_000,
+            },
             RescanCommandConfig::default(),
         );
 
@@ -332,7 +334,9 @@ mod tests {
                 started_tx,
                 release_rx: Mutex::new(release_rx),
             },
-            FixedClock { now_unix_ms: 45_000 },
+            FixedClock {
+                now_unix_ms: 45_000,
+            },
             RescanCommandConfig::default(),
         ));
 
@@ -343,11 +347,16 @@ mod tests {
         let worker = thread::spawn(move || thread_handler.trigger_rescan(&thread_allowlist));
         started_rx.recv().expect("scanner should start");
 
-        let second = handler.trigger_rescan(&allowlist).expect_err("second rescan must debounce");
+        let second = handler
+            .trigger_rescan(&allowlist)
+            .expect_err("second rescan must debounce");
         assert_eq!(second.code, RescanCommandErrorCode::ScanAlreadyInProgress);
 
         release_tx.send(()).expect("release scanner");
-        let first = worker.join().expect("worker join").expect("first rescan ok");
+        let first = worker
+            .join()
+            .expect("worker join")
+            .expect("first rescan ok");
         assert_eq!(first.resolution.state, DetectionState::Detected);
     }
 
@@ -357,7 +366,9 @@ mod tests {
             ErrorScanner {
                 code: ScanErrorCode::PermissionDenied,
             },
-            FixedClock { now_unix_ms: 60_000 },
+            FixedClock {
+                now_unix_ms: 60_000,
+            },
             RescanCommandConfig::default(),
         );
 
@@ -382,7 +393,9 @@ mod tests {
                 }],
                 calls: Arc::new(AtomicUsize::new(0)),
             },
-            FixedClock { now_unix_ms: 90_000 },
+            FixedClock {
+                now_unix_ms: 90_000,
+            },
             RescanCommandConfig {
                 scan_interval_ms: 2_000,
                 freshness: FreshnessWindowConfig {
@@ -416,7 +429,9 @@ mod tests {
                 }],
                 calls: Arc::new(AtomicUsize::new(0)),
             },
-            FixedClock { now_unix_ms: 110_000 },
+            FixedClock {
+                now_unix_ms: 110_000,
+            },
             RescanCommandConfig::default(),
             RescanRuntimeState {
                 in_progress: false,
@@ -443,7 +458,9 @@ mod tests {
                 processes: Vec::new(),
                 calls: Arc::new(AtomicUsize::new(0)),
             },
-            FixedClock { now_unix_ms: 123_000 },
+            FixedClock {
+                now_unix_ms: 123_000,
+            },
             RescanCommandConfig::default(),
             RescanRuntimeState {
                 in_progress: true,

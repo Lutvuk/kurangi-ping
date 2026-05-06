@@ -1,14 +1,13 @@
 use std::collections::BTreeMap;
 
 use crate::detection::state_resolver::{DetectionResolution, DetectionState};
-use crate::telemetry::{TelemetryPayload, TelemetryService, TelemetryValue};
 use crate::telemetry::validator::{
     validate_event_payload, TelemetryValidationErrorCode, UnknownKeyPolicy,
 };
+use crate::telemetry::{TelemetryPayload, TelemetryService, TelemetryValue};
 
 pub const GAME_DETECTED_EVENT_NAME: &str = "game_detected";
-pub const GAME_DETECTED_ALLOWED_KEYS: [&str; 3] =
-    ["game_id", "process_name", "detection_time_ms"];
+pub const GAME_DETECTED_ALLOWED_KEYS: [&str; 3] = ["game_id", "process_name", "detection_time_ms"];
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum GameDetectedSchemaErrorCode {
@@ -37,23 +36,17 @@ pub fn emit_game_detected_event(
     previous_state: DetectionState,
     resolution: &DetectionResolution,
 ) -> Result<bool, GameDetectedSchemaError> {
-    if !(previous_state != DetectionState::Detected
-        && resolution.state == DetectionState::Detected)
+    if !(previous_state != DetectionState::Detected && resolution.state == DetectionState::Detected)
     {
         return Ok(false);
     }
 
-    let game_id =
-        resolution
-            .metadata
-            .matched_game_id
-            .clone()
-            .ok_or_else(|| {
-                GameDetectedSchemaError::new(
-                    GameDetectedSchemaErrorCode::MissingRequiredField,
-                    "game_detected requires matched game_id",
-                )
-            })?;
+    let game_id = resolution.metadata.matched_game_id.clone().ok_or_else(|| {
+        GameDetectedSchemaError::new(
+            GameDetectedSchemaErrorCode::MissingRequiredField,
+            "game_detected requires matched game_id",
+        )
+    })?;
 
     let process_name = resolution
         .metadata
@@ -66,16 +59,20 @@ pub fn emit_game_detected_event(
             )
         })?;
 
-    let detection_time_ms = i64::try_from(resolution.metadata.scanned_at_unix_ms).map_err(|_| {
-        GameDetectedSchemaError::new(
-            GameDetectedSchemaErrorCode::MissingRequiredField,
-            "game_detected requires valid detection_time_ms",
-        )
-    })?;
+    let detection_time_ms =
+        i64::try_from(resolution.metadata.scanned_at_unix_ms).map_err(|_| {
+            GameDetectedSchemaError::new(
+                GameDetectedSchemaErrorCode::MissingRequiredField,
+                "game_detected requires valid detection_time_ms",
+            )
+        })?;
 
     let payload = BTreeMap::from([
         ("game_id".to_string(), TelemetryValue::Text(game_id)),
-        ("process_name".to_string(), TelemetryValue::Text(process_name)),
+        (
+            "process_name".to_string(),
+            TelemetryValue::Text(process_name),
+        ),
         (
             "detection_time_ms".to_string(),
             TelemetryValue::Integer(detection_time_ms),
@@ -179,8 +176,9 @@ mod tests {
         let mut telemetry = TelemetryService::new();
         let resolution = detected_resolution();
 
-        let emitted = emit_game_detected_event(&mut telemetry, DetectionState::NotFound, &resolution)
-            .expect("successful transition should enqueue event");
+        let emitted =
+            emit_game_detected_event(&mut telemetry, DetectionState::NotFound, &resolution)
+                .expect("successful transition should enqueue event");
         assert!(emitted);
         assert_eq!(telemetry.queue_depth(), 1);
 
@@ -211,7 +209,10 @@ mod tests {
     #[test]
     fn non_allowlisted_fields_are_rejected_before_enqueue() {
         let payload = BTreeMap::from([
-            ("game_id".to_string(), TelemetryValue::Text("ffxiv".to_string())),
+            (
+                "game_id".to_string(),
+                TelemetryValue::Text("ffxiv".to_string()),
+            ),
             (
                 "process_name".to_string(),
                 TelemetryValue::Text("ffxiv_dx11.exe".to_string()),
@@ -235,7 +236,10 @@ mod tests {
 
         let error = emit_game_detected_event(&mut telemetry, DetectionState::NotFound, &resolution)
             .expect_err("missing required payload field must fail");
-        assert_eq!(error.code, GameDetectedSchemaErrorCode::MissingRequiredField);
+        assert_eq!(
+            error.code,
+            GameDetectedSchemaErrorCode::MissingRequiredField
+        );
         assert_eq!(telemetry.queue_depth(), 0);
     }
 
@@ -257,8 +261,9 @@ mod tests {
             },
         };
 
-        let emitted = emit_game_detected_event(&mut telemetry, DetectionState::Detected, &resolution)
-            .expect("stale transition should not emit");
+        let emitted =
+            emit_game_detected_event(&mut telemetry, DetectionState::Detected, &resolution)
+                .expect("stale transition should not emit");
         assert!(!emitted);
         assert_eq!(telemetry.queue_depth(), 0);
     }

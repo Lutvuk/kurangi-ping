@@ -164,10 +164,9 @@ fn force_timeout_failed_state(
             if let Ok(transition) = machine.transition(RoutingTrigger::HealthDegraded, None) {
                 trace.push(transition);
             }
-            if let Ok(transition) = machine.transition(
-                RoutingTrigger::RelayFailure,
-                Some(failure_code.to_string()),
-            ) {
+            if let Ok(transition) =
+                machine.transition(RoutingTrigger::RelayFailure, Some(failure_code.to_string()))
+            {
                 trace.push(transition);
             }
         }
@@ -222,22 +221,14 @@ mod tests {
             disarming_timeout_ms: 4_321,
         };
 
-        let arming = evaluate_lifecycle_timeout(
-            &mut machine,
-            LifecyclePhase::Arming,
-            777,
-            &configured,
-        );
+        let arming =
+            evaluate_lifecycle_timeout(&mut machine, LifecyclePhase::Arming, 777, &configured);
         assert_eq!(arming.metrics.threshold_ms, 777);
         assert_eq!(arming.status, LifecycleTimeoutStatus::WithinThreshold);
 
         let mut machine = connected_machine();
-        let disarming = evaluate_lifecycle_timeout(
-            &mut machine,
-            LifecyclePhase::Disarming,
-            4_321,
-            &configured,
-        );
+        let disarming =
+            evaluate_lifecycle_timeout(&mut machine, LifecyclePhase::Disarming, 4_321, &configured);
         assert_eq!(disarming.metrics.threshold_ms, 4_321);
         assert_eq!(disarming.status, LifecycleTimeoutStatus::WithinThreshold);
     }
@@ -246,7 +237,8 @@ mod tests {
     fn arming_timeout_transitions_to_stable_failed_with_reason() {
         let mut machine = connecting_machine();
 
-        let result = evaluate_lifecycle_timeout(&mut machine, LifecyclePhase::Arming, 2_001, &policy());
+        let result =
+            evaluate_lifecycle_timeout(&mut machine, LifecyclePhase::Arming, 2_001, &policy());
 
         assert_eq!(result.state_before, RoutingState::Connecting);
         assert_eq!(result.state_after, RoutingState::Failed);
@@ -267,12 +259,8 @@ mod tests {
     fn disarming_timeout_transitions_to_stable_failed_with_reason() {
         let mut machine = connected_machine();
 
-        let result = evaluate_lifecycle_timeout(
-            &mut machine,
-            LifecyclePhase::Disarming,
-            1_500,
-            &policy(),
-        );
+        let result =
+            evaluate_lifecycle_timeout(&mut machine, LifecyclePhase::Disarming, 1_500, &policy());
 
         assert_eq!(result.state_before, RoutingState::Connected);
         assert_eq!(result.state_after, RoutingState::Failed);
@@ -293,7 +281,8 @@ mod tests {
     fn timeout_metrics_are_emitted_for_telemetry_consumers() {
         let mut machine = connecting_machine();
 
-        let result = evaluate_lifecycle_timeout(&mut machine, LifecyclePhase::Arming, 1_200, &policy());
+        let result =
+            evaluate_lifecycle_timeout(&mut machine, LifecyclePhase::Arming, 1_200, &policy());
 
         assert!(!result.metrics.timed_out);
         assert_eq!(result.metrics.phase, LifecyclePhase::Arming);
@@ -307,21 +296,13 @@ mod tests {
     fn behavior_is_deterministic_at_timeout_boundary() {
         let mut machine = connecting_machine();
 
-        let at_boundary = evaluate_lifecycle_timeout(
-            &mut machine,
-            LifecyclePhase::Arming,
-            2_000,
-            &policy(),
-        );
+        let at_boundary =
+            evaluate_lifecycle_timeout(&mut machine, LifecyclePhase::Arming, 2_000, &policy());
         assert_eq!(at_boundary.status, LifecycleTimeoutStatus::WithinThreshold);
         assert_eq!(at_boundary.state_after, RoutingState::Connecting);
 
-        let over_boundary = evaluate_lifecycle_timeout(
-            &mut machine,
-            LifecyclePhase::Arming,
-            2_001,
-            &policy(),
-        );
+        let over_boundary =
+            evaluate_lifecycle_timeout(&mut machine, LifecyclePhase::Arming, 2_001, &policy());
         assert!(matches!(
             over_boundary.status,
             LifecycleTimeoutStatus::TimedOut { .. }

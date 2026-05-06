@@ -141,7 +141,11 @@ pub fn should_failover(
                     next_warn_count,
                 )
             } else {
-                (false, FailoverReasonCode::DegradedWithinGrace, next_warn_count)
+                (
+                    false,
+                    FailoverReasonCode::DegradedWithinGrace,
+                    next_warn_count,
+                )
             }
         }
         RelayHealthStatus::Dead => {
@@ -153,13 +157,12 @@ pub fn should_failover(
         }
     };
 
-    let (should_failover, reason_code) = if input.poll_failure_streak
-        >= config.poll_failure_streak_threshold
-    {
-        (true, FailoverReasonCode::PollFailureStreakExceeded)
-    } else {
-        (should_failover, reason_code)
-    };
+    let (should_failover, reason_code) =
+        if input.poll_failure_streak >= config.poll_failure_streak_threshold {
+            (true, FailoverReasonCode::PollFailureStreakExceeded)
+        } else {
+            (should_failover, reason_code)
+        };
 
     state.consecutive_warn_polls = if should_failover {
         0
@@ -259,7 +262,10 @@ mod tests {
             &config,
         );
         assert!(!blocked.should_failover);
-        assert_eq!(blocked.reason_code, FailoverReasonCode::HysteresisWindowActive);
+        assert_eq!(
+            blocked.reason_code,
+            FailoverReasonCode::HysteresisWindowActive
+        );
     }
 
     #[test]
@@ -292,7 +298,10 @@ mod tests {
 
         assert!(!first.should_failover);
         assert!(second.should_failover);
-        assert_eq!(second.reason_code, FailoverReasonCode::DegradedGraceExceeded);
+        assert_eq!(
+            second.reason_code,
+            FailoverReasonCode::DegradedGraceExceeded
+        );
     }
 
     #[test]

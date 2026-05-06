@@ -18,10 +18,10 @@ Build telemetry batching and queue-depth control to stabilize high event volume 
 *   **Data Models:** Batch queue model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Queue depth limits are enforced.
-*   [ ] Batch sizing follows contract constraints.
-*   [ ] Overflow policy is deterministic and logged.
-*   [ ] Core app flow is never blocked by telemetry backlog.
+*   [x] Queue depth limits are enforced.
+*   [x] Batch sizing follows contract constraints.
+*   [x] Overflow policy is deterministic and logged.
+*   [x] Core app flow is never blocked by telemetry backlog.
 
 ## Business Rules & Logic
 *   Telemetry pipeline must degrade gracefully under load.
@@ -30,6 +30,6 @@ Build telemetry batching and queue-depth control to stabilize high event volume 
 *   Depends on: KP-080, KP-081
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

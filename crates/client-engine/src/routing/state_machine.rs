@@ -130,9 +130,7 @@ fn next_state(current: RoutingState, trigger: RoutingTrigger) -> Option<RoutingS
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        RoutingState, RoutingStateMachine, RoutingTrigger,
-    };
+    use super::{RoutingState, RoutingStateMachine, RoutingTrigger};
 
     #[test]
     fn states_include_required_minimum_set() {
@@ -199,4 +197,3 @@ mod tests {
         );
     }
 }
-

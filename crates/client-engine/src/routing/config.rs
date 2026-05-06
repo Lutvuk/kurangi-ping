@@ -21,12 +21,22 @@ impl Default for RoutingConfig {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RoutingConfigError {
-    InvalidPriorityLength { expected: usize, actual: usize },
-    DuplicateProtocol { protocol: RouteProtocol },
-    MissingProtocol { protocol: RouteProtocol },
+    InvalidPriorityLength {
+        expected: usize,
+        actual: usize,
+    },
+    DuplicateProtocol {
+        protocol: RouteProtocol,
+    },
+    MissingProtocol {
+        protocol: RouteProtocol,
+    },
     RetryAttemptsMustBePositive,
     BaseBackoffMustBePositive,
-    MaxBackoffLessThanBase { base_backoff_ms: u64, max_backoff_ms: u64 },
+    MaxBackoffLessThanBase {
+        base_backoff_ms: u64,
+        max_backoff_ms: u64,
+    },
 }
 
 impl RoutingConfig {
@@ -92,7 +102,9 @@ mod tests {
     #[test]
     fn default_config_validates_and_converts() {
         let config = RoutingConfig::default();
-        let policy = config.into_policy().expect("default config should be valid");
+        let policy = config
+            .into_policy()
+            .expect("default config should be valid");
 
         assert_eq!(
             policy.protocol_order(),
@@ -132,7 +144,9 @@ mod tests {
             retry_policy: RetryPolicy::default(),
         };
 
-        let err = config.validate().expect_err("duplicate protocol should be rejected");
+        let err = config
+            .validate()
+            .expect_err("duplicate protocol should be rejected");
         assert_eq!(
             err,
             RoutingConfigError::DuplicateProtocol {
@@ -152,7 +166,9 @@ mod tests {
             retry_policy: RetryPolicy::default(),
         };
 
-        let err = config.validate().expect_err("missing protocol should be rejected");
+        let err = config
+            .validate()
+            .expect_err("missing protocol should be rejected");
         assert_eq!(
             err,
             RoutingConfigError::MissingProtocol {
@@ -176,7 +192,9 @@ mod tests {
             },
         };
 
-        let err = config.validate().expect_err("retry attempts must be positive");
+        let err = config
+            .validate()
+            .expect_err("retry attempts must be positive");
         assert_eq!(err, RoutingConfigError::RetryAttemptsMustBePositive);
     }
 }

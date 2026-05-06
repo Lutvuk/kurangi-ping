@@ -2,11 +2,11 @@ use client_engine::db::{MetricSampleRecord, SqliteMetricsRepo};
 use client_engine::metrics::PingMetrics;
 use client_engine::routing::{build_failover_state_payload, FailoverUiState};
 use client_engine::telemetry::events::ping_metrics::{
-    emit_ping_measured_event, PingMeasuredEmitState, PingMeasuredEmissionPolicy,
+    emit_ping_measured_event, PingMeasuredEmissionPolicy, PingMeasuredEmitState,
 };
 use client_engine::telemetry::events::relay_failover::{
-    emit_relay_failed, emit_relay_recovered, RELAY_FAILED_EVENT_NAME, RELAY_RECOVERED_EVENT_NAME,
-    RelayFailoverEmissionPolicy,
+    emit_relay_failed, emit_relay_recovered, RelayFailoverEmissionPolicy, RELAY_FAILED_EVENT_NAME,
+    RELAY_RECOVERED_EVENT_NAME,
 };
 use client_engine::telemetry::{TelemetryEvent, TelemetryService, TelemetryValue};
 use rusqlite::Connection;
@@ -75,13 +75,31 @@ impl MetricsKpiReport {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum MetricsKpiValidationError {
-    NonMonotonicSampleTimestamp { previous_ms: u64, current_ms: u64 },
-    NonMonotonicEventTimestamp { previous_ms: u64, current_ms: u64 },
-    UnsupportedFixtureEvent { event_name: String },
-    MissingAttemptCount { at_ms: u64, event_name: String },
-    RecoveryWithoutFailure { at_ms: u64 },
-    MissingRecoveryAfterFailure { at_ms: u64 },
-    MissingPingMeasuredForPersistedSamples { persisted_samples: usize, ping_events: usize },
+    NonMonotonicSampleTimestamp {
+        previous_ms: u64,
+        current_ms: u64,
+    },
+    NonMonotonicEventTimestamp {
+        previous_ms: u64,
+        current_ms: u64,
+    },
+    UnsupportedFixtureEvent {
+        event_name: String,
+    },
+    MissingAttemptCount {
+        at_ms: u64,
+        event_name: String,
+    },
+    RecoveryWithoutFailure {
+        at_ms: u64,
+    },
+    MissingRecoveryAfterFailure {
+        at_ms: u64,
+    },
+    MissingPingMeasuredForPersistedSamples {
+        persisted_samples: usize,
+        ping_events: usize,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -205,7 +223,9 @@ fn simulate_telemetry_stream(sequence: &MetricsFixtureSequence) -> Vec<TimedTele
                 &mut telemetry,
                 &payload,
                 fixture_event.attempt_count,
-                RelayFailoverEmissionPolicy { max_queue_depth: 100_000 },
+                RelayFailoverEmissionPolicy {
+                    max_queue_depth: 100_000,
+                },
             )
             .expect("relay_failed should emit")
         } else {
@@ -213,7 +233,9 @@ fn simulate_telemetry_stream(sequence: &MetricsFixtureSequence) -> Vec<TimedTele
                 &mut telemetry,
                 &payload,
                 fixture_event.attempt_count,
-                RelayFailoverEmissionPolicy { max_queue_depth: 100_000 },
+                RelayFailoverEmissionPolicy {
+                    max_queue_depth: 100_000,
+                },
             )
             .expect("relay_recovered should emit")
         };
@@ -252,16 +274,19 @@ fn derive_kpi_report(
     };
 
     if ping_events.len() < persisted_samples.len() {
-        return Err(MetricsKpiValidationError::MissingPingMeasuredForPersistedSamples {
-            persisted_samples: persisted_samples.len(),
-            ping_events: ping_events.len(),
-        });
+        return Err(
+            MetricsKpiValidationError::MissingPingMeasuredForPersistedSamples {
+                persisted_samples: persisted_samples.len(),
+                ping_events: ping_events.len(),
+            },
+        );
     }
 
     let relay_events = telemetry_stream
         .iter()
         .filter(|entry| {
-            entry.event.name == RELAY_FAILED_EVENT_NAME || entry.event.name == RELAY_RECOVERED_EVENT_NAME
+            entry.event.name == RELAY_FAILED_EVENT_NAME
+                || entry.event.name == RELAY_RECOVERED_EVENT_NAME
         })
         .cloned()
         .collect::<Vec<_>>();
@@ -318,8 +343,10 @@ fn derive_degraded_windows(
                 }
             }
             RELAY_RECOVERED_EVENT_NAME => {
-                let started_at = open_failure_at
-                    .ok_or(MetricsKpiValidationError::RecoveryWithoutFailure { at_ms: relay.at_ms })?;
+                let started_at =
+                    open_failure_at.ok_or(MetricsKpiValidationError::RecoveryWithoutFailure {
+                        at_ms: relay.at_ms,
+                    })?;
                 windows.push((started_at, relay.at_ms));
                 open_failure_at = None;
                 recovered_pairs = recovered_pairs.saturating_add(1);
@@ -366,7 +393,9 @@ fn sampled_at_iso(at_ms: u64) -> String {
     format!("2026-08-01T{:02}:{:02}:{:02}Z", hours, minutes, seconds)
 }
 
-fn validate_sample_timestamps(samples: &[MetricsFixtureSample]) -> Result<(), MetricsKpiValidationError> {
+fn validate_sample_timestamps(
+    samples: &[MetricsFixtureSample],
+) -> Result<(), MetricsKpiValidationError> {
     for pair in samples.windows(2) {
         if pair[1].at_ms < pair[0].at_ms {
             return Err(MetricsKpiValidationError::NonMonotonicSampleTimestamp {
@@ -378,7 +407,9 @@ fn validate_sample_timestamps(samples: &[MetricsFixtureSample]) -> Result<(), Me
     Ok(())
 }
 
-fn validate_event_timestamps(events: &[MetricsFixtureEvent]) -> Result<(), MetricsKpiValidationError> {
+fn validate_event_timestamps(
+    events: &[MetricsFixtureEvent],
+) -> Result<(), MetricsKpiValidationError> {
     for pair in events.windows(2) {
         if pair[1].at_ms < pair[0].at_ms {
             return Err(MetricsKpiValidationError::NonMonotonicEventTimestamp {
@@ -511,7 +542,10 @@ fn load_sequence(path: &str) -> MetricsFixtureSequence {
 
 fn approx_eq(left: f64, right: f64) {
     let delta = (left - right).abs();
-    assert!(delta < 0.000_001, "expected {left} ~= {right}, delta={delta}");
+    assert!(
+        delta < 0.000_001,
+        "expected {left} ~= {right}, delta={delta}"
+    );
 }
 
 #[test]

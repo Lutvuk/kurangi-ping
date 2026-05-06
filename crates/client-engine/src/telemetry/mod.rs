@@ -1,14 +1,15 @@
 //! Telemetry batching boundary for privacy-safe event delivery.
 
+pub mod batch_queue;
 pub mod events;
 pub mod scrubber;
 pub mod validator;
 
-use std::collections::BTreeMap;
+use batch_queue::{BackpressureDiagnostic, BatchQueue, BatchQueueConfig};
 use scrubber::{
-    scrub_or_reject_payload, SensitiveFieldAction, SensitiveFieldDiagnostic,
-    SensitiveFieldPolicy,
+    scrub_or_reject_payload, SensitiveFieldAction, SensitiveFieldDiagnostic, SensitiveFieldPolicy,
 };
+use std::collections::BTreeMap;
 use validator::{
     validate_event_payload, TelemetryValidationError, TelemetryValidationErrorCode,
     UnknownKeyPolicy,
@@ -55,26 +56,37 @@ impl TelemetryEvent {
 /// Public batching interface used by upper orchestration layers.
 #[derive(Debug, Clone)]
 pub struct TelemetryService {
-    queue: Vec<TelemetryEvent>,
+    batch_queue: BatchQueue,
     sensitive_field_policy: SensitiveFieldPolicy,
     privacy_diagnostics: Vec<SensitiveFieldDiagnostic>,
 }
 
 impl TelemetryService {
     pub fn new() -> Self {
-        Self::with_sensitive_field_policy(SensitiveFieldPolicy::default())
+        Self::with_policies(SensitiveFieldPolicy::default(), BatchQueueConfig::default())
     }
 
     pub fn with_sensitive_field_policy(policy: SensitiveFieldPolicy) -> Self {
+        Self::with_policies(policy, BatchQueueConfig::default())
+    }
+
+    pub fn with_batch_queue_config(config: BatchQueueConfig) -> Self {
+        Self::with_policies(SensitiveFieldPolicy::default(), config)
+    }
+
+    pub fn with_policies(
+        sensitive_field_policy: SensitiveFieldPolicy,
+        batch_queue_config: BatchQueueConfig,
+    ) -> Self {
         Self {
-            queue: Vec::new(),
-            sensitive_field_policy: policy,
+            batch_queue: BatchQueue::new(batch_queue_config),
+            sensitive_field_policy,
             privacy_diagnostics: Vec::new(),
         }
     }
 
     pub fn queue_depth(&self) -> usize {
-        self.queue.len()
+        self.batch_queue.depth()
     }
 
     pub fn privacy_diagnostics(&self) -> &[SensitiveFieldDiagnostic] {
@@ -83,6 +95,14 @@ impl TelemetryService {
 
     pub fn take_privacy_diagnostics(&mut self) -> Vec<SensitiveFieldDiagnostic> {
         std::mem::take(&mut self.privacy_diagnostics)
+    }
+
+    pub fn backpressure_diagnostics(&self) -> &[BackpressureDiagnostic] {
+        self.batch_queue.backpressure_diagnostics()
+    }
+
+    pub fn take_backpressure_diagnostics(&mut self) -> Vec<BackpressureDiagnostic> {
+        self.batch_queue.take_backpressure_diagnostics()
     }
 
     pub fn set_sensitive_field_policy(&mut self, policy: SensitiveFieldPolicy) {
@@ -99,7 +119,8 @@ impl TelemetryService {
                         SensitiveFieldAction::Sanitized,
                     );
                 }
-                self.queue.push(TelemetryEvent::new(event.name, scrubbed.payload));
+                self.batch_queue
+                    .enqueue_event(TelemetryEvent::new(event.name, scrubbed.payload));
             }
             Err(error) => {
                 self.record_privacy_violations(
@@ -139,17 +160,20 @@ impl TelemetryService {
             })?;
 
         if !scrubbed.violations.is_empty() {
-            self.record_privacy_violations(&name, &scrubbed.violations, SensitiveFieldAction::Sanitized);
+            self.record_privacy_violations(
+                &name,
+                &scrubbed.violations,
+                SensitiveFieldAction::Sanitized,
+            );
         }
 
-        self.queue.push(TelemetryEvent::new(name, scrubbed.payload));
+        self.batch_queue
+            .enqueue_event(TelemetryEvent::new(name, scrubbed.payload));
         Ok(())
     }
 
     pub fn drain_batch(&mut self, max_items: usize) -> Vec<TelemetryEvent> {
-        // TODO(KP-083/KP-084): replace with retry-aware batch lifecycle.
-        let take = max_items.min(self.queue.len());
-        self.queue.drain(0..take).collect()
+        self.batch_queue.build_batch(max_items)
     }
 
     fn record_privacy_violations(
@@ -177,6 +201,7 @@ impl Default for TelemetryService {
 
 #[cfg(test)]
 mod tests {
+    use super::batch_queue::{BackpressurePolicy, BatchQueueConfig};
     use super::scrubber::{SensitiveFieldAction, SensitiveFieldPolicy};
     use super::validator::UnknownKeyPolicy;
     use super::{TelemetryEvent, TelemetryPayload, TelemetryService, TelemetryValue};
@@ -185,7 +210,10 @@ mod tests {
     fn sanitize_policy_strips_nested_sensitive_fields_before_queue() {
         let mut service = TelemetryService::new();
         let payload = TelemetryPayload::from([
-            ("game_id".to_string(), TelemetryValue::Text("ffxiv".to_string())),
+            (
+                "game_id".to_string(),
+                TelemetryValue::Text("ffxiv".to_string()),
+            ),
             (
                 "process_name".to_string(),
                 TelemetryValue::Text(
@@ -223,9 +251,13 @@ mod tests {
 
     #[test]
     fn reject_policy_blocks_sensitive_payload_with_non_sensitive_error() {
-        let mut service = TelemetryService::with_sensitive_field_policy(SensitiveFieldPolicy::reject());
+        let mut service =
+            TelemetryService::with_sensitive_field_policy(SensitiveFieldPolicy::reject());
         let payload = TelemetryPayload::from([
-            ("game_id".to_string(), TelemetryValue::Text("ffxiv".to_string())),
+            (
+                "game_id".to_string(),
+                TelemetryValue::Text("ffxiv".to_string()),
+            ),
             (
                 "process_name".to_string(),
                 TelemetryValue::Text(
@@ -279,5 +311,85 @@ mod tests {
         assert_eq!(diagnostics.len(), 1);
         assert_eq!(diagnostics[0].action, SensitiveFieldAction::Sanitized);
         assert_eq!(diagnostics[0].field_path, "username");
+    }
+
+    #[test]
+    fn queue_backpressure_is_centralized_and_deterministic() {
+        let mut service = TelemetryService::with_batch_queue_config(BatchQueueConfig {
+            max_queue_depth: 2,
+            max_batch_size: 200,
+            backpressure_policy: BackpressurePolicy::DropOldest,
+        });
+
+        service.enqueue(TelemetryEvent::new("first", Default::default()));
+        service.enqueue(TelemetryEvent::new("second", Default::default()));
+        service.enqueue(TelemetryEvent::new("third", Default::default()));
+
+        assert_eq!(service.queue_depth(), 2);
+        let batch = service.drain_batch(10);
+        assert_eq!(batch.len(), 2);
+        assert_eq!(batch[0].name, "second");
+        assert_eq!(batch[1].name, "third");
+
+        let backpressure_logs = service.take_backpressure_diagnostics();
+        assert_eq!(backpressure_logs.len(), 1);
+        assert_eq!(backpressure_logs[0].dropped_event_name, "first");
+        assert_eq!(backpressure_logs[0].incoming_event_name, "third");
+    }
+
+    #[test]
+    fn validated_enqueue_remains_non_blocking_under_backpressure() {
+        let mut service = TelemetryService::with_batch_queue_config(BatchQueueConfig {
+            max_queue_depth: 1,
+            max_batch_size: 200,
+            backpressure_policy: BackpressurePolicy::DropOldest,
+        });
+
+        service
+            .enqueue_validated(
+                "routing_enabled",
+                TelemetryPayload::from([
+                    (
+                        "result".to_string(),
+                        TelemetryValue::Text("success".to_string()),
+                    ),
+                    (
+                        "reason_code".to_string(),
+                        TelemetryValue::Text("none".to_string()),
+                    ),
+                    (
+                        "lifecycle_state".to_string(),
+                        TelemetryValue::Text("active".to_string()),
+                    ),
+                ]),
+                UnknownKeyPolicy::Reject,
+            )
+            .expect("first event should enqueue");
+        service
+            .enqueue_validated(
+                "routing_enabled",
+                TelemetryPayload::from([
+                    (
+                        "result".to_string(),
+                        TelemetryValue::Text("success".to_string()),
+                    ),
+                    (
+                        "reason_code".to_string(),
+                        TelemetryValue::Text("none".to_string()),
+                    ),
+                    (
+                        "lifecycle_state".to_string(),
+                        TelemetryValue::Text("active".to_string()),
+                    ),
+                ]),
+                UnknownKeyPolicy::Reject,
+            )
+            .expect("queue overflow should not block telemetry producer");
+
+        assert_eq!(service.queue_depth(), 1);
+        let diagnostics = service.take_backpressure_diagnostics();
+        assert_eq!(diagnostics.len(), 1);
+        assert_eq!(diagnostics[0].dropped_event_name, "routing_enabled");
+        assert_eq!(diagnostics[0].incoming_event_name, "routing_enabled");
     }
 }
