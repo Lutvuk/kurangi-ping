@@ -18,10 +18,10 @@ Implement UI step flow screens for welcome, checks, relay test, detection test, 
 *   **Data Models:** Onboarding step view models
 
 ## Acceptance Criteria (Technical)
-*   [ ] Five-step flow renders in defined order.
-*   [ ] Step state reflects backend onboarding state machine.
-*   [ ] UI copy remains concise and non-technical.
-*   [ ] Layout follows design-system onboarding patterns.
+*   [x] Five-step flow renders in defined order.
+*   [x] Step state reflects backend onboarding state machine.
+*   [x] UI copy remains concise and non-technical.
+*   [x] Layout follows design-system onboarding patterns.
 
 ## Business Rules & Logic
 *   Onboarding should feel fast, clear, and low-friction.
@@ -30,6 +30,6 @@ Implement UI step flow screens for welcome, checks, relay test, detection test, 
 *   Depends on: KP-089, KP-026
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

@@ -2,25 +2,18 @@ import { useEffect, useMemo, useState } from "react";
 import {
   ConnectionStatusBadge,
   GameDetectionRow,
-  OnboardingStepper,
   PingMetricCard,
   PrimaryToggle,
   RelayHealthListItem
 } from "../components/modules";
 import { DetectionPanel, type DetectionViewModel } from "../features/detection";
 import { PingMetricsPanel, type MetricsTrendSample, type MetricsViewModel } from "../features/metrics";
+import { OnboardingFlow, type OnboardingStateMachineView } from "../features/onboarding";
 import { RelayHealthPanel } from "../features/relay";
 import { LifecycleStatusPresenter, ToggleController } from "../features/routing";
 import { AppShell } from "../layout/AppShell";
 import { Panel } from "../layout/Panel";
 import "./foundation-showcase.css";
-
-const onboardingSteps = [
-  { id: "welcome", label: "Welcome", state: "completed" as const },
-  { id: "permission", label: "Permission", state: "completed" as const },
-  { id: "relay-test", label: "Relay Test", state: "active" as const },
-  { id: "first-connect", label: "First Connect", state: "inactive" as const }
-];
 
 function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean }) {
   const detectionCycle: DetectionViewModel[] = [
@@ -94,6 +87,17 @@ function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean
   );
   const [metricsIndex, setMetricsIndex] = useState(0);
   const [trendSamples, setTrendSamples] = useState<MetricsTrendSample[]>([]);
+  const [onboardingMachine, setOnboardingMachine] = useState<OnboardingStateMachineView>({
+    state: {
+      state: "not_started"
+    }
+  });
+  const [onboardingSignals, setOnboardingSignals] = useState({
+    permissionGranted: false,
+    relayReady: false,
+    gameDetected: false,
+    connected: false
+  });
 
   async function handleRescanMock() {
     const nextIndex = (detectionStateIndex + 1) % detectionCycle.length;
@@ -121,6 +125,77 @@ function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean
       window.clearInterval(timer);
     };
   }, [metricsCycle.length]);
+
+  function startOnboarding() {
+    setOnboardingMachine({
+      state: {
+        state: "in_progress",
+        current_step: "permission_check",
+        completed_steps: ["welcome"]
+      }
+    });
+  }
+
+  function runPermissionCheck() {
+    setOnboardingSignals((previous) => ({
+      ...previous,
+      permissionGranted: true
+    }));
+    setOnboardingMachine({
+      state: {
+        state: "in_progress",
+        current_step: "relay_test",
+        completed_steps: ["welcome", "permission_check"]
+      }
+    });
+  }
+
+  function runRelayTest() {
+    setOnboardingSignals((previous) => ({
+      ...previous,
+      relayReady: true
+    }));
+    setOnboardingMachine({
+      state: {
+        state: "in_progress",
+        current_step: "game_detection_test",
+        completed_steps: ["welcome", "permission_check", "relay_test"]
+      }
+    });
+  }
+
+  function runDetectionTest() {
+    setOnboardingSignals((previous) => ({
+      ...previous,
+      gameDetected: true
+    }));
+    setOnboardingMachine({
+      state: {
+        state: "in_progress",
+        current_step: "first_connect",
+        completed_steps: ["welcome", "permission_check", "relay_test", "game_detection_test"]
+      }
+    });
+  }
+
+  function runFirstConnect() {
+    setOnboardingSignals((previous) => ({
+      ...previous,
+      connected: true
+    }));
+    setOnboardingMachine({
+      state: {
+        state: "completed",
+        completed_steps: [
+          "welcome",
+          "permission_check",
+          "relay_test",
+          "game_detection_test",
+          "first_connect"
+        ]
+      }
+    });
+  }
 
   return (
     <section
@@ -238,7 +313,17 @@ function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean
             onTriggerRescan={handleRescanMock}
           />
         </div>
-        <OnboardingStepper steps={onboardingSteps} />
+        <OnboardingFlow
+          machine={onboardingMachine}
+          signals={onboardingSignals}
+          actions={{
+            onStart: startOnboarding,
+            onRunPermissionCheck: runPermissionCheck,
+            onRunRelayTest: runRelayTest,
+            onRunDetectionTest: runDetectionTest,
+            onRunFirstConnect: runFirstConnect
+          }}
+        />
       </div>
     </section>
   );
@@ -248,7 +333,7 @@ export function FoundationShowcasePage() {
   return (
     <AppShell
       sidebar={{ activeId: "routing", title: "Kurangi Ping 2" }}
-      topBar={{ statusLabel: "Build", statusValue: "Foundation Showcase", meta: "KP-024 to KP-075" }}
+      topBar={{ statusLabel: "Build", statusValue: "Foundation Showcase", meta: "KP-024 to KP-094" }}
       contentClassName="kp-showcase-content"
     >
       <Panel eyebrow="Foundation QA" title="UI Composition Showcase">
