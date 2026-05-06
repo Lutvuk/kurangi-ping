@@ -104,6 +104,7 @@ impl UpdaterLifecycleSignal {
 pub struct UpdaterStateTransition {
     pub from: UpdaterStateTag,
     pub to: UpdaterStateTag,
+    pub signal_tag: UpdaterSignalTag,
     pub reason: Option<UpdaterErrorReasonCode>,
     pub state: UpdaterState,
 }
@@ -224,6 +225,7 @@ pub fn resolve_updater_state(
     Ok(UpdaterStateTransition {
         from,
         to,
+        signal_tag,
         reason,
         state: next,
     })

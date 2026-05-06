@@ -141,6 +141,38 @@ impl SchemaAllowlist {
                 &["onboarding_duration_s", "game_id", "success_path"],
             ),
         );
+        by_event.insert(
+            "updater_check",
+            schema_with_required(&["state", "channel"], &["state", "channel"]),
+        );
+        by_event.insert(
+            "updater_available",
+            schema_with_required(
+                &["state", "channel", "target_version"],
+                &["state", "channel", "target_version"],
+            ),
+        );
+        by_event.insert(
+            "updater_download",
+            schema_with_required(
+                &["state", "channel", "target_version"],
+                &["state", "channel", "target_version"],
+            ),
+        );
+        by_event.insert(
+            "updater_apply",
+            schema_with_required(
+                &["state", "channel", "target_version"],
+                &["state", "channel", "target_version"],
+            ),
+        );
+        by_event.insert(
+            "updater_failure",
+            schema_with_required(
+                &["state", "channel", "reason_code"],
+                &["state", "channel", "reason_code"],
+            ),
+        );
 
         Self { by_event }
     }

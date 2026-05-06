@@ -18,10 +18,10 @@ Emit updater lifecycle events for adoption and failure analysis with schema-safe
 *   **Data Models:** Updater telemetry payload model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Check, available, download, apply, and failure events can be emitted.
-*   [ ] Payloads follow telemetry allowlist rules.
-*   [ ] Sensitive release or local path details are excluded.
-*   [ ] Event sequence remains deterministic.
+*   [x] Check, available, download, apply, and failure events can be emitted.
+*   [x] Payloads follow telemetry allowlist rules.
+*   [x] Sensitive release or local path details are excluded.
+*   [x] Event sequence remains deterministic.
 
 ## Business Rules & Logic
 *   Updater analytics must be useful without compromising privacy.
@@ -30,6 +30,6 @@ Emit updater lifecycle events for adoption and failure analysis with schema-safe
 *   Depends on: KP-101, KP-080
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
