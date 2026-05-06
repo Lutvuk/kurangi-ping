@@ -18,10 +18,10 @@ Define normalized updater lifecycle states and reason taxonomy for UI + telemetr
 *   **Data Models:** Updater state enum + reason code model
 
 ## Acceptance Criteria (Technical)
-*   [ ] States include `up_to_date`, `update_available`, `downloading`, `ready_to_restart`, `update_error`.
-*   [ ] Reason codes are deterministic and stable.
-*   [ ] Unknown failures map to safe fallback category.
-*   [ ] State transitions are validated by tests.
+*   [x] States include `up_to_date`, `update_available`, `downloading`, `ready_to_restart`, `update_error`.
+*   [x] Reason codes are deterministic and stable.
+*   [x] Unknown failures map to safe fallback category.
+*   [x] State transitions are validated by tests.
 
 ## Business Rules & Logic
 *   Clear state semantics reduce user confusion and support overhead.
@@ -30,6 +30,6 @@ Define normalized updater lifecycle states and reason taxonomy for UI + telemetr
 *   Depends on: KP-100
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

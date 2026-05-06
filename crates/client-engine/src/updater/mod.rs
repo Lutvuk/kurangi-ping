@@ -1,5 +1,6 @@
 pub mod apply_orchestrator;
 pub mod check_scheduler;
+pub mod state_model;
 
 pub use apply_orchestrator::{
     apply_update, check_for_update, download_update, ApplyUpdateErrorCode, DownloadTransportErrorCode,
@@ -13,4 +14,9 @@ pub use check_scheduler::{
     UpdateCheckCompletion, UpdateCheckConfig, UpdateCheckContext, UpdateCheckDecision,
     UpdateCheckErrorCode, UpdateCheckLease, UpdateCheckScheduler, UpdateCheckSkipReason,
     UpdateCheckTrigger,
+};
+pub use state_model::{
+    map_updater_error_reason, resolve_updater_state, UpdaterErrorReasonCode, UpdaterLifecycleSignal,
+    UpdaterSignalTag, UpdaterState, UpdaterStateTag, UpdaterStateTransition,
+    UpdaterStateTransitionError,
 };
