@@ -1,7 +1,10 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 
 use crate::routing::{normalize_reason_code, FailoverStatePayload};
-use crate::telemetry::{TelemetryEvent, TelemetryPayload, TelemetryService, TelemetryValue};
+use crate::telemetry::{TelemetryPayload, TelemetryService, TelemetryValue};
+use crate::telemetry::validator::{
+    validate_event_payload, TelemetryValidationErrorCode, UnknownKeyPolicy,
+};
 
 pub const RELAY_FAILED_EVENT_NAME: &str = "relay_failed";
 pub const RELAY_RECOVERED_EVENT_NAME: &str = "relay_recovered";
@@ -106,7 +109,9 @@ fn enqueue_failover_event(
 
     let payload = build_payload(state_payload, attempt_count)?;
     validate_failover_payload(&payload)?;
-    telemetry.enqueue(TelemetryEvent::new(event_name, payload));
+    telemetry
+        .enqueue_validated(event_name, payload, UnknownKeyPolicy::Reject)
+        .map_err(map_validator_error)?;
     Ok(RelayFailoverEmitStatus::Emitted)
 }
 
@@ -172,14 +177,8 @@ fn sanitize_failover_state(value: &str) -> String {
 pub fn validate_failover_payload(
     payload: &TelemetryPayload,
 ) -> Result<(), RelayFailoverSchemaError> {
-    let allowed = BTreeSet::from(RELAY_FAILOVER_ALLOWED_KEYS.map(ToString::to_string));
-    let keys = payload.keys().cloned().collect::<BTreeSet<_>>();
-    if keys != allowed {
-        return Err(RelayFailoverSchemaError::new(
-            RelayFailoverSchemaErrorCode::InvalidPayloadKeys,
-            "relay failover payload keys must exactly match allowlist",
-        ));
-    }
+    validate_event_payload(RELAY_FAILED_EVENT_NAME, payload, UnknownKeyPolicy::Reject)
+        .map_err(map_validator_error)?;
 
     for key in [
         "reason_code",
@@ -209,6 +208,21 @@ pub fn validate_failover_payload(
     }
 
     Ok(())
+}
+
+fn map_validator_error(
+    error: crate::telemetry::validator::TelemetryValidationError,
+) -> RelayFailoverSchemaError {
+    let code = match error.code {
+        TelemetryValidationErrorCode::UnknownEventName
+        | TelemetryValidationErrorCode::UnknownPayloadKey => {
+            RelayFailoverSchemaErrorCode::InvalidPayloadKeys
+        }
+        TelemetryValidationErrorCode::MissingRequiredKey => {
+            RelayFailoverSchemaErrorCode::MissingRequiredField
+        }
+    };
+    RelayFailoverSchemaError::new(code, error.message)
 }
 
 #[cfg(test)]

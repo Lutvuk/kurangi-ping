@@ -1,7 +1,10 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 
 use crate::metrics::PingMetrics;
-use crate::telemetry::{TelemetryEvent, TelemetryPayload, TelemetryService, TelemetryValue};
+use crate::telemetry::{TelemetryPayload, TelemetryService, TelemetryValue};
+use crate::telemetry::validator::{
+    validate_event_payload, TelemetryValidationErrorCode, UnknownKeyPolicy,
+};
 
 pub const PING_MEASURED_EVENT_NAME: &str = "ping_measured";
 pub const PING_MEASURED_ALLOWED_KEYS: [&str; 4] = [
@@ -80,7 +83,9 @@ pub fn emit_ping_measured_event(
 
     let payload = build_payload(metrics)?;
     validate_ping_measured_payload(&payload)?;
-    telemetry.enqueue(TelemetryEvent::new(PING_MEASURED_EVENT_NAME, payload));
+    telemetry
+        .enqueue_validated(PING_MEASURED_EVENT_NAME, payload, UnknownKeyPolicy::Reject)
+        .map_err(map_validator_error)?;
     emission_state.last_emitted_at_unix_ms = Some(sampled_at_unix_ms);
     Ok(PingMeasuredEmitStatus::Emitted)
 }
@@ -125,14 +130,8 @@ fn build_payload(metrics: &PingMetrics) -> Result<TelemetryPayload, PingMeasured
 pub fn validate_ping_measured_payload(
     payload: &TelemetryPayload,
 ) -> Result<(), PingMeasuredSchemaError> {
-    let allowed = BTreeSet::from(PING_MEASURED_ALLOWED_KEYS.map(ToString::to_string));
-    let keys = payload.keys().cloned().collect::<BTreeSet<_>>();
-    if keys != allowed {
-        return Err(PingMeasuredSchemaError::new(
-            PingMeasuredSchemaErrorCode::InvalidPayloadKeys,
-            "ping_measured payload keys must exactly match allowlist",
-        ));
-    }
+    validate_event_payload(PING_MEASURED_EVENT_NAME, payload, UnknownKeyPolicy::Reject)
+        .map_err(map_validator_error)?;
 
     validate_float_field(payload, "baseline_ping_ms", 0.0, None)?;
     validate_float_field(payload, "routed_ping_ms", 0.0, None)?;
@@ -140,6 +139,21 @@ pub fn validate_ping_measured_payload(
     validate_float_field(payload, "packet_loss_pct", 0.0, Some(100.0))?;
 
     Ok(())
+}
+
+fn map_validator_error(
+    error: crate::telemetry::validator::TelemetryValidationError,
+) -> PingMeasuredSchemaError {
+    let code = match error.code {
+        TelemetryValidationErrorCode::UnknownEventName
+        | TelemetryValidationErrorCode::UnknownPayloadKey => {
+            PingMeasuredSchemaErrorCode::InvalidPayloadKeys
+        }
+        TelemetryValidationErrorCode::MissingRequiredKey => {
+            PingMeasuredSchemaErrorCode::MissingRequiredField
+        }
+    };
+    PingMeasuredSchemaError::new(code, error.message)
 }
 
 fn validate_float_field(

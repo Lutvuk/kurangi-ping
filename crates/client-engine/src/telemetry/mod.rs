@@ -1,8 +1,10 @@
 //! Telemetry batching boundary for privacy-safe event delivery.
 
 pub mod events;
+pub mod validator;
 
 use std::collections::BTreeMap;
+use validator::{validate_event_payload, TelemetryValidationError, UnknownKeyPolicy};
 
 #[derive(Debug, Clone)]
 pub enum TelemetryValue {
@@ -60,6 +62,18 @@ impl TelemetryService {
     pub fn enqueue(&mut self, event: TelemetryEvent) {
         // TODO(KP-080/KP-082): apply schema allowlist and bounded queue policy.
         self.queue.push(event);
+    }
+
+    pub fn enqueue_validated(
+        &mut self,
+        event_name: impl Into<String>,
+        payload: TelemetryPayload,
+        unknown_key_policy: UnknownKeyPolicy,
+    ) -> Result<(), TelemetryValidationError> {
+        let name = event_name.into();
+        let sanitized = validate_event_payload(&name, &payload, unknown_key_policy)?;
+        self.queue.push(TelemetryEvent::new(name, sanitized));
+        Ok(())
     }
 
     pub fn drain_batch(&mut self, max_items: usize) -> Vec<TelemetryEvent> {

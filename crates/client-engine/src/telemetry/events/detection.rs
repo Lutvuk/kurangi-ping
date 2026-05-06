@@ -1,7 +1,10 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 
 use crate::detection::state_resolver::{DetectionResolution, DetectionState};
-use crate::telemetry::{TelemetryEvent, TelemetryPayload, TelemetryService, TelemetryValue};
+use crate::telemetry::{TelemetryPayload, TelemetryService, TelemetryValue};
+use crate::telemetry::validator::{
+    validate_event_payload, TelemetryValidationErrorCode, UnknownKeyPolicy,
+};
 
 pub const GAME_DETECTED_EVENT_NAME: &str = "game_detected";
 pub const GAME_DETECTED_ALLOWED_KEYS: [&str; 3] =
@@ -80,21 +83,17 @@ pub fn emit_game_detected_event(
     ]);
 
     validate_game_detected_payload(&payload)?;
-    telemetry.enqueue(TelemetryEvent::new(GAME_DETECTED_EVENT_NAME, payload));
+    telemetry
+        .enqueue_validated(GAME_DETECTED_EVENT_NAME, payload, UnknownKeyPolicy::Reject)
+        .map_err(map_validator_error)?;
     Ok(true)
 }
 
 pub fn validate_game_detected_payload(
     payload: &TelemetryPayload,
 ) -> Result<(), GameDetectedSchemaError> {
-    let allowed = BTreeSet::from(GAME_DETECTED_ALLOWED_KEYS.map(ToString::to_string));
-    let keys = payload.keys().cloned().collect::<BTreeSet<_>>();
-    if keys != allowed {
-        return Err(GameDetectedSchemaError::new(
-            GameDetectedSchemaErrorCode::InvalidPayloadKeys,
-            "game_detected payload keys must exactly match allowlist",
-        ));
-    }
+    validate_event_payload(GAME_DETECTED_EVENT_NAME, payload, UnknownKeyPolicy::Reject)
+        .map_err(map_validator_error)?;
 
     match payload.get("game_id") {
         Some(TelemetryValue::Text(value)) if !value.trim().is_empty() => {}
@@ -127,6 +126,21 @@ pub fn validate_game_detected_payload(
     }
 
     Ok(())
+}
+
+fn map_validator_error(
+    error: crate::telemetry::validator::TelemetryValidationError,
+) -> GameDetectedSchemaError {
+    let code = match error.code {
+        TelemetryValidationErrorCode::UnknownEventName
+        | TelemetryValidationErrorCode::UnknownPayloadKey => {
+            GameDetectedSchemaErrorCode::InvalidPayloadKeys
+        }
+        TelemetryValidationErrorCode::MissingRequiredKey => {
+            GameDetectedSchemaErrorCode::MissingRequiredField
+        }
+    };
+    GameDetectedSchemaError::new(code, error.message)
 }
 
 #[cfg(test)]

@@ -1,9 +1,12 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 
 use crate::routing::{
     OffPipelineResult, OffPipelineStatus, OnPipelineResult, OnPipelineStatus,
 };
-use crate::telemetry::{TelemetryEvent, TelemetryPayload, TelemetryService, TelemetryValue};
+use crate::telemetry::{TelemetryPayload, TelemetryService, TelemetryValue};
+use crate::telemetry::validator::{
+    validate_event_payload, TelemetryValidationErrorCode, UnknownKeyPolicy,
+};
 
 pub const ROUTING_ENABLED_EVENT_NAME: &str = "routing_enabled";
 pub const ROUTING_DISABLED_EVENT_NAME: &str = "routing_disabled";
@@ -46,7 +49,9 @@ pub fn emit_routing_enabled(
 
     let payload = build_payload(outcome, &reason_code, lifecycle_state);
     validate_toggle_lifecycle_payload(&payload)?;
-    telemetry.enqueue(TelemetryEvent::new(ROUTING_ENABLED_EVENT_NAME, payload));
+    telemetry
+        .enqueue_validated(ROUTING_ENABLED_EVENT_NAME, payload, UnknownKeyPolicy::Reject)
+        .map_err(map_validator_error)?;
     Ok(true)
 }
 
@@ -69,7 +74,9 @@ pub fn emit_routing_disabled(
 
     let payload = build_payload(outcome, &reason_code, lifecycle_state);
     validate_toggle_lifecycle_payload(&payload)?;
-    telemetry.enqueue(TelemetryEvent::new(ROUTING_DISABLED_EVENT_NAME, payload));
+    telemetry
+        .enqueue_validated(ROUTING_DISABLED_EVENT_NAME, payload, UnknownKeyPolicy::Reject)
+        .map_err(map_validator_error)?;
     Ok(true)
 }
 
@@ -106,14 +113,8 @@ fn sanitize_reason_code(raw: &str) -> String {
 pub fn validate_toggle_lifecycle_payload(
     payload: &TelemetryPayload,
 ) -> Result<(), ToggleLifecycleSchemaError> {
-    let allowed = BTreeSet::from(TOGGLE_LIFECYCLE_ALLOWED_KEYS.map(ToString::to_string));
-    let keys = payload.keys().cloned().collect::<BTreeSet<_>>();
-    if keys != allowed {
-        return Err(ToggleLifecycleSchemaError::new(
-            ToggleLifecycleSchemaErrorCode::InvalidPayloadKeys,
-            "toggle lifecycle payload keys must exactly match allowlist",
-        ));
-    }
+    validate_event_payload(ROUTING_ENABLED_EVENT_NAME, payload, UnknownKeyPolicy::Reject)
+        .map_err(map_validator_error)?;
 
     for key in TOGGLE_LIFECYCLE_ALLOWED_KEYS {
         match payload.get(key) {
@@ -128,6 +129,21 @@ pub fn validate_toggle_lifecycle_payload(
     }
 
     Ok(())
+}
+
+fn map_validator_error(
+    error: crate::telemetry::validator::TelemetryValidationError,
+) -> ToggleLifecycleSchemaError {
+    let code = match error.code {
+        TelemetryValidationErrorCode::UnknownEventName
+        | TelemetryValidationErrorCode::UnknownPayloadKey => {
+            ToggleLifecycleSchemaErrorCode::InvalidPayloadKeys
+        }
+        TelemetryValidationErrorCode::MissingRequiredKey => {
+            ToggleLifecycleSchemaErrorCode::MissingRequiredField
+        }
+    };
+    ToggleLifecycleSchemaError::new(code, error.message)
 }
 
 #[cfg(test)]
