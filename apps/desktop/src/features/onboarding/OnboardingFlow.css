@@ -109,3 +109,55 @@
   flex-wrap: wrap;
   gap: var(--space-2);
 }
+
+.kp-resume-entry {
+  display: grid;
+  gap: var(--space-3);
+  border-color: var(--color-signal-border);
+  background: var(--color-signal-dim);
+}
+
+.kp-resume-entry-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.kp-resume-entry-title {
+  margin: 0;
+  color: var(--color-text-primary);
+  font: var(--text-display-sm);
+}
+
+.kp-resume-entry-copy {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font: var(--text-body-sm);
+}
+
+.kp-resume-entry-copy strong {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.kp-resume-entry-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.kp-resume-entry-confirm {
+  display: grid;
+  gap: var(--space-2);
+  border: var(--border-default);
+  border-radius: var(--radius-xs);
+  background: var(--color-surface-01);
+  padding: var(--space-3);
+}
+
+.kp-resume-entry-confirm-copy {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font: var(--text-body-sm);
+}

@@ -45,6 +45,14 @@ export const ONBOARDING_STEP_SEQUENCE: OnboardingStepMeta[] = [
   { id: "first_connect", label: "First Connect" }
 ];
 
+const stepLabelById: Record<OnboardingStepId, string> = ONBOARDING_STEP_SEQUENCE.reduce(
+  (accumulator, step) => {
+    accumulator[step.id] = step.label;
+    return accumulator;
+  },
+  {} as Record<OnboardingStepId, string>
+);
+
 function active_step_from_state(lifecycle: OnboardingLifecycleStateView): OnboardingStepId {
   if (lifecycle.state === "in_progress") {
     return lifecycle.current_step;
@@ -107,3 +115,6 @@ export function onboarding_reason_code(machine: OnboardingStateMachineView): str
   return null;
 }
 
+export function onboarding_step_label(stepId: OnboardingStepId): string {
+  return stepLabelById[stepId];
+}

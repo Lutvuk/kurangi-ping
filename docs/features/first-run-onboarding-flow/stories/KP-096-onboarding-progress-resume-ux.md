@@ -18,10 +18,10 @@ Provide clear resume behavior and messaging when user returns mid-onboarding.
 *   **Data Models:** Resume state model
 
 ## Acceptance Criteria (Technical)
-*   [ ] UI resumes at persisted checkpoint step.
-*   [ ] Resume context is clearly indicated to user.
-*   [ ] Reset/restart option is available with confirmation.
-*   [ ] Resume path remains consistent with backend checkpoint data.
+*   [x] UI resumes at persisted checkpoint step.
+*   [x] Resume context is clearly indicated to user.
+*   [x] Reset/restart option is available with confirmation.
+*   [x] Resume path remains consistent with backend checkpoint data.
 
 ## Business Rules & Logic
 *   Resume should preserve momentum and avoid confusion.
@@ -30,6 +30,6 @@ Provide clear resume behavior and messaging when user returns mid-onboarding.
 *   Depends on: KP-091, KP-094
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

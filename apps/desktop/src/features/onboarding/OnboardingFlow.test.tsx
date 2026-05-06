@@ -36,7 +36,11 @@ describe("OnboardingFlow", () => {
     expect(steps[2]).toHaveClass("kp-onboarding-step--active");
     expect(steps[3]).toHaveClass("kp-onboarding-step--inactive");
     expect(steps[4]).toHaveClass("kp-onboarding-step--inactive");
-    expect(screen.getByRole("status")).toHaveTextContent("In Progress");
+    expect(screen.getAllByRole("status")[0]).toHaveTextContent("In Progress");
+    const resumeEntry = screen.getByLabelText("Onboarding resume entry");
+    expect(resumeEntry).toBeInTheDocument();
+    expect(screen.getByText(/Kamu sudah menyelesaikan 2\/5 langkah/i)).toBeInTheDocument();
+    expect(resumeEntry.querySelector("strong")?.textContent).toBe("Relay Test");
   });
 
   it("shows concise non-technical step copy for each main screen", () => {
@@ -92,5 +96,10 @@ describe("OnboardingFlow", () => {
 
     expect(screen.getByLabelText("Onboarding recovery panel")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Continue onboarding without routing" })).toBeNull();
+  });
+
+  it("does not show resume entry on a clean not_started state", () => {
+    render_flow({ state: { state: "not_started" } });
+    expect(screen.queryByLabelText("Onboarding resume entry")).toBeNull();
   });
 });

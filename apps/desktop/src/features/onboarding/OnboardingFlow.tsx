@@ -1,8 +1,10 @@
 import { OnboardingStepper } from "../../components/modules";
 import { Card, StatusBadge } from "../../components/primitives";
 import { RecoveryPanel } from "./RecoveryPanel";
+import { ResumeEntry } from "./ResumeEntry";
 import {
   current_onboarding_step_id,
+  onboarding_step_label,
   onboarding_reason_code,
   to_onboarding_flow_steps,
   type OnboardingStateMachineView,
@@ -30,6 +32,8 @@ export type OnboardingFlowActions = {
   onRunRelayTest?: () => void;
   onRunDetectionTest?: () => void;
   onRunFirstConnect?: () => void;
+  onResumeCheckpoint?: () => void;
+  onRestartOnboarding?: () => void;
   onRetryCurrentStep?: () => void;
   onOpenTroubleshoot?: () => void;
   onContinueSafe?: () => void;
@@ -130,6 +134,10 @@ export function OnboardingFlow({
   const focusedStep = steps.find((step) => step.id === focusedStepId) ?? steps[0];
   const status = flow_status(machine);
   const reasonCode = onboarding_reason_code(machine);
+  const shouldShowResumeEntry =
+    machine.state.state === "in_progress" && machine.state.completed_steps.length > 0;
+  const resumeCompletedCount = machine.state.state === "in_progress" ? machine.state.completed_steps.length : 0;
+  const resumeStepLabel = onboarding_step_label(focusedStep.id);
   const composedClassName = ["kp-onboarding-flow", className].filter(Boolean).join(" ");
 
   return (
@@ -149,6 +157,17 @@ export function OnboardingFlow({
           state: step.state
         }))}
       />
+
+      {shouldShowResumeEntry ? (
+        <ResumeEntry
+          stepLabel={resumeStepLabel}
+          completedCount={resumeCompletedCount}
+          totalCount={steps.length}
+          onResume={actions.onResumeCheckpoint}
+          onRestart={actions.onRestartOnboarding}
+          isBusy={isBusy}
+        />
+      ) : null}
 
       {render_step_screen(focusedStep.id, focusedStep.state, signals, actions, isBusy)}
 
