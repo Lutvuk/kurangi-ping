@@ -18,10 +18,10 @@ Validate end-to-end payload conformance against telemetry ingest contract.
 *   **Data Models:** Contract fixture payloads
 
 ## Acceptance Criteria (Technical)
-*   [ ] Valid payload batches pass integration checks.
-*   [ ] Invalid payloads fail with expected policy outcomes.
-*   [ ] Batch size and schema constraints are enforced.
-*   [ ] CI fails on conformance regressions.
+*   [x] Valid payload batches pass integration checks.
+*   [x] Invalid payloads fail with expected policy outcomes.
+*   [x] Batch size and schema constraints are enforced.
+*   [x] CI fails on conformance regressions.
 
 ## Business Rules & Logic
 *   Contract compliance is a release gate for telemetry pipeline.
@@ -30,6 +30,6 @@ Validate end-to-end payload conformance against telemetry ingest contract.
 *   Depends on: KP-083, KP-084
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

@@ -1,0 +1,16 @@
+{
+  "installation_id_hash": "sha256:0123456789abcdef0123456789abcdef",
+  "events": [
+    {
+      "event_name": "routing_enabled",
+      "occurred_at": "2026-05-06T09:10:00Z",
+      "session_id": "sess-1",
+      "payload": {
+        "result": "success",
+        "reason_code": "none",
+        "lifecycle_state": "active",
+        "private_host": "internal.example.net"
+      }
+    }
+  ]
+}

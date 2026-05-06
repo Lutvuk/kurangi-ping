@@ -1,0 +1,15 @@
+{
+  "installation_id_hash": "sha256:0123456789abcdef0123456789abcdef",
+  "events": [
+    {
+      "event_name": "game_detected",
+      "occurred_at": "2026-05-06T09:10:00Z",
+      "session_id": "sess-1",
+      "payload": {
+        "game_id": "ffxiv",
+        "process_name": "{\"exe\":\"ffxiv_dx11.exe\",\"username\":\"secret-user\"}",
+        "detection_time_ms": 1700000000000
+      }
+    }
+  ]
+}
