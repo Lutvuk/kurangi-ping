@@ -18,10 +18,10 @@ Mark onboarding complete only after first successful route activation.
 *   **Data Models:** Completion decision model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Completion cannot occur before successful connect state.
-*   [ ] Successful connect updates onboarding state to completed.
-*   [ ] Failed connect keeps onboarding in non-complete state.
-*   [ ] Completion gate integrates with toggle/routing lifecycle.
+*   [x] Completion cannot occur before successful connect state.
+*   [x] Successful connect updates onboarding state to completed.
+*   [x] Failed connect keeps onboarding in non-complete state.
+*   [x] Completion gate integrates with toggle/routing lifecycle.
 
 ## Business Rules & Logic
 *   Completion must represent real product readiness, not just walkthrough completion.
@@ -30,6 +30,6 @@ Mark onboarding complete only after first successful route activation.
 *   Depends on: KP-059, KP-091
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
