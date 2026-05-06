@@ -18,10 +18,10 @@ Stress-test privacy controls with intentionally malicious/sensitive payload patt
 *   **Data Models:** Malicious payload fixture set
 
 ## Acceptance Criteria (Technical)
-*   [ ] PII-like fields are always rejected/scrubbed by policy.
-*   [ ] Nested sensitive keys are detected.
-*   [ ] Pipeline remains stable under repeated violation attempts.
-*   [ ] Diagnostics remain non-sensitive.
+*   [x] PII-like fields are always rejected/scrubbed by policy.
+*   [x] Nested sensitive keys are detected.
+*   [x] Pipeline remains stable under repeated violation attempts.
+*   [x] Diagnostics remain non-sensitive.
 
 ## Business Rules & Logic
 *   Privacy defense-in-depth must be demonstrably robust.
@@ -30,6 +30,6 @@ Stress-test privacy controls with intentionally malicious/sensitive payload patt
 *   Depends on: KP-081, KP-086
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

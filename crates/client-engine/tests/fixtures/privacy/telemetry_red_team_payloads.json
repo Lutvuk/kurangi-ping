@@ -1,0 +1,69 @@
+{
+  "cases": [
+    {
+      "id": "reject_nested_username",
+      "submission": "validated",
+      "policy": "reject",
+      "event_name": "game_detected",
+      "payload": {
+        "game_id": "ffxiv",
+        "process_name": "{\"exe\":\"ffxiv_dx11.exe\",\"username\":\"red-user\"}",
+        "detection_time_ms": 1700000000000
+      }
+    },
+    {
+      "id": "reject_nested_ip_and_email",
+      "submission": "validated",
+      "policy": "reject",
+      "event_name": "game_detected",
+      "payload": {
+        "game_id": "ffxiv",
+        "process_name": "{\"exe\":\"ffxiv_dx11.exe\",\"network\":{\"ip_address\":\"10.10.10.10\"},\"profile\":{\"email\":\"red@example.net\"}}",
+        "detection_time_ms": 1700000001000
+      }
+    },
+    {
+      "id": "reject_nested_command_line",
+      "submission": "validated",
+      "policy": "reject",
+      "event_name": "game_detected",
+      "payload": {
+        "game_id": "ffxiv",
+        "process_name": "{\"exe\":\"ffxiv_dx11.exe\",\"full_process_command_line\":\"C:/Games/ffxiv_dx11.exe --token secret\"}",
+        "detection_time_ms": 1700000002000
+      }
+    },
+    {
+      "id": "sanitize_root_username_email",
+      "submission": "direct",
+      "policy": "sanitize",
+      "event_name": "red_team_probe",
+      "payload": {
+        "username": "ops-admin",
+        "email": "admin@example.net",
+        "reason_code": "safe_generic_issue"
+      }
+    },
+    {
+      "id": "sanitize_root_phone_and_packet_payload",
+      "submission": "direct",
+      "policy": "sanitize",
+      "event_name": "red_team_probe",
+      "payload": {
+        "phone_number": "+620000111222",
+        "packet_payload": "0xDEADBEEF",
+        "reason_code": "safe_generic_issue"
+      }
+    },
+    {
+      "id": "sanitize_nested_destination_hosts",
+      "submission": "direct",
+      "policy": "sanitize",
+      "event_name": "red_team_probe",
+      "payload": {
+        "context": "{\"raw_destination_host_list\":[\"internal-a.local\",\"internal-b.local\"],\"safe\":\"ok\"}",
+        "reason_code": "safe_generic_issue"
+      }
+    }
+  ]
+}
