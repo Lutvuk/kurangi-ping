@@ -134,7 +134,13 @@ impl SchemaAllowlist {
                 ],
             ),
         );
-        by_event.insert("onboarding_completed", schema_with_required(&[], &[]));
+        by_event.insert(
+            "onboarding_completed",
+            schema_with_required(
+                &["onboarding_duration_s", "game_id", "success_path"],
+                &["onboarding_duration_s", "game_id", "success_path"],
+            ),
+        );
 
         Self { by_event }
     }
