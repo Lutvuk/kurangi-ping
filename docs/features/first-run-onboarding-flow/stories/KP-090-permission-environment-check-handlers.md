@@ -18,10 +18,10 @@ Implement onboarding check handlers for permission, relay test readiness, and en
 *   **Data Models:** Check result model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Permission checks produce actionable outcome codes.
-*   [ ] Environment checks identify blocking/non-blocking conditions.
-*   [ ] Relay readiness checks integrate with existing relay health sources.
-*   [ ] Check results feed onboarding state machine transitions.
+*   [x] Permission checks produce actionable outcome codes.
+*   [x] Environment checks identify blocking/non-blocking conditions.
+*   [x] Relay readiness checks integrate with existing relay health sources.
+*   [x] Check results feed onboarding state machine transitions.
 
 ## Business Rules & Logic
 *   Early failure clarity reduces setup confusion.
@@ -30,6 +30,6 @@ Implement onboarding check handlers for permission, relay test readiness, and en
 *   Depends on: KP-089, KP-048
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
