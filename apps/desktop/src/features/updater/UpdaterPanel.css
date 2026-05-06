@@ -1,0 +1,60 @@
+.kp-updater-panel {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.kp-updater-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.kp-updater-panel-title-wrap {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.kp-updater-panel-title {
+  margin: 0;
+  color: var(--color-text-primary);
+  font: var(--text-display-sm);
+}
+
+.kp-updater-panel-meta {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font: var(--text-body-sm);
+}
+
+.kp-updater-panel-meta code,
+.kp-updater-panel-copy code {
+  color: var(--color-text-primary);
+  font: var(--text-mono-sm);
+}
+
+.kp-updater-panel-message {
+  margin: 0;
+  color: var(--color-text-primary);
+  font: var(--text-body-md);
+}
+
+.kp-updater-panel-copy {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font: var(--text-body-sm);
+}
+
+.kp-updater-panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.kp-updater-panel--update_error {
+  border-color: rgba(232, 64, 64, 0.35);
+}
+
+.kp-updater-panel--ready_to_restart {
+  border-color: var(--color-signal-border);
+}

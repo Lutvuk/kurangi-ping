@@ -18,10 +18,10 @@ Create updater status panel with check/update action controls and state-driven m
 *   **Data Models:** Updater view model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Panel reflects normalized updater states.
-*   [ ] Controls support check/download/apply actions as allowed by state.
-*   [ ] Error states provide actionable retry path.
-*   [ ] Styling remains aligned with design-system rules.
+*   [x] Panel reflects normalized updater states.
+*   [x] Controls support check/download/apply actions as allowed by state.
+*   [x] Error states provide actionable retry path.
+*   [x] Styling remains aligned with design-system rules.
 
 ## Business Rules & Logic
 *   User should understand update status quickly without technical complexity.
@@ -30,6 +30,6 @@ Create updater status panel with check/update action controls and state-driven m
 *   Depends on: KP-101, KP-020
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

@@ -11,6 +11,7 @@ import { PingMetricsPanel, type MetricsTrendSample, type MetricsViewModel } from
 import { OnboardingFlow, type OnboardingStateMachineView } from "../features/onboarding";
 import { RelayHealthPanel } from "../features/relay";
 import { LifecycleStatusPresenter, ToggleController } from "../features/routing";
+import { UpdaterPanel, type UpdaterActionResult, type UpdaterViewModel } from "../features/updater";
 import { AppShell } from "../layout/AppShell";
 import { Panel } from "../layout/Panel";
 import "./foundation-showcase.css";
@@ -97,6 +98,12 @@ function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean
     relayReady: false,
     gameDetected: false,
     connected: false
+  });
+  const [updaterModel, setUpdaterModel] = useState<UpdaterViewModel>({
+    state: "up_to_date",
+    channel: "stable",
+    currentVersion: "1.0.0",
+    lastCheckedAtLabel: "just now"
   });
 
   async function handleRescanMock() {
@@ -195,6 +202,89 @@ function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean
         ]
       }
     });
+  }
+
+  async function handleCheckForUpdate(): Promise<UpdaterActionResult> {
+    if (updaterModel.state === "ready_to_restart") {
+      const nextModel: UpdaterViewModel = {
+        ...updaterModel,
+        lastCheckedAtLabel: "restart pending"
+      };
+      return {
+        ok: true,
+        nextModel
+      };
+    }
+
+    const nextModel: UpdaterViewModel = {
+      ...updaterModel,
+      state: "update_available",
+      targetVersion: "1.1.0",
+      canApply: false,
+      reasonCode: undefined,
+      message: undefined,
+      lastCheckedAtLabel: "just now"
+    };
+    return {
+      ok: true,
+      nextModel
+    };
+  }
+
+  async function handleDownloadUpdate(): Promise<UpdaterActionResult> {
+    setUpdaterModel((previous) => ({
+      ...previous,
+      state: "downloading",
+      message: "Sedang mengunduh paket update. Jangan tutup aplikasi."
+    }));
+
+    return new Promise<UpdaterActionResult>((resolve) => {
+      window.setTimeout(() => {
+        const nextModel: UpdaterViewModel = {
+          state: "update_available",
+          channel: "stable",
+          currentVersion: "1.0.0",
+          targetVersion: "1.1.0",
+          canApply: true,
+          lastCheckedAtLabel: "just now",
+          message: "Paket update selesai diunduh. Siap di-apply."
+        };
+        resolve({
+          ok: true,
+          nextModel
+        });
+      }, 450);
+    });
+  }
+
+  async function handleApplyUpdate(): Promise<UpdaterActionResult> {
+    const nextModel: UpdaterViewModel = {
+      state: "ready_to_restart",
+      channel: "stable",
+      currentVersion: "1.0.0",
+      targetVersion: "1.1.0",
+      canApply: false,
+      message: "Update sudah siap. Restart aplikasi untuk menerapkan update.",
+      lastCheckedAtLabel: "just now"
+    };
+    return {
+      ok: true,
+      nextModel
+    };
+  }
+
+  async function handleRetryUpdate(): Promise<UpdaterActionResult> {
+    const nextModel: UpdaterViewModel = {
+      state: "up_to_date",
+      channel: "stable",
+      currentVersion: "1.0.0",
+      message: "Retry selesai. Lakukan check update lagi.",
+      lastCheckedAtLabel: "just now"
+    };
+    return {
+      ok: true,
+      nextModel
+    };
   }
 
   return (
@@ -325,6 +415,32 @@ function ShowcaseViewport({ title, compact }: { title: string; compact?: boolean
           }}
         />
       </div>
+
+      <div className="kp-showcase-group">
+        <h3 className="kp-showcase-subtitle">Updater Lifecycle</h3>
+        <div className="kp-showcase-stack">
+          <UpdaterPanel
+            model={updaterModel}
+            onCheckForUpdate={handleCheckForUpdate}
+            onDownloadUpdate={handleDownloadUpdate}
+            onApplyUpdate={handleApplyUpdate}
+            onRetry={handleRetryUpdate}
+          />
+          <UpdaterPanel
+            model={{
+              state: "update_error",
+              channel: "beta",
+              currentVersion: "1.0.0-beta.2",
+              reasonCode: "updater_download_transport_failed",
+              message: "Koneksi relay update gagal. Gunakan retry untuk coba lagi.",
+              lastCheckedAtLabel: "2 minutes ago",
+              targetVersion: "1.1.0-beta.1"
+            }}
+            onCheckForUpdate={handleCheckForUpdate}
+            onRetry={handleRetryUpdate}
+          />
+        </div>
+      </div>
     </section>
   );
 }
@@ -333,7 +449,7 @@ export function FoundationShowcasePage() {
   return (
     <AppShell
       sidebar={{ activeId: "routing", title: "Kurangi Ping 2" }}
-      topBar={{ statusLabel: "Build", statusValue: "Foundation Showcase", meta: "KP-024 to KP-094" }}
+      topBar={{ statusLabel: "Build", statusValue: "Foundation Showcase", meta: "KP-024 to KP-103" }}
       contentClassName="kp-showcase-content"
     >
       <Panel eyebrow="Foundation QA" title="UI Composition Showcase">
