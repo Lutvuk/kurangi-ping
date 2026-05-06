@@ -1,0 +1,2 @@
+name=missing_available_segment
+steps=1000|sess-missing|updater_download|downloading|stable|1.3.0|_;1300|sess-missing|updater_apply|ready_to_restart|stable|1.3.0|_

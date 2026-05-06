@@ -18,10 +18,10 @@ Validate updater event stream supports KPI extraction for adoption, success rate
 *   **Data Models:** Updater event sequence fixtures
 
 ## Acceptance Criteria (Technical)
-*   [ ] KPI derivation for update adoption rate is reproducible.
-*   [ ] Failure category breakdown is derivable from reason codes.
-*   [ ] Missing sequence segments fail assertions.
-*   [ ] Output supports release readiness decisioning.
+*   [x] KPI derivation for update adoption rate is reproducible.
+*   [x] Failure category breakdown is derivable from reason codes.
+*   [x] Missing sequence segments fail assertions.
+*   [x] Output supports release readiness decisioning.
 
 ## Business Rules & Logic
 *   Update pipeline decisions should be data-driven.
@@ -30,6 +30,6 @@ Validate updater event stream supports KPI extraction for adoption, success rate
 *   Depends on: KP-102, KP-107, KP-088
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
