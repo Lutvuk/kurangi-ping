@@ -1,0 +1,186 @@
+name: Release Trust Gate
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: "Release channel"
+        required: true
+        default: stable
+        type: choice
+        options:
+          - stable
+          - beta
+      beta_signing_policy:
+        description: "Beta signing policy"
+        required: true
+        default: allow_unsigned
+        type: choice
+        options:
+          - allow_unsigned
+          - require_signed
+      expected_signer:
+        description: "Expected signer identity (leave empty to skip signer identity check)"
+        required: false
+        default: "kp-ci-signer"
+        type: string
+      simulate_unsigned_artifact:
+        description: "Skip signature generation for the release gate sample artifact"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  signing_gate_reproducibility:
+    name: Signing Gate Reproducibility
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - case_id: stable-signed-pass
+            channel: stable
+            beta_policy: allow_unsigned
+            signed: true
+            expected: pass
+          - case_id: stable-unsigned-fail
+            channel: stable
+            beta_policy: allow_unsigned
+            signed: false
+            expected: fail
+          - case_id: beta-unsigned-pass
+            channel: beta
+            beta_policy: allow_unsigned
+            signed: false
+            expected: pass
+          - case_id: beta-require-signed-fail
+            channel: beta
+            beta_policy: require_signed
+            signed: false
+            expected: fail
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build sample artifact and optional signature
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path out | Out-Null
+          $artifactPath = Join-Path (Resolve-Path out).Path ("${{ matrix.case_id }}.bin")
+          "sample:${{ matrix.case_id }}" | Set-Content -LiteralPath $artifactPath -NoNewline
+
+          if ("${{ matrix.signed }}" -eq "true") {
+            $hash = (Get-FileHash -LiteralPath $artifactPath -Algorithm SHA256).Hash.ToLowerInvariant()
+            $payload = @{
+              artifactName = (Split-Path -Leaf $artifactPath)
+              sha256 = $hash
+              signer = "kp-ci-signer"
+            } | ConvertTo-Json
+            $payload | Set-Content -LiteralPath "$artifactPath.sig.json" -NoNewline
+          }
+
+      - name: Execute signing gate and assert expected outcome
+        shell: pwsh
+        run: |
+          $artifactPath = Join-Path (Resolve-Path out).Path ("${{ matrix.case_id }}.bin")
+          $signaturePath = "$artifactPath.sig.json"
+          $logPath = Join-Path (Resolve-Path out).Path ("signing-${{ matrix.case_id }}.log")
+          $expected = "${{ matrix.expected }}"
+          $actual = "pass"
+
+          try {
+            ./scripts/ci-verify-signing.ps1 `
+              -Channel "${{ matrix.channel }}" `
+              -ArtifactPath $artifactPath `
+              -SignaturePath $signaturePath `
+              -BetaSigningPolicy "${{ matrix.beta_policy }}" `
+              -ExpectedSigner "kp-ci-signer" `
+              -LogPath $logPath
+          }
+          catch {
+            Write-Host "Expected gate exception path: $($_.Exception.Message)"
+            $actual = "fail"
+          }
+
+          if ($actual -ne $expected) {
+            throw "Signing gate mismatch for case ${{ matrix.case_id }}: expected=$expected actual=$actual"
+          }
+
+          Write-Host "SIGNING_GATE_REPRO_CASE=${{ matrix.case_id }}"
+          Write-Host "SIGNING_GATE_REPRO_RESULT=pass"
+
+      - name: Upload reproducibility logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: signing-gate-log-${{ matrix.case_id }}
+          path: out/signing-${{ matrix.case_id }}.log
+          if-no-files-found: error
+
+  release_signing_gate:
+    name: Release Signing Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve release gate configuration
+        id: release_config
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "push") {
+            "channel=stable" >> $env:GITHUB_OUTPUT
+            "beta_policy=allow_unsigned" >> $env:GITHUB_OUTPUT
+            "expected_signer=kp-ci-signer" >> $env:GITHUB_OUTPUT
+            "simulate_unsigned=false" >> $env:GITHUB_OUTPUT
+            exit 0
+          }
+
+          "channel=${{ inputs.channel }}" >> $env:GITHUB_OUTPUT
+          "beta_policy=${{ inputs.beta_signing_policy }}" >> $env:GITHUB_OUTPUT
+          "expected_signer=${{ inputs.expected_signer }}" >> $env:GITHUB_OUTPUT
+          "simulate_unsigned=${{ inputs.simulate_unsigned_artifact }}" >> $env:GITHUB_OUTPUT
+
+      - name: Prepare release artifact sample
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path out | Out-Null
+          $artifactPath = Join-Path (Resolve-Path out).Path "kurangi-ping-desktop-release.bin"
+          "release:$env:GITHUB_REF_NAME" | Set-Content -LiteralPath $artifactPath -NoNewline
+
+          if ("${{ steps.release_config.outputs.simulate_unsigned }}" -eq "false") {
+            $hash = (Get-FileHash -LiteralPath $artifactPath -Algorithm SHA256).Hash.ToLowerInvariant()
+            $payload = @{
+              artifactName = (Split-Path -Leaf $artifactPath)
+              sha256 = $hash
+              signer = "kp-ci-signer"
+            } | ConvertTo-Json
+            $payload | Set-Content -LiteralPath "$artifactPath.sig.json" -NoNewline
+          }
+
+      - name: Enforce signing gate
+        shell: pwsh
+        run: |
+          $artifactPath = Join-Path (Resolve-Path out).Path "kurangi-ping-desktop-release.bin"
+          ./scripts/ci-verify-signing.ps1 `
+            -Channel "${{ steps.release_config.outputs.channel }}" `
+            -ArtifactPath $artifactPath `
+            -SignaturePath "$artifactPath.sig.json" `
+            -BetaSigningPolicy "${{ steps.release_config.outputs.beta_policy }}" `
+            -ExpectedSigner "${{ steps.release_config.outputs.expected_signer }}" `
+            -LogPath (Join-Path (Resolve-Path out).Path "release-signing-gate.log")
+
+      - name: Upload release gate log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-signing-gate-log
+          path: out/release-signing-gate.log
+          if-no-files-found: error

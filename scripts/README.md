@@ -45,6 +45,7 @@ pnpm db:seed:test
 pnpm db:telemetry:prune
 pnpm db:telemetry:prune:test
 ./scripts/ci-verify-db.ps1
+./scripts/ci-verify-signing.ps1 -Channel stable -ArtifactPath <artifact-path> -SignaturePath <artifact-path>.sig.json
 ```
 
 - `pnpm db:migrate` applies pending SQLite `*.up.sql` files in lexical order.
@@ -55,3 +56,4 @@ pnpm db:telemetry:prune:test
 - `pnpm db:telemetry:prune` prunes expired telemetry batches/events and prints retention summary metrics.
 - `pnpm db:telemetry:prune:test` validates retention pruning policy (preserve retryable rows + idempotent re-run).
 - `./scripts/ci-verify-db.ps1` runs CI-style fresh DB verification (migrate + idempotency + constraint/index checks, plus optional seed checks).
+- `./scripts/ci-verify-signing.ps1` enforces release signing policy (`stable` always signed, `beta` configurable via `-BetaSigningPolicy`).

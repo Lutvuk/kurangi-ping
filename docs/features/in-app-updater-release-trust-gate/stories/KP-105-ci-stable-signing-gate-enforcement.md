@@ -18,10 +18,10 @@ Enforce CI gate that blocks stable releases when artifact signing is missing or 
 *   **Data Models:** Release gate metadata
 
 ## Acceptance Criteria (Technical)
-*   [ ] Stable release job fails on unsigned artifact.
-*   [ ] Signed artifact verification is explicit in pipeline logs.
-*   [ ] Beta channel policy remains configurable.
-*   [ ] Gate outcome is reproducible in CI.
+*   [x] Stable release job fails on unsigned artifact.
+*   [x] Signed artifact verification is explicit in pipeline logs.
+*   [x] Beta channel policy remains configurable.
+*   [x] Gate outcome is reproducible in CI.
 
 ## Business Rules & Logic
 *   Stable trust policy is non-negotiable.
@@ -30,6 +30,6 @@ Enforce CI gate that blocks stable releases when artifact signing is missing or 
 *   Depends on: KP-009
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
