@@ -133,7 +133,8 @@ fn map_validator_error(
 ) -> GameDetectedSchemaError {
     let code = match error.code {
         TelemetryValidationErrorCode::UnknownEventName
-        | TelemetryValidationErrorCode::UnknownPayloadKey => {
+        | TelemetryValidationErrorCode::UnknownPayloadKey
+        | TelemetryValidationErrorCode::SensitiveFieldViolation => {
             GameDetectedSchemaErrorCode::InvalidPayloadKeys
         }
         TelemetryValidationErrorCode::MissingRequiredKey => {

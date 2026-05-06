@@ -13,6 +13,7 @@ pub enum TelemetryValidationErrorCode {
     UnknownEventName,
     UnknownPayloadKey,
     MissingRequiredKey,
+    SensitiveFieldViolation,
 }
 
 impl TelemetryValidationErrorCode {
@@ -21,6 +22,7 @@ impl TelemetryValidationErrorCode {
             Self::UnknownEventName => "unknown_event_name",
             Self::UnknownPayloadKey => "unknown_payload_key",
             Self::MissingRequiredKey => "missing_required_key",
+            Self::SensitiveFieldViolation => "sensitive_field_violation",
         }
     }
 }
@@ -32,7 +34,7 @@ pub struct TelemetryValidationError {
 }
 
 impl TelemetryValidationError {
-    fn new(code: TelemetryValidationErrorCode, message: impl Into<String>) -> Self {
+    pub(crate) fn new(code: TelemetryValidationErrorCode, message: impl Into<String>) -> Self {
         Self {
             code,
             message: message.into(),

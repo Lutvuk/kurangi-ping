@@ -215,7 +215,8 @@ fn map_validator_error(
 ) -> RelayFailoverSchemaError {
     let code = match error.code {
         TelemetryValidationErrorCode::UnknownEventName
-        | TelemetryValidationErrorCode::UnknownPayloadKey => {
+        | TelemetryValidationErrorCode::UnknownPayloadKey
+        | TelemetryValidationErrorCode::SensitiveFieldViolation => {
             RelayFailoverSchemaErrorCode::InvalidPayloadKeys
         }
         TelemetryValidationErrorCode::MissingRequiredKey => {

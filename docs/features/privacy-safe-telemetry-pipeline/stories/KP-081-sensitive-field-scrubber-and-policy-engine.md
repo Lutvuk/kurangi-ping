@@ -18,10 +18,10 @@ Implement policy-driven scrubbing/rejection for prohibited fields (PII and sensi
 *   **Data Models:** Scrub result model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Prohibited fields are never persisted or transmitted.
-*   [ ] Policy mode (reject/sanitize) is configurable.
-*   [ ] Violations are logged in non-sensitive diagnostic form.
-*   [ ] Nested payload fields are handled safely.
+*   [x] Prohibited fields are never persisted or transmitted.
+*   [x] Policy mode (reject/sanitize) is configurable.
+*   [x] Violations are logged in non-sensitive diagnostic form.
+*   [x] Nested payload fields are handled safely.
 
 ## Business Rules & Logic
 *   Privacy boundaries must be enforced even on malformed producer payloads.
@@ -30,6 +30,6 @@ Implement policy-driven scrubbing/rejection for prohibited fields (PII and sensi
 *   Depends on: KP-080
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

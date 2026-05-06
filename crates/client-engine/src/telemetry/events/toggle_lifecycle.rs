@@ -136,7 +136,8 @@ fn map_validator_error(
 ) -> ToggleLifecycleSchemaError {
     let code = match error.code {
         TelemetryValidationErrorCode::UnknownEventName
-        | TelemetryValidationErrorCode::UnknownPayloadKey => {
+        | TelemetryValidationErrorCode::UnknownPayloadKey
+        | TelemetryValidationErrorCode::SensitiveFieldViolation => {
             ToggleLifecycleSchemaErrorCode::InvalidPayloadKeys
         }
         TelemetryValidationErrorCode::MissingRequiredKey => {

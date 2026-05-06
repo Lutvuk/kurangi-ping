@@ -146,7 +146,8 @@ fn map_validator_error(
 ) -> PingMeasuredSchemaError {
     let code = match error.code {
         TelemetryValidationErrorCode::UnknownEventName
-        | TelemetryValidationErrorCode::UnknownPayloadKey => {
+        | TelemetryValidationErrorCode::UnknownPayloadKey
+        | TelemetryValidationErrorCode::SensitiveFieldViolation => {
             PingMeasuredSchemaErrorCode::InvalidPayloadKeys
         }
         TelemetryValidationErrorCode::MissingRequiredKey => {
