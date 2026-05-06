@@ -1,5 +1,6 @@
 import { OnboardingStepper } from "../../components/modules";
 import { Card, StatusBadge } from "../../components/primitives";
+import { RecoveryPanel } from "./RecoveryPanel";
 import {
   current_onboarding_step_id,
   onboarding_reason_code,
@@ -29,12 +30,16 @@ export type OnboardingFlowActions = {
   onRunRelayTest?: () => void;
   onRunDetectionTest?: () => void;
   onRunFirstConnect?: () => void;
+  onRetryCurrentStep?: () => void;
+  onOpenTroubleshoot?: () => void;
+  onContinueSafe?: () => void;
 };
 
 export type OnboardingFlowProps = {
   machine: OnboardingStateMachineView;
   signals?: OnboardingFlowSignals;
   actions?: OnboardingFlowActions;
+  continueSafeAllowed?: boolean;
   isBusy?: boolean;
   className?: string;
 };
@@ -116,6 +121,7 @@ export function OnboardingFlow({
   machine,
   signals = {},
   actions = {},
+  continueSafeAllowed,
   isBusy = false,
   className
 }: OnboardingFlowProps) {
@@ -146,12 +152,16 @@ export function OnboardingFlow({
 
       {render_step_screen(focusedStep.id, focusedStep.state, signals, actions, isBusy)}
 
-      {reasonCode ? (
-        <p className="kp-onboarding-flow-reason">
-          Kendala saat ini: <code>{reasonCode}</code>
-        </p>
+      {reasonCode && (machine.state.state === "blocked" || machine.state.state === "failed") ? (
+        <RecoveryPanel
+          reasonCode={reasonCode}
+          continueSafeAllowed={continueSafeAllowed}
+          onRetry={actions.onRetryCurrentStep}
+          onGuidance={actions.onOpenTroubleshoot}
+          onContinueSafe={actions.onContinueSafe}
+          isBusy={isBusy}
+        />
       ) : null}
     </Card>
   );
 }
-

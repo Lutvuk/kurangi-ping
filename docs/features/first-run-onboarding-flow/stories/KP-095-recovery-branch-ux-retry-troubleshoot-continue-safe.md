@@ -18,10 +18,10 @@ Design and wire recovery branches for onboarding failures with clear retry/troub
 *   **Data Models:** Recovery action model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Failure states present at least retry + guidance action.
-*   [ ] Non-blocking paths allow safe continuation where permitted.
-*   [ ] Error messages map to backend reason codes.
-*   [ ] Accessibility checks pass for recovery interactions.
+*   [x] Failure states present at least retry + guidance action.
+*   [x] Non-blocking paths allow safe continuation where permitted.
+*   [x] Error messages map to backend reason codes.
+*   [x] Accessibility checks pass for recovery interactions.
 
 ## Business Rules & Logic
 *   Recovery UX should reduce abandonment during setup failures.
@@ -30,6 +30,6 @@ Design and wire recovery branches for onboarding failures with clear retry/troub
 *   Depends on: KP-090, KP-094
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

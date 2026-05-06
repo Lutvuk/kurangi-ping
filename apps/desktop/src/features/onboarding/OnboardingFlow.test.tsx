@@ -66,11 +66,31 @@ describe("OnboardingFlow", () => {
     });
 
     expect(screen.getByLabelText("Onboarding flow")).toBeInTheDocument();
-    expect(screen.getByRole("status")).toHaveTextContent("Action Needed");
+    const statusBadges = screen.getAllByRole("status");
+    expect(statusBadges[0]).toHaveTextContent("Action Needed");
     expect(screen.getByText("Koneksi pertama")).toBeInTheDocument();
     expect(screen.getByText("connect_attempt_failed")).toBeInTheDocument();
     expect(container.querySelector(".kp-onboarding-flow-header")).toBeTruthy();
     expect(container.querySelector(".kp-onboarding-step-screen")).toBeTruthy();
+    expect(screen.getByLabelText("Onboarding recovery panel")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Retry current onboarding step" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Open troubleshooting guidance" })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Continue onboarding without routing" })
+    ).toBeDisabled();
+  });
+
+  it("hides continue-safe action for strict blocking permission failures", () => {
+    render_flow({
+      state: {
+        state: "blocked",
+        blocked_step: "permission_check",
+        completed_steps: ["welcome"],
+        reason_code: "permission_admin_required"
+      }
+    });
+
+    expect(screen.getByLabelText("Onboarding recovery panel")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Continue onboarding without routing" })).toBeNull();
   });
 });
-
