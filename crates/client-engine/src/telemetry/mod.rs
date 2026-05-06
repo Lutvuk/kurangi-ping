@@ -3,11 +3,15 @@
 pub mod batch_queue;
 pub mod delivery_client;
 pub mod events;
+pub mod health_snapshot;
 pub mod retry_state_machine;
 pub mod scrubber;
 pub mod validator;
 
 use batch_queue::{BackpressureDiagnostic, BatchQueue, BatchQueueConfig};
+use delivery_client::TelemetryDeliveryDiagnostic;
+use health_snapshot::{build_telemetry_health_snapshot, TelemetryHealthSnapshot};
+use retry_state_machine::TelemetryBatchState;
 use scrubber::{
     scrub_or_reject_payload, SensitiveFieldAction, SensitiveFieldDiagnostic, SensitiveFieldPolicy,
 };
@@ -111,6 +115,19 @@ impl TelemetryService {
         self.sensitive_field_policy = policy;
     }
 
+    pub fn health_snapshot(
+        &self,
+        delivery_diagnostics: &[TelemetryDeliveryDiagnostic],
+        batch_states: &[TelemetryBatchState],
+    ) -> TelemetryHealthSnapshot {
+        build_telemetry_health_snapshot(
+            self.queue_depth(),
+            self.backpressure_diagnostics(),
+            delivery_diagnostics,
+            batch_states,
+        )
+    }
+
     pub fn enqueue(&mut self, event: TelemetryEvent) {
         match scrub_or_reject_payload(&event.name, &event.payload, self.sensitive_field_policy) {
             Ok(scrubbed) => {
@@ -204,6 +221,9 @@ impl Default for TelemetryService {
 #[cfg(test)]
 mod tests {
     use super::batch_queue::{BackpressurePolicy, BatchQueueConfig};
+    use super::delivery_client::TelemetryDeliveryDiagnostic;
+    use super::health_snapshot::LastDeliveryStatus;
+    use super::retry_state_machine::{TelemetryBatchState, TelemetryBatchStatus, TelemetryRetryPolicy};
     use super::scrubber::{SensitiveFieldAction, SensitiveFieldPolicy};
     use super::validator::UnknownKeyPolicy;
     use super::{TelemetryEvent, TelemetryPayload, TelemetryService, TelemetryValue};
@@ -393,5 +413,41 @@ mod tests {
         assert_eq!(diagnostics.len(), 1);
         assert_eq!(diagnostics[0].dropped_event_name, "routing_enabled");
         assert_eq!(diagnostics[0].incoming_event_name, "routing_enabled");
+    }
+
+    #[test]
+    fn health_snapshot_can_be_queried_without_blocking_main_queue_flow() {
+        let mut service = TelemetryService::with_batch_queue_config(BatchQueueConfig {
+            max_queue_depth: 2,
+            max_batch_size: 200,
+            backpressure_policy: BackpressurePolicy::DropOldest,
+        });
+        service.enqueue(TelemetryEvent::new("first", Default::default()));
+        service.enqueue(TelemetryEvent::new("second", Default::default()));
+        service.enqueue(TelemetryEvent::new("third", Default::default()));
+
+        let mut batch_state = TelemetryBatchState::new_queued(1_000, TelemetryRetryPolicy::default());
+        batch_state.status = TelemetryBatchStatus::RetryScheduled;
+        batch_state.attempt_count = 2;
+        let delivery = vec![TelemetryDeliveryDiagnostic {
+            status: "failed".to_string(),
+            http_status: Some(503),
+            retryable: true,
+            request_id: Some("req-last".to_string()),
+            error_code: Some("INTERNAL_ERROR".to_string()),
+            idempotency_key: "idem-last".to_string(),
+        }];
+
+        let snapshot = service.health_snapshot(&delivery, &[batch_state]);
+        assert_eq!(snapshot.queue_depth, 2);
+        assert_eq!(snapshot.drop_count, 1);
+        assert_eq!(snapshot.retry_scheduled_batches, 1);
+        assert_eq!(snapshot.total_retry_attempts, 2);
+        assert_eq!(snapshot.last_delivery_status, Some(LastDeliveryStatus::Failed));
+
+        let batch = service.drain_batch(10);
+        assert_eq!(batch.len(), 2);
+        assert_eq!(batch[0].name, "second");
+        assert_eq!(batch[1].name, "third");
     }
 }

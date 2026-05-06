@@ -18,10 +18,10 @@ Aggregate telemetry pipeline health stats for diagnostics and reliability monito
 *   **Data Models:** Pipeline health snapshot model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Snapshot includes queue depth, retry counts, drop counts, last delivery status.
-*   [ ] Snapshot can be queried without blocking main event flow.
-*   [ ] Values align with queue/delivery state machines.
-*   [ ] Snapshot output excludes sensitive payload details.
+*   [x] Snapshot includes queue depth, retry counts, drop counts, last delivery status.
+*   [x] Snapshot can be queried without blocking main event flow.
+*   [x] Values align with queue/delivery state machines.
+*   [x] Snapshot output excludes sensitive payload details.
 
 ## Business Rules & Logic
 *   Operators need quick signal on telemetry subsystem health.
@@ -30,6 +30,6 @@ Aggregate telemetry pipeline health stats for diagnostics and reliability monito
 *   Depends on: KP-084
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
