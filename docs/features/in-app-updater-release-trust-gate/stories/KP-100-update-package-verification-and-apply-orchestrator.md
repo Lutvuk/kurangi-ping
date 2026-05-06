@@ -18,10 +18,10 @@ Orchestrate safe update download/verify/apply flow with recoverable failure hand
 *   **Data Models:** Update operation result model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Update package verification occurs before apply.
-*   [ ] Failed downloads/applies move to recoverable error state.
-*   [ ] Core app remains operational after updater failure.
-*   [ ] Apply flow is deterministic and test-covered.
+*   [x] Update package verification occurs before apply.
+*   [x] Failed downloads/applies move to recoverable error state.
+*   [x] Core app remains operational after updater failure.
+*   [x] Apply flow is deterministic and test-covered.
 
 ## Business Rules & Logic
 *   Update safety is higher priority than update speed.
@@ -30,6 +30,6 @@ Orchestrate safe update download/verify/apply flow with recoverable failure hand
 *   Depends on: KP-099
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
