@@ -18,10 +18,10 @@ Validate event/state data can derive onboarding funnel KPIs (completion rate, st
 *   **Data Models:** Onboarding event/step timeline fixtures
 
 ## Acceptance Criteria (Technical)
-*   [ ] Completion and drop-off KPI derivation is reproducible.
-*   [ ] Missing/invalid event sequences fail assertions.
-*   [ ] Time-to-connect metric derivation is validated.
-*   [ ] Output supports product tuning decisions.
+*   [x] Completion and drop-off KPI derivation is reproducible.
+*   [x] Missing/invalid event sequences fail assertions.
+*   [x] Time-to-connect metric derivation is validated.
+*   [x] Output supports product tuning decisions.
 
 ## Business Rules & Logic
 *   Funnel analytics must be reliable for launch optimization.
@@ -30,6 +30,6 @@ Validate event/state data can derive onboarding funnel KPIs (completion rate, st
 *   Depends on: KP-093, KP-097, KP-088
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

@@ -1,0 +1,2 @@
+name=missing_completion_event_onboarding_funnel_kpi
+journeys=sess-missing|0|welcome@1000,permission_check@1800,relay_test@2600,game_detection_test@3600,first_connect@5100|_

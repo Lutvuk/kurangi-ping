@@ -1,0 +1,2 @@
+name=nominal_onboarding_funnel_kpi
+journeys=sess-a|0|welcome@1000,permission_check@2000,relay_test@3200,game_detection_test@4500,first_connect@6200|onboarding_completed@6200@6@ffxiv@welcome>permission_check>relay_test>game_detection_test>first_connect;sess-b|0|welcome@900,permission_check@1800|_;sess-c|0|welcome@800,permission_check@1700,relay_test@2700,game_detection_test@3800,first_connect@5200|onboarding_completed@5200@5@valorant@welcome>permission_check>relay_test>game_detection_test>first_connect

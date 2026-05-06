@@ -1,0 +1,2 @@
+name=invalid_event_timing_onboarding_funnel_kpi
+journeys=sess-invalid-time|0|welcome@1000,permission_check@1800,relay_test@2600,game_detection_test@3700,first_connect@5200|onboarding_completed@4800@4@ffxiv@welcome>permission_check>relay_test>game_detection_test>first_connect
