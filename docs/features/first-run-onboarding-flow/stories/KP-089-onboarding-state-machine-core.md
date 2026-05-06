@@ -1,4 +1,4 @@
-﻿# KP-089: Onboarding State Machine Core
+﻿# KP-089: c
 
 **Epic:** EPIC-ONBOARDING
 **Layer:** L3-backend
@@ -18,10 +18,10 @@ Implement deterministic onboarding state machine across defined setup steps.
 *   **Data Models:** Onboarding step/state model
 
 ## Acceptance Criteria (Technical)
-*   [ ] State machine supports canonical 5-step progression.
-*   [ ] Invalid transitions are rejected.
-*   [ ] Terminal states are explicit (completed, blocked, failed).
-*   [ ] State model is serializable for UI sync.
+*   [x] State machine supports canonical 5-step progression.
+*   [x] Invalid transitions are rejected.
+*   [x] Terminal states are explicit (completed, blocked, failed).
+*   [x] State model is serializable for UI sync.
 
 ## Business Rules & Logic
 *   Onboarding behavior must be predictable and restart-safe.
@@ -30,6 +30,6 @@ Implement deterministic onboarding state machine across defined setup steps.
 *   Depends on: KP-034
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
