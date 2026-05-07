@@ -163,7 +163,7 @@ describe("App IPC toggle wiring", () => {
     fireEvent.click(screen.getByRole("button", { name: "Routing toggle off" }));
 
     const alert = await screen.findByRole("alert");
-    expect(alert).toHaveTextContent("Tidak bisa memproses perintah routing sekarang. Coba lagi.");
+    expect(alert).toHaveTextContent("Tidak bisa memproses perintah ON routing sekarang. Coba lagi.");
     expect(alert).not.toHaveTextContent("stacktrace");
     await waitFor(() =>
       expect(screen.getByTestId("routing-connection-status")).toHaveTextContent("No Relay Available")
@@ -182,7 +182,7 @@ describe("App IPC toggle wiring", () => {
     await waitFor(() =>
       expect(within(detectionPanel).getByRole("status")).toHaveTextContent("Error")
     );
-    expect(within(detectionPanel).getByText("ipc_unknown_failure")).toBeInTheDocument();
+    expect(within(detectionPanel).getByText("ipc_detection_scan_failed")).toBeInTheDocument();
     expect(within(detectionPanel).getByText("Detection status tidak tersedia.")).toBeInTheDocument();
     expect(screen.queryByText("stacktrace")).not.toBeInTheDocument();
   });

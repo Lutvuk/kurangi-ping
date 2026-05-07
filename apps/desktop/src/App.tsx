@@ -3,6 +3,7 @@ import { ConnectionStatusBadge, PrimaryToggle } from "./components/modules";
 import { DetectionPanel } from "./features/detection";
 import { PingMetricsPanel } from "./features/metrics";
 import { useAppShellIpcState, type AppShellIpcActions } from "./features/shell";
+import { presentIpcFailureState } from "./lib/errors/ipcErrorMapper";
 import {
   attachShellListeners,
   createListenerRegistryMetadata,
@@ -49,15 +50,24 @@ export default function App() {
             });
       actions.applyRoutingInvokeResponse(response);
       if (response.reasonCode) {
-        setCommandFeedback("Perintah routing ditolak sistem. Coba lagi.");
+        const rejected = presentIpcFailureState({
+          context: command === "on" ? "routing_toggle_on" : "routing_toggle_off",
+          reasonCode: response.reasonCode
+        });
+        setCommandFeedback(rejected.banner?.message ?? rejected.uiError.userMessage);
       }
     } catch {
-      actions.applyRoutingInvokeResponse({
-        state: "error",
-        reasonCode: "ipc_unknown_failure",
-        message: "Toggle command failed."
+      const failure = presentIpcFailureState({
+        context: command === "on" ? "routing_toggle_on" : "routing_toggle_off"
       });
-      setCommandFeedback("Tidak bisa memproses perintah routing sekarang. Coba lagi.");
+      actions.applyRoutingInvokeResponse(
+        failure.routingResponse ?? {
+          state: "error",
+          reasonCode: "ipc_unknown_failure",
+          message: failure.uiError.userMessage
+        }
+      );
+      setCommandFeedback(failure.banner?.message ?? failure.uiError.userMessage);
     } finally {
       setInFlightCommand(null);
     }
@@ -91,11 +101,16 @@ export default function App() {
         if (!active) {
           return;
         }
-        actions.applyDetectionQueryResponse({
-          state: "not_detected",
-          reasonCode: "ipc_unknown_failure",
-          message: "Detection status tidak tersedia."
+        const failure = presentIpcFailureState({
+          context: "detection_startup_query"
         });
+        actions.applyDetectionQueryResponse(
+          failure.detectionResponse ?? {
+            state: "not_detected",
+            reasonCode: failure.uiError.reasonCode,
+            message: failure.uiError.userMessage
+          }
+        );
       }
     })();
 
@@ -193,26 +208,40 @@ function handleListenerAttachError(
   setCommandFeedback: (value: string | null) => void
 ) {
   if (key === "routing_state_changed") {
-    setCommandFeedback("Sinkronisasi status routing sedang tidak tersedia.");
+    const failure = presentIpcFailureState({
+      context: "listener_attach_routing"
+    });
+    setCommandFeedback(failure.banner?.message ?? failure.uiError.userMessage);
     return;
   }
 
   if (key === "detection_status_updated") {
-    actions.applyDetectionQueryResponse({
-      state: "not_detected",
-      reasonCode: "ipc_unknown_failure",
-      message: "Sinkronisasi detection status tidak tersedia."
+    const failure = presentIpcFailureState({
+      context: "listener_attach_detection"
     });
+    actions.applyDetectionQueryResponse(
+      failure.detectionResponse ?? {
+        state: "not_detected",
+        reasonCode: failure.uiError.reasonCode,
+        message: failure.uiError.userMessage
+      }
+    );
     return;
   }
 
-  actions.applyMetricsSampleEvent({
-    sampledAtUnixMs: Date.now(),
-    state: "degraded",
-    baselinePingMs: null,
-    routedPingMs: null,
-    jitterMs: null,
-    packetLossPct: null,
-    reasonCode: "ipc_metrics_stream_unavailable"
+  const failure = presentIpcFailureState({
+    context: "listener_attach_metrics",
+    atUnixMs: Date.now()
   });
+  actions.applyMetricsSampleEvent(
+    failure.metricsPayload ?? {
+      sampledAtUnixMs: Date.now(),
+      state: "degraded",
+      baselinePingMs: null,
+      routedPingMs: null,
+      jitterMs: null,
+      packetLossPct: null,
+      reasonCode: failure.uiError.reasonCode
+    }
+  );
 }

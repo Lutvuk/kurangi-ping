@@ -18,10 +18,10 @@ Normalize invoke/listen failures di app shell ke reason code UI-safe supaya feed
 *   **Data Models:** `UiSafeIpcError`, `ShellErrorBannerState`
 
 ## Acceptance Criteria (Technical)
-*   [ ] Error invoke ON/OFF dan detection query dipetakan ke reason code `ipc_*` yang disetujui.
-*   [ ] Error listener attach dipresentasikan lewat state UI aman (tanpa stack trace/raw command internals).
-*   [ ] UX fallback tetap memungkinkan user lanjut menggunakan mode aman bila tersedia.
-*   [ ] Mapping reuse taxonomy dari kontrak backend IPC.
+*   [x] Error invoke ON/OFF dan detection query dipetakan ke reason code `ipc_*` yang disetujui.
+*   [x] Error listener attach dipresentasikan lewat state UI aman (tanpa stack trace/raw command internals).
+*   [x] UX fallback tetap memungkinkan user lanjut menggunakan mode aman bila tersedia.
+*   [x] Mapping reuse taxonomy dari kontrak backend IPC.
 
 ## Business Rules & Logic
 *   Kegagalan IPC harus bisa dipahami user tanpa membuka informasi teknis sensitif.
@@ -30,6 +30,6 @@ Normalize invoke/listen failures di app shell ke reason code UI-safe supaya feed
 *   Depends on: KP-119, KP-120, KP-121, KP-113
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
