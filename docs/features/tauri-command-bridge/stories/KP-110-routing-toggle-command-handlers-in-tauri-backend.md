@@ -18,10 +18,10 @@ Implement Tauri command handlers that bridge frontend toggle actions to Rust rou
 *   **Data Models:** Routing command request/response contract
 
 ## Acceptance Criteria (Technical)
-*   [ ] `routing_toggle_on` command invokes Rust routing lifecycle ON path.
-*   [ ] `routing_toggle_off` command invokes Rust routing lifecycle OFF path.
-*   [ ] Command responses return normalized state payload usable by frontend presenter.
-*   [ ] Recoverable backend failures are mapped to UI-safe reason codes.
+*   [x] `routing_toggle_on` command invokes Rust routing lifecycle ON path.
+*   [x] `routing_toggle_off` command invokes Rust routing lifecycle OFF path.
+*   [x] Command responses return normalized state payload usable by frontend presenter.
+*   [x] Recoverable backend failures are mapped to UI-safe reason codes.
 
 ## Business Rules & Logic
 *   Toggle actions must stay idempotent and safe under repeated clicks.
@@ -30,6 +30,6 @@ Implement Tauri command handlers that bridge frontend toggle actions to Rust rou
 *   Depends on: KP-109, KP-058, KP-059, KP-060
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
