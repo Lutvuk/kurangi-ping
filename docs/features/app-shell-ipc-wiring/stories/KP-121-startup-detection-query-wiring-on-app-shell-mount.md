@@ -18,10 +18,10 @@ Fetch detection status via IPC saat app shell selesai mount agar `DetectionPanel
 *   **Data Models:** `DetectionStatusResponse`, `DetectionPanelViewModel`
 
 ## Acceptance Criteria (Technical)
-*   [ ] App shell memanggil `invoke("detection_get_status")` sekali pada startup lifecycle.
-*   [ ] Response sukses di-map ke state UI `detected/not_detected` yang kompatibel dengan `DetectionPanel`.
-*   [ ] Response failure di-map ke error state UI-safe tanpa raw internal error.
-*   [ ] Startup query bersifat idempotent untuk remount/hot-reload.
+*   [x] App shell memanggil `invoke("detection_get_status")` sekali pada startup lifecycle.
+*   [x] Response sukses di-map ke state UI `detected/not_detected` yang kompatibel dengan `DetectionPanel`.
+*   [x] Response failure di-map ke error state UI-safe tanpa raw internal error.
+*   [x] Startup query bersifat idempotent untuk remount/hot-reload.
 
 ## Business Rules & Logic
 *   User harus mendapat status detection secepat mungkin tanpa menunggu event tambahan.
@@ -30,6 +30,6 @@ Fetch detection status via IPC saat app shell selesai mount agar `DetectionPanel
 *   Depends on: KP-118, KP-114, KP-111
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
