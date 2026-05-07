@@ -1,8 +1,7 @@
 use std::sync::Mutex;
 
 use client_engine::routing::{
-    RoutingState, ToggleCommand, ToggleCommandResult, ToggleOrchestrator, ToggleRejectionKind,
-    ToggleResultCode,
+    RoutingState, ToggleCommand, ToggleCommandResult, ToggleOrchestrator, ToggleResultCode,
 };
 use tauri::{AppHandle, State};
 
@@ -10,6 +9,7 @@ use super::contracts::{
     RoutingLifecycleResponse, RoutingLifecycleState, RoutingToggleOffRequest,
     RoutingToggleOnRequest,
 };
+use super::error_map::{map_ipc_error_reason, map_routing_rejection_kind, IpcErrorKind};
 use super::event_bridge::{emit_routing_state_changed, EventBridgeState};
 
 #[derive(Debug, Default)]
@@ -77,7 +77,7 @@ fn execute_with_state(
         }
         Err(_) => Err(RoutingLifecycleResponse {
             state: RoutingLifecycleState::Error,
-            reason_code: Some("ipc_unknown_failure".to_string()),
+            reason_code: Some(map_ipc_error_reason(IpcErrorKind::UnknownFailure).to_string()),
             message: Some("routing command state is unavailable".to_string()),
         }),
     }
@@ -103,11 +103,8 @@ fn normalize_toggle_result(result: &ToggleCommandResult) -> RoutingLifecycleResp
             message: None,
         },
         ToggleResultCode::IllegalTransitionRejected => {
-            let reason_code = match result.rejection_kind {
-                Some(ToggleRejectionKind::UnsupportedStateForCommand) => "ipc_invalid_state",
-                Some(ToggleRejectionKind::StateMachineRejectedTransition) => "ipc_command_rejected",
-                None => "ipc_unknown_failure",
-            };
+            let reason_code =
+                map_ipc_error_reason(map_routing_rejection_kind(result.rejection_kind));
 
             RoutingLifecycleResponse {
                 state: normalized_state,

@@ -10,6 +10,7 @@ use super::contracts::{
     MetricsEmissionState, MetricsPingSampledEventPayload, RoutingLifecycleResponse,
     RoutingLifecycleState, RoutingStateChangedEventPayload,
 };
+use super::error_map::{map_ipc_error_reason, map_metrics_reason_kind};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct EmittedIpcEvent {
@@ -117,12 +118,7 @@ fn map_metrics_state(
         MetricsState::Degraded | MetricsState::Error => MetricsEmissionState::Degraded,
     };
 
-    let normalized_reason = match reason_code {
-        Some(MetricsStateReasonCode::FreshnessTimeout) => Some("ipc_timeout"),
-        Some(_) => Some("ipc_metrics_stream_unavailable"),
-        None if matches!(state, MetricsState::Error) => Some("ipc_metrics_stream_unavailable"),
-        None => None,
-    };
+    let normalized_reason = map_metrics_reason_kind(state, reason_code).map(map_ipc_error_reason);
 
     (normalized_state, normalized_reason)
 }

@@ -18,10 +18,10 @@ Normalize IPC command and event failure cases into stable reason codes that fron
 *   **Data Models:** IPC reason code enum
 
 ## Acceptance Criteria (Technical)
-*   [ ] Routing/detection/metrics IPC failures map to bounded reason code set.
-*   [ ] Unknown failures map to safe fallback reason code.
-*   [ ] Reason-code format is compatible with existing UI error presenters.
-*   [ ] Unit tests cover deterministic mapping behavior.
+*   [x] Routing/detection/metrics IPC failures map to bounded reason code set.
+*   [x] Unknown failures map to safe fallback reason code.
+*   [x] Reason-code format is compatible with existing UI error presenters.
+*   [x] Unit tests cover deterministic mapping behavior.
 
 ## Business Rules & Logic
 *   Diagnostic errors should be actionable without exposing sensitive internals.
@@ -30,6 +30,6 @@ Normalize IPC command and event failure cases into stable reason codes that fron
 *   Depends on: KP-110, KP-111, KP-112, KP-101
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

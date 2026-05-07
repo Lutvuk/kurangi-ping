@@ -9,6 +9,9 @@ use client_engine::detection::state_resolver::{DetectionResolution, DetectionSta
 use tauri::{AppHandle, State};
 
 use super::contracts::{DetectionStatusResponse, DetectionStatusState};
+use super::error_map::{
+    map_detection_state_error_kind, map_ipc_error_reason, map_rescan_error_kind,
+};
 use super::event_bridge::{emit_detection_status_updated, EventBridgeState};
 
 #[tauri::command]
@@ -75,17 +78,16 @@ fn map_detection_resolution(resolution: DetectionResolution) -> DetectionStatusR
             game_id: None,
             process_name: None,
             detection_time_ms: Some(resolution.metadata.scanned_at_unix_ms),
-            reason_code: Some("ipc_detection_scan_failed".to_string()),
+            reason_code: map_detection_state_error_kind(DetectionState::Error)
+                .map(map_ipc_error_reason)
+                .map(str::to_string),
             message: Some("game detection scan failed".to_string()),
         },
     }
 }
 
 fn map_rescan_error(error_code: RescanCommandErrorCode) -> DetectionStatusResponse {
-    let reason = match error_code {
-        RescanCommandErrorCode::ScanAlreadyInProgress => "ipc_command_rejected",
-        RescanCommandErrorCode::InternalStateUnavailable => "ipc_unknown_failure",
-    };
+    let reason = map_ipc_error_reason(map_rescan_error_kind(error_code));
 
     DetectionStatusResponse {
         state: DetectionStatusState::NotDetected,
