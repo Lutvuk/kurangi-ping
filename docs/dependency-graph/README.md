@@ -1,6 +1,6 @@
 ﻿# Global Dependency Graph
 
-> Generated: 2026-05-04
+> Generated: 2026-05-07
 
 ```mermaid
 graph TD
@@ -113,6 +113,15 @@ graph TD
     KP-106["KP-106: Release Artifact Trust Validation Harness (L5-integration)"]:::pending
     KP-107["KP-107: End-to-End Updater Journey Harness (L5-integration)"]:::pending
     KP-108["KP-108: Update Adoption and Failure KPI Validation Suite (L5-integration)"]:::pending
+    KP-109["KP-109: Tauri IPC Contract Types and Command/Event Registry (L3-backend)"]:::pending
+    KP-110["KP-110: Routing Toggle Command Handlers in Tauri Backend (L3-backend)"]:::pending
+    KP-111["KP-111: Detection Status Query Command and Result Mapping (L3-backend)"]:::pending
+    KP-112["KP-112: Rust-to-Frontend Event Emission Bridge (L3-backend)"]:::pending
+    KP-113["KP-113: IPC Error Taxonomy Normalization for UI-safe Reason Codes (L3-backend)"]:::pending
+    KP-114["KP-114: Frontend IPC Client Adapter (invoke + event subscribe lifecycle) (L4-feature-ui)"]:::pending
+    KP-115["KP-115: Feature Wiring for ToggleController, DetectionPanel, and PingMetricsPanel via IPC (L4-feature-ui)"]:::pending
+    KP-116["KP-116: End-to-End IPC Journey Harness (toggle, detection, live metrics) (L5-integration)"]:::pending
+    KP-117["KP-117: IPC Contract Conformance and Determinism Test Suite (L5-integration)"]:::pending
 
     %% Dependencies
     KP-001 --> KP-002
@@ -313,6 +322,37 @@ graph TD
     KP-102 --> KP-108
     KP-107 --> KP-108
     KP-088 --> KP-108
+    KP-003 --> KP-109
+    KP-005 --> KP-109
+    KP-109 --> KP-110
+    KP-058 --> KP-110
+    KP-059 --> KP-110
+    KP-060 --> KP-110
+    KP-109 --> KP-111
+    KP-041 --> KP-111
+    KP-042 --> KP-111
+    KP-109 --> KP-112
+    KP-034 --> KP-112
+    KP-041 --> KP-112
+    KP-068 --> KP-112
+    KP-110 --> KP-113
+    KP-111 --> KP-113
+    KP-112 --> KP-113
+    KP-101 --> KP-113
+    KP-109 --> KP-114
+    KP-112 --> KP-114
+    KP-114 --> KP-115
+    KP-064 --> KP-115
+    KP-045 --> KP-115
+    KP-074 --> KP-115
+    KP-110 --> KP-116
+    KP-111 --> KP-116
+    KP-112 --> KP-116
+    KP-115 --> KP-116
+    KP-112 --> KP-117
+    KP-114 --> KP-117
+    KP-116 --> KP-117
+    KP-037 --> KP-117
 
     %% Styles
     classDef done fill:#d4f0f0,stroke:#007777,stroke-width:2px;

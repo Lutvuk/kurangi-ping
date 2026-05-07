@@ -446,6 +446,27 @@ Example event payload format:
 - Updater failures must remain recoverable and non-blocking for core app use
 - Updater telemetry must stay schema-compliant and privacy-safe
 
+### 13.23 Product Feature Registered: Tauri IPC Command Bridge
+- Feature Code: FEATURE-009
+- Source: `docs/features/tauri-command-bridge/prd-addendum.md`
+- Status: Proposed
+- Story Set:
+  - KP-109 Tauri IPC Contract Types and Command/Event Registry
+  - KP-110 Routing Toggle Command Handlers in Tauri Backend
+  - KP-111 Detection Status Query Command and Result Mapping
+  - KP-112 Rust-to-Frontend Event Emission Bridge
+  - KP-113 IPC Error Taxonomy Normalization for UI-safe Reason Codes
+  - KP-114 Frontend IPC Client Adapter (invoke + event subscribe lifecycle)
+  - KP-115 Feature Wiring for ToggleController, DetectionPanel, and PingMetricsPanel via IPC
+  - KP-116 End-to-End IPC Journey Harness (toggle, detection, live metrics)
+  - KP-117 IPC Contract Conformance and Determinism Test Suite
+
+### 13.24 IPC Bridge Guardrails Reinforced
+- Frontend must consume backend state via typed IPC adapter only (no raw hardcoded invoke/listen strings)
+- Rust state machines remain source-of-truth for routing/detection/metrics transitions
+- IPC error payloads must map to normalized non-sensitive reason codes
+- IPC event ordering and payload schema must remain deterministic and test-gated
+
 ---
 
 ## 12) Appendix
