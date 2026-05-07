@@ -18,10 +18,10 @@ Create frontend IPC adapter that encapsulates Tauri invoke/listen APIs for comma
 *   **Data Models:** Frontend IPC adapter request/response types
 
 ## Acceptance Criteria (Technical)
-*   [ ] Adapter exposes typed invoke wrappers for routing and detection commands.
-*   [ ] Adapter exposes subscribe/unsubscribe wrappers for bridge events.
-*   [ ] Adapter provides deterministic cleanup lifecycle for event listeners.
-*   [ ] Frontend code no longer directly hardcodes raw IPC command strings.
+*   [x] Adapter exposes typed invoke wrappers for routing and detection commands.
+*   [x] Adapter exposes subscribe/unsubscribe wrappers for bridge events.
+*   [x] Adapter provides deterministic cleanup lifecycle for event listeners.
+*   [x] Frontend code no longer directly hardcodes raw IPC command strings.
 
 ## Business Rules & Logic
 *   IPC complexity should stay hidden from feature components.
@@ -30,6 +30,6 @@ Create frontend IPC adapter that encapsulates Tauri invoke/listen APIs for comma
 *   Depends on: KP-109, KP-112
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
