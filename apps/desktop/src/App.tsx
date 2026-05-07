@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ConnectionStatusBadge, PrimaryToggle } from "./components/modules";
 import { DetectionPanel } from "./features/detection";
+import { PingMetricsPanel } from "./features/metrics";
 import { useAppShellIpcState } from "./features/shell";
 import { ipcClient } from "./lib/ipc";
 import { AppShell } from "./layout/AppShell";
@@ -130,6 +131,42 @@ export default function App() {
 
     void (async () => {
       try {
+        unsubscribe = await ipcClient.subscribePingMetrics((payload) => {
+          if (!active) {
+            return;
+          }
+          actions.applyMetricsSampleEvent(payload);
+        });
+      } catch {
+        if (!active) {
+          return;
+        }
+        actions.applyMetricsSampleEvent({
+          sampledAtUnixMs: Date.now(),
+          state: "degraded",
+          baselinePingMs: null,
+          routedPingMs: null,
+          jitterMs: null,
+          packetLossPct: null,
+          reasonCode: "ipc_metrics_stream_unavailable"
+        });
+      }
+    })();
+
+    return () => {
+      active = false;
+      if (unsubscribe) {
+        void unsubscribe();
+      }
+    };
+  }, [actions]);
+
+  useEffect(() => {
+    let active = true;
+    let unsubscribe: (() => Promise<void>) | undefined;
+
+    void (async () => {
+      try {
         unsubscribe = await ipcClient.subscribeDetectionStatus((payload) => {
           if (!active) {
             return;
@@ -189,6 +226,7 @@ export default function App() {
         ) : null}
       </Panel>
       <DetectionPanel model={viewModel.detection} title="Detection Status" />
+      <PingMetricsPanel model={viewModel.metrics} title="Ping Metrics" />
     </AppShell>
   );
 }

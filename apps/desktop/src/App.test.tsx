@@ -7,7 +7,8 @@ const mocks = vi.hoisted(() => ({
   invokeRoutingToggleOff: vi.fn(),
   invokeDetectionGetStatus: vi.fn(),
   subscribeRoutingState: vi.fn(),
-  subscribeDetectionStatus: vi.fn()
+  subscribeDetectionStatus: vi.fn(),
+  subscribePingMetrics: vi.fn()
 }));
 
 vi.mock("./lib/ipc", () => ({
@@ -16,7 +17,8 @@ vi.mock("./lib/ipc", () => ({
     invokeRoutingToggleOff: mocks.invokeRoutingToggleOff,
     invokeDetectionGetStatus: mocks.invokeDetectionGetStatus,
     subscribeRoutingState: mocks.subscribeRoutingState,
-    subscribeDetectionStatus: mocks.subscribeDetectionStatus
+    subscribeDetectionStatus: mocks.subscribeDetectionStatus,
+    subscribePingMetrics: mocks.subscribePingMetrics
   }
 }));
 
@@ -27,11 +29,13 @@ describe("App IPC toggle wiring", () => {
     mocks.invokeDetectionGetStatus.mockReset();
     mocks.subscribeRoutingState.mockReset();
     mocks.subscribeDetectionStatus.mockReset();
+    mocks.subscribePingMetrics.mockReset();
     mocks.invokeDetectionGetStatus.mockResolvedValue({
       state: "not_detected"
     });
     mocks.subscribeRoutingState.mockResolvedValue(async () => undefined);
     mocks.subscribeDetectionStatus.mockResolvedValue(async () => undefined);
+    mocks.subscribePingMetrics.mockResolvedValue(async () => undefined);
   });
 
   it("invokes routing_toggle_on via ipc client and sets connecting badge", async () => {
@@ -218,5 +222,48 @@ describe("App IPC toggle wiring", () => {
 
     unmount();
     await waitFor(() => expect(unsubscribe).toHaveBeenCalledTimes(1));
+  });
+
+  it("refreshes ping metrics from metrics_ping_sampled event and cleans listener on unmount", async () => {
+    let metricsListener:
+      | ((payload: {
+          sampledAtUnixMs: number;
+          state: "live" | "measuring" | "degraded";
+          baselinePingMs: number | null;
+          routedPingMs: number | null;
+          jitterMs: number | null;
+          packetLossPct: number | null;
+          reasonCode?: string;
+        }) => void)
+      | undefined;
+    const metricsUnsubscribe = vi.fn(async () => undefined);
+    mocks.subscribePingMetrics.mockImplementation(async (handler) => {
+      metricsListener = handler;
+      return metricsUnsubscribe;
+    });
+
+    const { unmount } = render(<App />);
+    const metricsPanel = screen.getByLabelText("Ping Metrics");
+
+    await waitFor(() => expect(mocks.subscribePingMetrics).toHaveBeenCalledTimes(1));
+    expect(within(metricsPanel).getByTestId("metrics-panel-status")).toHaveTextContent("Idle");
+
+    metricsListener?.({
+      sampledAtUnixMs: 1_700_000_003_000,
+      state: "live",
+      baselinePingMs: 210.3,
+      routedPingMs: 154.1,
+      jitterMs: 3.2,
+      packetLossPct: 0.2
+    });
+
+    await waitFor(() =>
+      expect(within(metricsPanel).getByTestId("metrics-panel-status")).toHaveTextContent("Live")
+    );
+    expect(within(metricsPanel).getByTestId("metrics-jitter")).toHaveTextContent("3.2 ms");
+    expect(within(metricsPanel).getByTestId("metrics-packet-loss")).toHaveTextContent("0.2%");
+
+    unmount();
+    await waitFor(() => expect(metricsUnsubscribe).toHaveBeenCalledTimes(1));
   });
 });

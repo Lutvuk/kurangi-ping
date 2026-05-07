@@ -18,10 +18,10 @@ Bind `metrics_ping_sampled` stream ke app shell state supaya `PingMetricsPanel` 
 *   **Data Models:** `PingSampleEventPayload`, `PingMetricsViewModel`
 
 ## Acceptance Criteria (Technical)
-*   [ ] Listener `metrics_ping_sampled` aktif saat shell mount.
-*   [ ] Nilai metrics event di-map ke panel model yang existing (current/baseline/reduction, state).
-*   [ ] Event throughput normal tidak menyebabkan memory leak atau render storm signifikan.
-*   [ ] Cleanup subscription berjalan konsisten saat shell unmount.
+*   [x] Listener `metrics_ping_sampled` aktif saat shell mount.
+*   [x] Nilai metrics event di-map ke panel model yang existing (current/baseline/reduction, state).
+*   [x] Event throughput normal tidak menyebabkan memory leak atau render storm signifikan.
+*   [x] Cleanup subscription berjalan konsisten saat shell unmount.
 
 ## Business Rules & Logic
 *   Monitoring value harus live dan konsisten dengan engine agar user bisa keputusan cepat sebelum bermain.
@@ -30,6 +30,6 @@ Bind `metrics_ping_sampled` stream ke app shell state supaya `PingMetricsPanel` 
 *   Depends on: KP-118, KP-114, KP-112, KP-115
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
