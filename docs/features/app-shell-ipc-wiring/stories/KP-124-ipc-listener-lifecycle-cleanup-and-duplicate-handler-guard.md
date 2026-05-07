@@ -18,10 +18,10 @@ Harden listener lifecycle management agar tidak ada duplicate handler, memory le
 *   **Data Models:** Listener registry metadata
 
 ## Acceptance Criteria (Technical)
-*   [ ] Semua listener (`routing_state_changed`, `detection_status_updated`, `metrics_ping_sampled`) punya cleanup deterministic.
-*   [ ] Re-mount tidak menghasilkan handler duplikat.
-*   [ ] Listener attach failure tidak crash app shell.
-*   [ ] Unit test membuktikan subscribe/unsubscribe cycle stabil pada eksekusi berulang.
+*   [x] Semua listener (`routing_state_changed`, `detection_status_updated`, `metrics_ping_sampled`) punya cleanup deterministic.
+*   [x] Re-mount tidak menghasilkan handler duplikat.
+*   [x] Listener attach failure tidak crash app shell.
+*   [x] Unit test membuktikan subscribe/unsubscribe cycle stabil pada eksekusi berulang.
 
 ## Business Rules & Logic
 *   Reliability app shell harus tetap stabil selama sesi panjang tanpa degradasi perilaku UI.
@@ -30,6 +30,6 @@ Harden listener lifecycle management agar tidak ada duplicate handler, memory le
 *   Depends on: KP-120, KP-122, KP-123
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

@@ -102,6 +102,25 @@ export type IpcClient = {
   ) => Promise<IpcUnsubscribe>;
 };
 
+export type ShellListenerKey = "routing_state_changed" | "detection_status_updated" | "metrics_ping_sampled";
+
+export type ListenerRegistryMetadata = {
+  attachedKeys: Set<ShellListenerKey>;
+};
+
+export type ShellListenerHandlers = {
+  onRoutingStateChanged: (payload: RoutingStateChangedEventPayload) => void;
+  onDetectionStatusUpdated: (payload: DetectionStatusUpdatedEventPayload) => void;
+  onMetricsPingSampled: (payload: MetricsPingSampledEventPayload) => void;
+};
+
+export type ShellListenerAttachErrorHandler = (context: {
+  key: ShellListenerKey;
+  error: unknown;
+}) => void;
+
+type ShellListenerUnsubscriberMap = Partial<Record<ShellListenerKey, IpcUnsubscribe>>;
+
 const REASON_CODES: readonly IpcReasonCode[] = [
   "ipc_invalid_state",
   "ipc_command_rejected",
@@ -173,6 +192,101 @@ export function createIpcClient(deps: IpcClientDeps = DEFAULT_DEPS): IpcClient {
       return once(rawUnsubscribe);
     }
   };
+}
+
+export function createListenerRegistryMetadata(): ListenerRegistryMetadata {
+  return {
+    attachedKeys: new Set<ShellListenerKey>()
+  };
+}
+
+export function listenerRegistryGuard(
+  metadata: ListenerRegistryMetadata,
+  key: ShellListenerKey
+): boolean {
+  if (metadata.attachedKeys.has(key)) {
+    return false;
+  }
+  metadata.attachedKeys.add(key);
+  return true;
+}
+
+export async function attachShellListeners(options: {
+  client: IpcClient;
+  handlers: ShellListenerHandlers;
+  metadata?: ListenerRegistryMetadata;
+  onAttachError?: ShellListenerAttachErrorHandler;
+}): Promise<IpcUnsubscribe> {
+  const metadata = options.metadata ?? createListenerRegistryMetadata();
+  const unsubscribers: ShellListenerUnsubscriberMap = {};
+
+  await Promise.all([
+    attachListener({
+      key: "routing_state_changed",
+      metadata,
+      onAttachError: options.onAttachError,
+      unsubscribers,
+      subscribe: () => options.client.subscribeRoutingState(options.handlers.onRoutingStateChanged)
+    }),
+    attachListener({
+      key: "detection_status_updated",
+      metadata,
+      onAttachError: options.onAttachError,
+      unsubscribers,
+      subscribe: () => options.client.subscribeDetectionStatus(options.handlers.onDetectionStatusUpdated)
+    }),
+    attachListener({
+      key: "metrics_ping_sampled",
+      metadata,
+      onAttachError: options.onAttachError,
+      unsubscribers,
+      subscribe: () => options.client.subscribePingMetrics(options.handlers.onMetricsPingSampled)
+    })
+  ]);
+
+  return async () => {
+    await detachShellListeners({
+      metadata,
+      unsubscribers
+    });
+  };
+}
+
+export async function detachShellListeners(options: {
+  metadata: ListenerRegistryMetadata;
+  unsubscribers: ShellListenerUnsubscriberMap;
+}): Promise<void> {
+  const keys = Array.from(options.metadata.attachedKeys.values()) as ShellListenerKey[];
+  for (const key of keys) {
+    const unsubscribe = options.unsubscribers[key];
+    if (unsubscribe) {
+      await unsubscribe();
+    }
+    options.metadata.attachedKeys.delete(key);
+  }
+}
+
+async function attachListener(options: {
+  key: ShellListenerKey;
+  metadata: ListenerRegistryMetadata;
+  onAttachError?: ShellListenerAttachErrorHandler;
+  unsubscribers: ShellListenerUnsubscriberMap;
+  subscribe: () => Promise<IpcUnsubscribe>;
+}): Promise<void> {
+  const canAttach = listenerRegistryGuard(options.metadata, options.key);
+  if (!canAttach) {
+    return;
+  }
+
+  try {
+    options.unsubscribers[options.key] = await options.subscribe();
+  } catch (error) {
+    options.metadata.attachedKeys.delete(options.key);
+    options.onAttachError?.({
+      key: options.key,
+      error
+    });
+  }
 }
 
 function once(rawUnsubscribe: RawUnsubscribe): IpcUnsubscribe {

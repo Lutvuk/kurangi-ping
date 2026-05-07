@@ -19,6 +19,48 @@ vi.mock("./lib/ipc", () => ({
     subscribeRoutingState: mocks.subscribeRoutingState,
     subscribeDetectionStatus: mocks.subscribeDetectionStatus,
     subscribePingMetrics: mocks.subscribePingMetrics
+  },
+  createListenerRegistryMetadata: () => ({
+    attachedKeys: new Set()
+  }),
+  attachShellListeners: async ({
+    client,
+    handlers,
+    onAttachError
+  }: {
+    client: {
+      subscribeRoutingState: (handler: (payload: unknown) => void) => Promise<() => Promise<void>>;
+      subscribeDetectionStatus: (handler: (payload: unknown) => void) => Promise<() => Promise<void>>;
+      subscribePingMetrics: (handler: (payload: unknown) => void) => Promise<() => Promise<void>>;
+    };
+    handlers: {
+      onRoutingStateChanged: (payload: unknown) => void;
+      onDetectionStatusUpdated: (payload: unknown) => void;
+      onMetricsPingSampled: (payload: unknown) => void;
+    };
+    onAttachError?: (context: { key: string; error: unknown }) => void;
+  }) => {
+    const detach: Array<() => Promise<void>> = [];
+    try {
+      detach.push(await client.subscribeRoutingState(handlers.onRoutingStateChanged));
+    } catch (error) {
+      onAttachError?.({ key: "routing_state_changed", error });
+    }
+    try {
+      detach.push(await client.subscribeDetectionStatus(handlers.onDetectionStatusUpdated));
+    } catch (error) {
+      onAttachError?.({ key: "detection_status_updated", error });
+    }
+    try {
+      detach.push(await client.subscribePingMetrics(handlers.onMetricsPingSampled));
+    } catch (error) {
+      onAttachError?.({ key: "metrics_ping_sampled", error });
+    }
+    return async () => {
+      for (const unsubscribe of detach) {
+        await unsubscribe();
+      }
+    };
   }
 }));
 

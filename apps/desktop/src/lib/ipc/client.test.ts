@@ -1,5 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
-import { createIpcClient, type IpcClientDeps } from "./client";
+import {
+  attachShellListeners,
+  createIpcClient,
+  createListenerRegistryMetadata,
+  listenerRegistryGuard,
+  type IpcClient,
+  type IpcClientDeps
+} from "./client";
 
 function createStubDeps(): IpcClientDeps {
   return {
@@ -310,5 +317,111 @@ describe("ipc client adapter", () => {
       "subscribe:routing_state_changed:3",
       "unsubscribe:routing_state_changed:3"
     ]);
+  });
+
+  it("listener registry guard blocks duplicate attachment attempts for same key", () => {
+    const metadata = createListenerRegistryMetadata();
+    expect(listenerRegistryGuard(metadata, "routing_state_changed")).toBe(true);
+    expect(listenerRegistryGuard(metadata, "routing_state_changed")).toBe(false);
+  });
+
+  it("attachShellListeners keeps subscribe-unsubscribe cycle deterministic across repeated runs", async () => {
+    const trace: string[] = [];
+    const routingUnsubscribe = vi.fn(async () => {
+      trace.push("unsubscribe:routing");
+    });
+    const detectionUnsubscribe = vi.fn(async () => {
+      trace.push("unsubscribe:detection");
+    });
+    const metricsUnsubscribe = vi.fn(async () => {
+      trace.push("unsubscribe:metrics");
+    });
+
+    const client: IpcClient = {
+      invokeRoutingToggleOn: vi.fn(),
+      invokeRoutingToggleOff: vi.fn(),
+      invokeDetectionGetStatus: vi.fn(),
+      subscribeRoutingState: vi.fn(async () => {
+        trace.push("subscribe:routing");
+        return routingUnsubscribe;
+      }),
+      subscribeDetectionStatus: vi.fn(async () => {
+        trace.push("subscribe:detection");
+        return detectionUnsubscribe;
+      }),
+      subscribePingMetrics: vi.fn(async () => {
+        trace.push("subscribe:metrics");
+        return metricsUnsubscribe;
+      })
+    };
+
+    async function runCycle() {
+      const metadata = createListenerRegistryMetadata();
+      const detach = await attachShellListeners({
+        client,
+        metadata,
+        handlers: {
+          onRoutingStateChanged: vi.fn(),
+          onDetectionStatusUpdated: vi.fn(),
+          onMetricsPingSampled: vi.fn()
+        }
+      });
+      await detach();
+    }
+
+    await runCycle();
+    await runCycle();
+
+    expect(trace).toEqual([
+      "subscribe:routing",
+      "subscribe:detection",
+      "subscribe:metrics",
+      "unsubscribe:routing",
+      "unsubscribe:detection",
+      "unsubscribe:metrics",
+      "subscribe:routing",
+      "subscribe:detection",
+      "subscribe:metrics",
+      "unsubscribe:routing",
+      "unsubscribe:detection",
+      "unsubscribe:metrics"
+    ]);
+  });
+
+  it("attachShellListeners isolates attach failure and keeps app lifecycle operational", async () => {
+    const onAttachError = vi.fn();
+    const routingUnsubscribe = vi.fn(async () => undefined);
+    const detectionUnsubscribe = vi.fn(async () => undefined);
+
+    const client: IpcClient = {
+      invokeRoutingToggleOn: vi.fn(),
+      invokeRoutingToggleOff: vi.fn(),
+      invokeDetectionGetStatus: vi.fn(),
+      subscribeRoutingState: vi.fn(async () => routingUnsubscribe),
+      subscribeDetectionStatus: vi.fn(async () => detectionUnsubscribe),
+      subscribePingMetrics: vi.fn(async () => {
+        throw new Error("metrics listener unavailable");
+      })
+    };
+
+    const detach = await attachShellListeners({
+      client,
+      metadata: createListenerRegistryMetadata(),
+      handlers: {
+        onRoutingStateChanged: vi.fn(),
+        onDetectionStatusUpdated: vi.fn(),
+        onMetricsPingSampled: vi.fn()
+      },
+      onAttachError
+    });
+
+    await detach();
+    expect(onAttachError).toHaveBeenCalledTimes(1);
+    expect(onAttachError).toHaveBeenCalledWith({
+      key: "metrics_ping_sampled",
+      error: expect.any(Error)
+    });
+    expect(routingUnsubscribe).toHaveBeenCalledTimes(1);
+    expect(detectionUnsubscribe).toHaveBeenCalledTimes(1);
   });
 });

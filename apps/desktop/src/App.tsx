@@ -1,9 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { ConnectionStatusBadge, PrimaryToggle } from "./components/modules";
 import { DetectionPanel } from "./features/detection";
 import { PingMetricsPanel } from "./features/metrics";
-import { useAppShellIpcState } from "./features/shell";
-import { ipcClient } from "./lib/ipc";
+import { useAppShellIpcState, type AppShellIpcActions } from "./features/shell";
+import {
+  attachShellListeners,
+  createListenerRegistryMetadata,
+  ipcClient,
+  type ShellListenerKey
+} from "./lib/ipc";
 import { AppShell } from "./layout/AppShell";
 import { Panel } from "./layout/Panel";
 import { FoundationShowcasePage } from "./pages/foundation-showcase";
@@ -13,6 +18,7 @@ export default function App() {
   const [inFlightCommand, setInFlightCommand] = useState<"on" | "off" | null>(null);
   const [commandFeedback, setCommandFeedback] = useState<string | null>(null);
   const startupDetectionRequestedRef = useRef(false);
+  const listenerRegistryRef = useRef(createListenerRegistryMetadata());
   const isFoundationShowcaseEnabled =
     (import.meta.env.DEV && import.meta.env.MODE !== "test") ||
     import.meta.env.VITE_ENABLE_FOUNDATION_SHOWCASE === "1";
@@ -100,95 +106,45 @@ export default function App() {
 
   useEffect(() => {
     let active = true;
-    let unsubscribe: (() => Promise<void>) | undefined;
+    let detachListeners: (() => Promise<void>) | undefined;
 
     void (async () => {
-      try {
-        unsubscribe = await ipcClient.subscribeRoutingState((payload) => {
+      detachListeners = await attachShellListeners({
+        client: ipcClient,
+        metadata: listenerRegistryRef.current,
+        handlers: {
+          onRoutingStateChanged(payload) {
+            if (!active) {
+              return;
+            }
+            actions.applyRoutingStateEvent(payload);
+          },
+          onDetectionStatusUpdated(payload) {
+            if (!active) {
+              return;
+            }
+            actions.applyDetectionStatusEvent(payload);
+          },
+          onMetricsPingSampled(payload) {
+            if (!active) {
+              return;
+            }
+            actions.applyMetricsSampleEvent(payload);
+          }
+        },
+        onAttachError(context) {
           if (!active) {
             return;
           }
-          actions.applyRoutingStateEvent(payload);
-        });
-      } catch {
-        if (active) {
-          setCommandFeedback("Sinkronisasi status routing sedang tidak tersedia.");
+          handleListenerAttachError(context.key, actions, setCommandFeedback);
         }
-      }
+      });
     })();
 
     return () => {
       active = false;
-      if (unsubscribe) {
-        void unsubscribe();
-      }
-    };
-  }, [actions]);
-
-  useEffect(() => {
-    let active = true;
-    let unsubscribe: (() => Promise<void>) | undefined;
-
-    void (async () => {
-      try {
-        unsubscribe = await ipcClient.subscribePingMetrics((payload) => {
-          if (!active) {
-            return;
-          }
-          actions.applyMetricsSampleEvent(payload);
-        });
-      } catch {
-        if (!active) {
-          return;
-        }
-        actions.applyMetricsSampleEvent({
-          sampledAtUnixMs: Date.now(),
-          state: "degraded",
-          baselinePingMs: null,
-          routedPingMs: null,
-          jitterMs: null,
-          packetLossPct: null,
-          reasonCode: "ipc_metrics_stream_unavailable"
-        });
-      }
-    })();
-
-    return () => {
-      active = false;
-      if (unsubscribe) {
-        void unsubscribe();
-      }
-    };
-  }, [actions]);
-
-  useEffect(() => {
-    let active = true;
-    let unsubscribe: (() => Promise<void>) | undefined;
-
-    void (async () => {
-      try {
-        unsubscribe = await ipcClient.subscribeDetectionStatus((payload) => {
-          if (!active) {
-            return;
-          }
-          actions.applyDetectionStatusEvent(payload);
-        });
-      } catch {
-        if (!active) {
-          return;
-        }
-        actions.applyDetectionQueryResponse({
-          state: "not_detected",
-          reasonCode: "ipc_unknown_failure",
-          message: "Sinkronisasi detection status tidak tersedia."
-        });
-      }
-    })();
-
-    return () => {
-      active = false;
-      if (unsubscribe) {
-        void unsubscribe();
+      if (detachListeners) {
+        void detachListeners();
       }
     };
   }, [actions]);
@@ -229,4 +185,34 @@ export default function App() {
       <PingMetricsPanel model={viewModel.metrics} title="Ping Metrics" />
     </AppShell>
   );
+}
+
+function handleListenerAttachError(
+  key: ShellListenerKey,
+  actions: AppShellIpcActions,
+  setCommandFeedback: (value: string | null) => void
+) {
+  if (key === "routing_state_changed") {
+    setCommandFeedback("Sinkronisasi status routing sedang tidak tersedia.");
+    return;
+  }
+
+  if (key === "detection_status_updated") {
+    actions.applyDetectionQueryResponse({
+      state: "not_detected",
+      reasonCode: "ipc_unknown_failure",
+      message: "Sinkronisasi detection status tidak tersedia."
+    });
+    return;
+  }
+
+  actions.applyMetricsSampleEvent({
+    sampledAtUnixMs: Date.now(),
+    state: "degraded",
+    baselinePingMs: null,
+    routedPingMs: null,
+    jitterMs: null,
+    packetLossPct: null,
+    reasonCode: "ipc_metrics_stream_unavailable"
+  });
 }
