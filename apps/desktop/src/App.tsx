@@ -124,6 +124,38 @@ export default function App() {
     };
   }, [actions]);
 
+  useEffect(() => {
+    let active = true;
+    let unsubscribe: (() => Promise<void>) | undefined;
+
+    void (async () => {
+      try {
+        unsubscribe = await ipcClient.subscribeDetectionStatus((payload) => {
+          if (!active) {
+            return;
+          }
+          actions.applyDetectionStatusEvent(payload);
+        });
+      } catch {
+        if (!active) {
+          return;
+        }
+        actions.applyDetectionQueryResponse({
+          state: "not_detected",
+          reasonCode: "ipc_unknown_failure",
+          message: "Sinkronisasi detection status tidak tersedia."
+        });
+      }
+    })();
+
+    return () => {
+      active = false;
+      if (unsubscribe) {
+        void unsubscribe();
+      }
+    };
+  }, [actions]);
+
   return (
     <AppShell>
       <Panel eyebrow="Foundation" title="Kurangi Ping 2">

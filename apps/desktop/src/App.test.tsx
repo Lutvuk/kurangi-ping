@@ -6,7 +6,8 @@ const mocks = vi.hoisted(() => ({
   invokeRoutingToggleOn: vi.fn(),
   invokeRoutingToggleOff: vi.fn(),
   invokeDetectionGetStatus: vi.fn(),
-  subscribeRoutingState: vi.fn()
+  subscribeRoutingState: vi.fn(),
+  subscribeDetectionStatus: vi.fn()
 }));
 
 vi.mock("./lib/ipc", () => ({
@@ -14,7 +15,8 @@ vi.mock("./lib/ipc", () => ({
     invokeRoutingToggleOn: mocks.invokeRoutingToggleOn,
     invokeRoutingToggleOff: mocks.invokeRoutingToggleOff,
     invokeDetectionGetStatus: mocks.invokeDetectionGetStatus,
-    subscribeRoutingState: mocks.subscribeRoutingState
+    subscribeRoutingState: mocks.subscribeRoutingState,
+    subscribeDetectionStatus: mocks.subscribeDetectionStatus
   }
 }));
 
@@ -24,10 +26,12 @@ describe("App IPC toggle wiring", () => {
     mocks.invokeRoutingToggleOff.mockReset();
     mocks.invokeDetectionGetStatus.mockReset();
     mocks.subscribeRoutingState.mockReset();
+    mocks.subscribeDetectionStatus.mockReset();
     mocks.invokeDetectionGetStatus.mockResolvedValue({
       state: "not_detected"
     });
     mocks.subscribeRoutingState.mockResolvedValue(async () => undefined);
+    mocks.subscribeDetectionStatus.mockResolvedValue(async () => undefined);
   });
 
   it("invokes routing_toggle_on via ipc client and sets connecting badge", async () => {
@@ -135,6 +139,47 @@ describe("App IPC toggle wiring", () => {
     expect(within(detectionPanel).getByText("ipc_unknown_failure")).toBeInTheDocument();
     expect(within(detectionPanel).getByText("Detection status tidak tersedia.")).toBeInTheDocument();
     expect(screen.queryByText("stacktrace")).not.toBeInTheDocument();
+  });
+
+  it("refreshes detection panel from detection_status_updated event and cleans listener on unmount", async () => {
+    let detectionListener:
+      | ((payload: {
+          state: "detected" | "not_detected";
+          gameId?: string;
+          processName?: string;
+          detectionTimeMs?: number;
+          reasonCode?: string;
+          message?: string;
+        }) => void)
+      | undefined;
+    const detectionUnsubscribe = vi.fn(async () => undefined);
+    mocks.subscribeDetectionStatus.mockImplementation(async (handler) => {
+      detectionListener = handler;
+      return detectionUnsubscribe;
+    });
+
+    const { unmount } = render(<App />);
+
+    await waitFor(() => expect(mocks.subscribeDetectionStatus).toHaveBeenCalledTimes(1));
+    const detectionPanel = screen.getByLabelText("Detection status panel");
+    expect(within(detectionPanel).getByRole("status")).toHaveTextContent("Not Found");
+
+    detectionListener?.({
+      state: "detected",
+      gameId: "valorant",
+      processName: "valorant-win64-shipping.exe",
+      detectionTimeMs: 1_700_000_002_000
+    });
+    await waitFor(() => expect(within(detectionPanel).getByRole("status")).toHaveTextContent("Detected"));
+    expect(within(detectionPanel).getByText("Valorant")).toBeInTheDocument();
+
+    detectionListener?.({
+      state: "not_detected"
+    });
+    await waitFor(() => expect(within(detectionPanel).getByRole("status")).toHaveTextContent("Not Found"));
+
+    unmount();
+    await waitFor(() => expect(detectionUnsubscribe).toHaveBeenCalledTimes(1));
   });
 
   it("syncs badge from routing_state_changed event and cleans listener on unmount", async () => {
