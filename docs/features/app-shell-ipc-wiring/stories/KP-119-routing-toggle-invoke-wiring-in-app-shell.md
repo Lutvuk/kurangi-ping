@@ -18,10 +18,10 @@ Wire app-shell toggle actions to existing Rust IPC routing commands through fron
 *   **Data Models:** `RoutingLifecycleResponse`
 
 ## Acceptance Criteria (Technical)
-*   [ ] Clicking ON triggers `invokeRoutingToggleOn` with production-safe payload.
-*   [ ] Clicking OFF triggers `invokeRoutingToggleOff` with production-safe payload.
-*   [ ] Response mapping updates badge to `connecting` / `off` / `error` consistently.
-*   [ ] Failure fallback shows user-safe feedback without leaking backend internals.
+*   [x] Clicking ON triggers `invokeRoutingToggleOn` with production-safe payload.
+*   [x] Clicking OFF triggers `invokeRoutingToggleOff` with production-safe payload.
+*   [x] Response mapping updates badge to `connecting` / `off` / `error` consistently.
+*   [x] Failure fallback shows user-safe feedback without leaking backend internals.
 
 ## Business Rules & Logic
 *   User action latency should stay responsive while command execution is in progress.
@@ -30,6 +30,6 @@ Wire app-shell toggle actions to existing Rust IPC routing commands through fron
 *   Depends on: KP-118, KP-114
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

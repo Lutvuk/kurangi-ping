@@ -1,17 +1,68 @@
+import { useMemo, useState } from "react";
 import { ConnectionStatusBadge, PrimaryToggle } from "./components/modules";
 import { useAppShellIpcState } from "./features/shell";
+import { ipcClient } from "./lib/ipc";
 import { AppShell } from "./layout/AppShell";
 import { Panel } from "./layout/Panel";
 import { FoundationShowcasePage } from "./pages/foundation-showcase";
 
 export default function App() {
-  const { viewModel } = useAppShellIpcState();
+  const { viewModel, actions } = useAppShellIpcState();
+  const [inFlightCommand, setInFlightCommand] = useState<"on" | "off" | null>(null);
+  const [commandFeedback, setCommandFeedback] = useState<string | null>(null);
   const isFoundationShowcaseEnabled =
-    import.meta.env.DEV || import.meta.env.VITE_ENABLE_FOUNDATION_SHOWCASE === "1";
+    (import.meta.env.DEV && import.meta.env.MODE !== "test") ||
+    import.meta.env.VITE_ENABLE_FOUNDATION_SHOWCASE === "1";
 
   if (isFoundationShowcaseEnabled) {
     return <FoundationShowcasePage />;
   }
+
+  async function invokeRoutingToggle(command: "on" | "off") {
+    if (inFlightCommand !== null) {
+      return;
+    }
+
+    setCommandFeedback(null);
+    setInFlightCommand(command);
+    actions.markRoutingCommandStarted(command);
+
+    try {
+      const response =
+        command === "on"
+          ? await ipcClient.invokeRoutingToggleOn({
+              trigger: "user_toggle",
+              requestedAtUnixMs: Date.now()
+            })
+          : await ipcClient.invokeRoutingToggleOff({
+              trigger: "user_toggle",
+              requestedAtUnixMs: Date.now()
+            });
+      actions.applyRoutingInvokeResponse(response);
+      if (response.reasonCode) {
+        setCommandFeedback("Perintah routing ditolak sistem. Coba lagi.");
+      }
+    } catch {
+      actions.applyRoutingInvokeResponse({
+        state: "error",
+        reasonCode: "ipc_unknown_failure",
+        message: "Toggle command failed."
+      });
+      setCommandFeedback("Tidak bisa memproses perintah routing sekarang. Coba lagi.");
+    } finally {
+      setInFlightCommand(null);
+    }
+  }
+
+  const statusLabel = useMemo(() => {
+    if (inFlightCommand === "on") {
+      return "Connecting...";
+    }
+    if (inFlightCommand === "off") {
+      return "Disconnecting...";
+    }
+    return undefined;
+  }, [inFlightCommand]);
 
   return (
     <AppShell>
@@ -25,9 +76,21 @@ export default function App() {
             gap: "var(--space-4)"
           }}
         >
-          <PrimaryToggle state={viewModel.routing.toggleState} />
-          <ConnectionStatusBadge state={viewModel.routing.badgeState} />
+          <PrimaryToggle
+            state={viewModel.routing.toggleState}
+            disabled={inFlightCommand !== null}
+            aria-busy={inFlightCommand !== null}
+            onToggle={(nextEnabled) => {
+              void invokeRoutingToggle(nextEnabled ? "on" : "off");
+            }}
+          />
+          <ConnectionStatusBadge state={viewModel.routing.badgeState} label={statusLabel} />
         </div>
+        {commandFeedback ? (
+          <p role="alert" className="kp-copy" style={{ marginTop: "var(--space-3)" }}>
+            {commandFeedback}
+          </p>
+        ) : null}
       </Panel>
     </AppShell>
   );
