@@ -18,10 +18,10 @@ Expose detection status query command from Tauri backend that maps Rust detectio
 *   **Data Models:** Detection status response contract
 
 ## Acceptance Criteria (Technical)
-*   [ ] Command returns deterministic `detected` or `not_detected` state for UI.
-*   [ ] Scanner and freshness resolver are invoked through existing client-engine boundaries.
-*   [ ] Error mapping avoids sensitive process/system details.
-*   [ ] Response contract aligns with `DetectionPanel` data needs.
+*   [x] Command returns deterministic `detected` or `not_detected` state for UI.
+*   [x] Scanner and freshness resolver are invoked through existing client-engine boundaries.
+*   [x] Error mapping avoids sensitive process/system details.
+*   [x] Response contract aligns with `DetectionPanel` data needs.
 
 ## Business Rules & Logic
 *   Startup detection status should be instantly actionable for non-technical users.
@@ -30,6 +30,6 @@ Expose detection status query command from Tauri backend that maps Rust detectio
 *   Depends on: KP-109, KP-041, KP-042
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
