@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import type { IpcClient, RoutingStateChangedEventPayload } from "../../lib/ipc";
 import { ToggleController, type ToggleControllerCommandResult } from "./ToggleController";
 
 describe("ToggleController", () => {
@@ -68,5 +69,39 @@ describe("ToggleController", () => {
     expect(alert).toHaveTextContent("Belum bisa mengaktifkan routing. Coba lagi.");
     expect(alert).not.toHaveTextContent("stacktrace");
     expect(screen.getByTestId("toggle-controller-status")).toHaveTextContent("No Relay Available");
+  });
+
+  it("uses IPC bridge invoke and cleans routing subscription on unmount", async () => {
+    let routingListener: ((payload: RoutingStateChangedEventPayload) => void) | undefined;
+    const unsubscribe = vi.fn(async () => undefined);
+    const ipcClient: IpcClient = {
+      invokeRoutingToggleOn: vi.fn(async () => ({ state: "connecting" as const })),
+      invokeRoutingToggleOff: vi.fn(async () => ({ state: "idle" as const })),
+      invokeDetectionGetStatus: vi.fn(async () => ({ state: "not_detected" as const })),
+      subscribeRoutingState: vi.fn(async (handler) => {
+        routingListener = handler;
+        return unsubscribe;
+      }),
+      subscribePingMetrics: vi.fn(async () => unsubscribe),
+      subscribeDetectionStatus: vi.fn(async () => unsubscribe)
+    };
+
+    const { unmount } = render(
+      <ToggleController initialState="off" enableIpcBridge ipcClient={ipcClient} />
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Routing toggle off" }));
+
+    await waitFor(() => expect(ipcClient.invokeRoutingToggleOn).toHaveBeenCalledTimes(1));
+    routingListener?.({
+      previousState: "idle",
+      state: "active"
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId("toggle-controller-status")).toHaveTextContent("Routing Active")
+    );
+
+    unmount();
+    await waitFor(() => expect(unsubscribe).toHaveBeenCalledTimes(1));
   });
 });

@@ -18,10 +18,10 @@ Wire core feature panels to IPC adapter so routing toggle, detection status, and
 *   **Data Models:** UI view models fed by IPC stream
 
 ## Acceptance Criteria (Technical)
-*   [ ] ToggleController uses IPC invoke for ON/OFF transitions.
-*   [ ] DetectionPanel fetches startup status via IPC and reflects updates from events.
-*   [ ] PingMetricsPanel updates live from metrics event stream without page reload.
-*   [ ] Subscription lifecycle is cleaned up on unmount to prevent duplicate event handling.
+*   [x] ToggleController uses IPC invoke for ON/OFF transitions.
+*   [x] DetectionPanel fetches startup status via IPC and reflects updates from events.
+*   [x] PingMetricsPanel updates live from metrics event stream without page reload.
+*   [x] Subscription lifecycle is cleaned up on unmount to prevent duplicate event handling.
 
 ## Business Rules & Logic
 *   Core user flows must remain responsive and deterministic during long sessions.
@@ -30,6 +30,6 @@ Wire core feature panels to IPC adapter so routing toggle, detection status, and
 *   Depends on: KP-114, KP-064, KP-045, KP-074
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

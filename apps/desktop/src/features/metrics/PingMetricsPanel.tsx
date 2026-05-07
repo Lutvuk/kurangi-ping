@@ -1,5 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from "react";
 import { PingMetricCard, type PingMetricCardState } from "../../components/modules";
+import {
+  ipcClient as defaultIpcClient,
+  type IpcClient,
+  type MetricsPingSampledEventPayload
+} from "../../lib/ipc";
 import { MetricsStatePresenter } from "./MetricsStatePresenter";
 import { MetricsTrendMiniView, type MetricsTrendSample } from "./MetricsTrendMiniView";
 import "./PingMetricsPanel.css";
@@ -20,6 +25,8 @@ export type PingMetricsPanelProps = {
   model: MetricsViewModel;
   title?: string;
   trendSamples?: MetricsTrendSample[];
+  enableIpcBridge?: boolean;
+  ipcClient?: IpcClient;
 };
 
 type StabilizedMetricsView = {
@@ -87,14 +94,77 @@ function toInitialView(model: MetricsViewModel): StabilizedMetricsView {
   };
 }
 
+function mapMetricsPayloadToViewModel(payload: MetricsPingSampledEventPayload): MetricsViewModel {
+  return {
+    state: payload.state,
+    baselinePingMs: payload.baselinePingMs,
+    routedPingMs: payload.routedPingMs,
+    jitterMs: payload.jitterMs,
+    packetLossPct: payload.packetLossPct,
+    sampledAtUnixMs: payload.sampledAtUnixMs,
+    reasonCode: payload.reasonCode
+  };
+}
+
+type MetricsIpcBridgeOptions = {
+  enabled: boolean;
+  client: IpcClient;
+  setView: Dispatch<SetStateAction<StabilizedMetricsView>>;
+};
+
+export function useMetricsIpcBridge({ enabled, client, setView }: MetricsIpcBridgeOptions) {
+  useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
+    let active = true;
+    let unsubscribe: (() => Promise<void>) | undefined;
+    void (async () => {
+      unsubscribe = await client.subscribePingMetrics((payload) => {
+        if (!active) {
+          return;
+        }
+        const model = mapMetricsPayloadToViewModel(payload);
+        setView((previous) => ({
+          state: model.state,
+          baselinePingMs: stabilizeNumber(model.baselinePingMs, previous.baselinePingMs),
+          routedPingMs: stabilizeNumber(model.routedPingMs, previous.routedPingMs),
+          jitterMs: stabilizeNumber(model.jitterMs, previous.jitterMs),
+          packetLossPct: stabilizeNumber(model.packetLossPct, previous.packetLossPct),
+          sampledAtUnixMs: model.sampledAtUnixMs ?? previous.sampledAtUnixMs,
+          reasonCode: model.reasonCode
+        }));
+      });
+    })();
+
+    return () => {
+      active = false;
+      if (unsubscribe) {
+        void unsubscribe();
+      }
+    };
+  }, [client, enabled, setView]);
+}
+
 export function PingMetricsPanel({
   model,
   title = "Ping Metrics",
-  trendSamples
+  trendSamples,
+  enableIpcBridge = false,
+  ipcClient = defaultIpcClient
 }: PingMetricsPanelProps) {
   const [view, setView] = useState<StabilizedMetricsView>(() => toInitialView(model));
+  useMetricsIpcBridge({
+    enabled: enableIpcBridge,
+    client: ipcClient,
+    setView
+  });
 
   useEffect(() => {
+    if (enableIpcBridge) {
+      return;
+    }
     setView((previous) => {
       const next: StabilizedMetricsView = {
         state: model.state,
@@ -117,7 +187,7 @@ export function PingMetricsPanel({
 
       return unchanged ? previous : next;
     });
-  }, [model]);
+  }, [enableIpcBridge, model]);
 
   const reductionPct = useMemo(
     () => computeReductionPct(view.baselinePingMs, view.routedPingMs),

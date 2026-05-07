@@ -1,5 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from "react";
 import { GameDetectionRow } from "../../components/modules";
+import {
+  ipcClient as defaultIpcClient,
+  type DetectionStatusResponse,
+  type DetectionStatusUpdatedEventPayload,
+  type IpcClient
+} from "../../lib/ipc";
 import { Button, Card, StatusBadge } from "../../components/primitives";
 import "./DetectionPanel.css";
 
@@ -18,6 +24,8 @@ export type DetectionPanelProps = {
   model: DetectionViewModel;
   onTriggerRescan?: () => Promise<DetectionViewModel> | DetectionViewModel;
   title?: string;
+  enableIpcBridge?: boolean;
+  ipcClient?: IpcClient;
 };
 
 const statusBadgeByState: Record<DetectionUiState, "off" | "on" | "degraded" | "error"> = {
@@ -65,13 +73,118 @@ function formatDetectionTime(detectionTimeMs?: number): string {
   return `${detectionTimeMs} ms`;
 }
 
-export function DetectionPanel({ model, onTriggerRescan, title = "Detection Status" }: DetectionPanelProps) {
+function mapDetectionState(
+  state: DetectionStatusResponse["state"] | DetectionStatusUpdatedEventPayload["state"],
+  reasonCode?: string
+): DetectionUiState {
+  if (state === "detected") {
+    return "detected";
+  }
+  if (reasonCode) {
+    return "error";
+  }
+  return "not_found";
+}
+
+function mapDetectionPayloadToViewModel(
+  payload: DetectionStatusResponse | DetectionStatusUpdatedEventPayload
+): DetectionViewModel {
+  return {
+    state: mapDetectionState(payload.state, payload.reasonCode),
+    gameId: payload.gameId,
+    processName: payload.processName,
+    detectionTimeMs: payload.detectionTimeMs,
+    reasonCode: payload.reasonCode,
+    message: payload.message
+  };
+}
+
+type DetectionIpcBridgeOptions = {
+  enabled: boolean;
+  client: IpcClient;
+  setViewModel: Dispatch<SetStateAction<DetectionViewModel>>;
+};
+
+type DetectionIpcBridge = {
+  triggerRescan: () => Promise<DetectionViewModel>;
+};
+
+export function useDetectionIpcBridge({
+  enabled,
+  client,
+  setViewModel
+}: DetectionIpcBridgeOptions): DetectionIpcBridge {
+  useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
+    let active = true;
+    let unsubscribe: (() => Promise<void>) | undefined;
+    void (async () => {
+      try {
+        const startupStatus = await client.invokeDetectionGetStatus();
+        if (active) {
+          setViewModel(mapDetectionPayloadToViewModel(startupStatus));
+        }
+      } catch {
+        if (active) {
+          setViewModel((previous) => ({
+            ...previous,
+            state: "error",
+            reasonCode: "ipc_unknown_failure",
+            message: "Detection status tidak tersedia."
+          }));
+        }
+      }
+
+      unsubscribe = await client.subscribeDetectionStatus((payload) => {
+        if (!active) {
+          return;
+        }
+        setViewModel(mapDetectionPayloadToViewModel(payload));
+      });
+    })();
+
+    return () => {
+      active = false;
+      if (unsubscribe) {
+        void unsubscribe();
+      }
+    };
+  }, [client, enabled, setViewModel]);
+
+  async function triggerRescan(): Promise<DetectionViewModel> {
+    const response = await client.invokeDetectionGetStatus();
+    return mapDetectionPayloadToViewModel(response);
+  }
+
+  return {
+    triggerRescan
+  };
+}
+
+export function DetectionPanel({
+  model,
+  onTriggerRescan,
+  title = "Detection Status",
+  enableIpcBridge = false,
+  ipcClient = defaultIpcClient
+}: DetectionPanelProps) {
   const [viewModel, setViewModel] = useState<DetectionViewModel>(model);
   const [isRescanning, setIsRescanning] = useState(false);
+  const ipcBridge = useDetectionIpcBridge({
+    enabled: enableIpcBridge,
+    client: ipcClient,
+    setViewModel
+  });
 
   useEffect(() => {
+    if (enableIpcBridge) {
+      return;
+    }
     setViewModel(model);
-  }, [model]);
+  }, [enableIpcBridge, model]);
 
   const effectiveState: DetectionUiState = isRescanning ? "stale" : viewModel.state;
   const badgeState = isRescanning ? "connecting" : statusBadgeByState[effectiveState];
@@ -87,13 +200,14 @@ export function DetectionPanel({ model, onTriggerRescan, title = "Detection Stat
   }, [viewModel.processName, viewModel.detectionTimeMs]);
 
   async function handleRescan() {
-    if (!onTriggerRescan || isRescanning) {
+    const rescan = onTriggerRescan ?? (enableIpcBridge ? ipcBridge.triggerRescan : undefined);
+    if (!rescan || isRescanning) {
       return;
     }
 
     setIsRescanning(true);
     try {
-      const nextModel = await onTriggerRescan();
+      const nextModel = await rescan();
       setViewModel(nextModel);
     } catch {
       setViewModel((previous) => ({
@@ -134,7 +248,7 @@ export function DetectionPanel({ model, onTriggerRescan, title = "Detection Stat
           intent="secondary"
           ariaLabel="Rescan detection status"
           onClick={handleRescan}
-          disabled={!onTriggerRescan || isRescanning}
+          disabled={!(onTriggerRescan || enableIpcBridge) || isRescanning}
           aria-busy={isRescanning}
         >
           {isRescanning ? "Scanning..." : "Scan Ulang"}
