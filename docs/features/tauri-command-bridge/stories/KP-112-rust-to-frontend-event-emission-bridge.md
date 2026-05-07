@@ -18,10 +18,10 @@ Bridge Rust lifecycle outputs to Tauri emitted events for routing state, ping me
 *   **Data Models:** Event payload contracts for routing, metrics, detection
 
 ## Acceptance Criteria (Technical)
-*   [ ] Routing lifecycle transitions emit `routing_state_changed` events.
-*   [ ] Metrics probe cycles emit `metrics_ping_sampled` events with normalized fields.
-*   [ ] Detection status changes emit `detection_status_updated` events.
-*   [ ] Event emission order remains deterministic across repeated runs.
+*   [x] Routing lifecycle transitions emit `routing_state_changed` events.
+*   [x] Metrics probe cycles emit `metrics_ping_sampled` events with normalized fields.
+*   [x] Detection status changes emit `detection_status_updated` events.
+*   [x] Event emission order remains deterministic across repeated runs.
 
 ## Business Rules & Logic
 *   UI must observe backend state changes without polling-heavy fallback.
@@ -30,6 +30,6 @@ Bridge Rust lifecycle outputs to Tauri emitted events for routing state, ping me
 *   Depends on: KP-109, KP-034, KP-041, KP-068
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

@@ -6,18 +6,25 @@ use client_engine::detection::scanner_windows::{
     ProcessEnumerator, SupportedGame, WindowsProcessEnumerator,
 };
 use client_engine::detection::state_resolver::{DetectionResolution, DetectionState};
+use tauri::{AppHandle, State};
 
 use super::contracts::{DetectionStatusResponse, DetectionStatusState};
+use super::event_bridge::{emit_detection_status_updated, EventBridgeState};
 
 #[tauri::command]
-pub fn detection_get_status() -> Result<DetectionStatusResponse, String> {
+pub fn detection_get_status(
+    app_handle: AppHandle,
+    event_bridge_state: State<'_, EventBridgeState>,
+) -> Result<DetectionStatusResponse, String> {
     let handler = DefaultRescanHandler::new(
         WindowsProcessEnumerator,
         SystemTimeProvider,
         RescanCommandConfig::default(),
     );
 
-    Ok(query_detection_status(&handler, &supported_games()))
+    let response = query_detection_status(&handler, &supported_games());
+    emit_detection_status_updated(&app_handle, event_bridge_state.inner(), &response)?;
+    Ok(response)
 }
 
 fn supported_games() -> Vec<SupportedGame> {
