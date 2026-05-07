@@ -18,10 +18,10 @@ Validate IPC command/event payload conformance and deterministic behavior under 
 *   **Data Models:** IPC payload fixture matrix
 
 ## Acceptance Criteria (Technical)
-*   [ ] IPC payload fields match documented contracts for routing, detection, and metrics.
-*   [ ] Missing/invalid payload fields fail conformance assertions.
-*   [ ] Repeated subscribe-unsubscribe cycles keep deterministic event behavior.
-*   [ ] Output provides actionable diagnostics for release readiness checks.
+*   [x] IPC payload fields match documented contracts for routing, detection, and metrics.
+*   [x] Missing/invalid payload fields fail conformance assertions.
+*   [x] Repeated subscribe-unsubscribe cycles keep deterministic event behavior.
+*   [x] Output provides actionable diagnostics for release readiness checks.
 
 ## Business Rules & Logic
 *   Contract drift should be caught in CI before impacting user-facing controls.
@@ -30,6 +30,6 @@ Validate IPC command/event payload conformance and deterministic behavior under 
 *   Depends on: KP-112, KP-114, KP-116, KP-037
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

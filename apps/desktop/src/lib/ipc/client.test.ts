@@ -8,6 +8,22 @@ function createStubDeps(): IpcClientDeps {
   };
 }
 
+function validateWirePayloadConformance(
+  payload: unknown,
+  requiredKeys: readonly string[]
+): string[] {
+  if (!payload || typeof payload !== "object") {
+    return ["payload must be object"];
+  }
+
+  const record = payload as Record<string, unknown>;
+  const missing = requiredKeys.filter((key) => !(key in record));
+  if (missing.length > 0) {
+    return missing.map((key) => `missing required key '${key}'`);
+  }
+  return [];
+}
+
 describe("ipc client adapter", () => {
   it("invokes routing toggle commands with typed payload mapping", async () => {
     const deps = createStubDeps();
@@ -187,5 +203,112 @@ describe("ipc client adapter", () => {
     await cleanupMetrics();
     await cleanupDetection();
     expect(rawUnsubscribe).toHaveBeenCalledTimes(2);
+  });
+
+  it("fails conformance assertions for missing and invalid payload fixtures", () => {
+    const routingValid = {
+      previous_state: "idle",
+      state: "active"
+    };
+    const routingInvalid = {
+      state: "active"
+    };
+    const metricsValid = {
+      sampled_at_unix_ms: 1_700_000_010_000,
+      state: "live",
+      baseline_ping_ms: 210.5,
+      routed_ping_ms: 152.2,
+      jitter_ms: 3.1,
+      packet_loss_pct: 0.0
+    };
+    const metricsInvalid = {
+      sampled_at_unix_ms: 1_700_000_010_000,
+      baseline_ping_ms: 210.5
+    };
+    const detectionValid = {
+      state: "detected",
+      game_id: "ffxiv"
+    };
+    const detectionInvalid = {
+      reason_code: "ipc_detection_scan_failed"
+    };
+
+    expect(
+      validateWirePayloadConformance(routingValid, ["previous_state", "state"])
+    ).toEqual([]);
+    expect(
+      validateWirePayloadConformance(metricsValid, [
+        "sampled_at_unix_ms",
+        "state",
+        "baseline_ping_ms",
+        "routed_ping_ms",
+        "jitter_ms",
+        "packet_loss_pct"
+      ])
+    ).toEqual([]);
+    expect(validateWirePayloadConformance(detectionValid, ["state"])).toEqual([]);
+
+    expect(validateWirePayloadConformance(routingInvalid, ["previous_state", "state"])).toEqual([
+      "missing required key 'previous_state'"
+    ]);
+    expect(
+      validateWirePayloadConformance(metricsInvalid, [
+        "sampled_at_unix_ms",
+        "state",
+        "baseline_ping_ms",
+        "routed_ping_ms",
+        "jitter_ms",
+        "packet_loss_pct"
+      ])
+    ).toEqual([
+      "missing required key 'state'",
+      "missing required key 'routed_ping_ms'",
+      "missing required key 'jitter_ms'",
+      "missing required key 'packet_loss_pct'"
+    ]);
+    expect(validateWirePayloadConformance(detectionInvalid, ["state"])).toEqual([
+      "missing required key 'state'"
+    ]);
+  });
+
+  it("keeps deterministic event behavior across repeated subscribe-unsubscribe cycles", async () => {
+    const deps = createStubDeps();
+    const trace: string[] = [];
+    let cycle = 0;
+
+    vi.mocked(deps.listen).mockImplementation(async (eventName, handler) => {
+      cycle += 1;
+      const currentCycle = cycle;
+      trace.push(`subscribe:${eventName}:${currentCycle}`);
+      void handler({
+        payload: {
+          previous_state: "idle",
+          state: "connecting",
+          reason_code: undefined,
+          message: undefined
+        }
+      });
+      return async () => {
+        trace.push(`unsubscribe:${eventName}:${currentCycle}`);
+      };
+    });
+
+    const client = createIpcClient(deps);
+    const onEvent = vi.fn();
+
+    for (let run = 0; run < 3; run += 1) {
+      const cleanup = await client.subscribeRoutingState(onEvent);
+      await cleanup();
+    }
+
+    expect(onEvent).toHaveBeenCalledTimes(3);
+    expect(trace).toEqual([
+      "subscribe:routing_state_changed:1",
+      "unsubscribe:routing_state_changed:1",
+      "subscribe:routing_state_changed:2",
+      "unsubscribe:routing_state_changed:2",
+      "subscribe:routing_state_changed:3",
+      "unsubscribe:routing_state_changed:3"
+    ]);
   });
 });
