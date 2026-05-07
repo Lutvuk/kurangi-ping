@@ -122,6 +122,15 @@ graph TD
     KP-115["KP-115: Feature Wiring for ToggleController, DetectionPanel, and PingMetricsPanel via IPC (L4-feature-ui)"]:::pending
     KP-116["KP-116: End-to-End IPC Journey Harness (toggle, detection, live metrics) (L5-integration)"]:::pending
     KP-117["KP-117: IPC Contract Conformance and Determinism Test Suite (L5-integration)"]:::pending
+    KP-118["KP-118: App Shell IPC State Orchestrator and ViewModel Contract (L4-feature-ui)"]:::pending
+    KP-119["KP-119: Routing Toggle Invoke Wiring in App Shell (L4-feature-ui)"]:::pending
+    KP-120["KP-120: Routing State Event Subscription and Badge Sync (L4-feature-ui)"]:::pending
+    KP-121["KP-121: Startup Detection Query Wiring on App Shell Mount (L4-feature-ui)"]:::pending
+    KP-122["KP-122: Detection Status Event Bridge for Live Panel Refresh (L4-feature-ui)"]:::pending
+    KP-123["KP-123: Ping Metrics Event Stream Binding in App Shell (L4-feature-ui)"]:::pending
+    KP-124["KP-124: IPC Listener Lifecycle Cleanup and Duplicate-Handler Guard (L4-feature-ui)"]:::pending
+    KP-125["KP-125: App Shell IPC Error Mapping and User-Safe Feedback (L4-feature-ui)"]:::pending
+    KP-126["KP-126: End-to-End App Shell IPC Wiring Harness (L5-integration)"]:::pending
 
     %% Dependencies
     KP-001 --> KP-002
@@ -353,6 +362,39 @@ graph TD
     KP-114 --> KP-117
     KP-116 --> KP-117
     KP-037 --> KP-117
+    KP-114 --> KP-118
+    KP-115 --> KP-118
+    KP-118 --> KP-119
+    KP-114 --> KP-119
+    KP-118 --> KP-120
+    KP-114 --> KP-120
+    KP-112 --> KP-120
+    KP-118 --> KP-121
+    KP-114 --> KP-121
+    KP-111 --> KP-121
+    KP-118 --> KP-122
+    KP-121 --> KP-122
+    KP-112 --> KP-122
+    KP-118 --> KP-123
+    KP-114 --> KP-123
+    KP-112 --> KP-123
+    KP-115 --> KP-123
+    KP-120 --> KP-124
+    KP-122 --> KP-124
+    KP-123 --> KP-124
+    KP-119 --> KP-125
+    KP-120 --> KP-125
+    KP-121 --> KP-125
+    KP-113 --> KP-125
+    KP-119 --> KP-126
+    KP-120 --> KP-126
+    KP-121 --> KP-126
+    KP-122 --> KP-126
+    KP-123 --> KP-126
+    KP-124 --> KP-126
+    KP-125 --> KP-126
+    KP-116 --> KP-126
+    KP-117 --> KP-126
 
     %% Styles
     classDef done fill:#d4f0f0,stroke:#007777,stroke-width:2px;
@@ -363,3 +405,4 @@ graph TD
 ## Ready To Start
 - KP-001: Repo Workspace Bootstrap
 - KP-010: SQLite Migration Framework Bootstrap
+

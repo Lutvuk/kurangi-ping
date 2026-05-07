@@ -1,9 +1,11 @@
 import { ConnectionStatusBadge, PrimaryToggle } from "./components/modules";
+import { useAppShellIpcState } from "./features/shell";
 import { AppShell } from "./layout/AppShell";
 import { Panel } from "./layout/Panel";
 import { FoundationShowcasePage } from "./pages/foundation-showcase";
 
 export default function App() {
+  const { viewModel } = useAppShellIpcState();
   const isFoundationShowcaseEnabled =
     import.meta.env.DEV || import.meta.env.VITE_ENABLE_FOUNDATION_SHOWCASE === "1";
 
@@ -23,8 +25,8 @@ export default function App() {
             gap: "var(--space-4)"
           }}
         >
-          <PrimaryToggle state="off" />
-          <ConnectionStatusBadge state="off" />
+          <PrimaryToggle state={viewModel.routing.toggleState} />
+          <ConnectionStatusBadge state={viewModel.routing.badgeState} />
         </div>
       </Panel>
     </AppShell>

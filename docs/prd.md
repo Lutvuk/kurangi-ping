@@ -467,6 +467,28 @@ Example event payload format:
 - IPC error payloads must map to normalized non-sensitive reason codes
 - IPC event ordering and payload schema must remain deterministic and test-gated
 
+
+### 13.25 Product Feature Registered: App Shell IPC Wiring
+- Feature Code: FEATURE-010
+- Source: `docs/features/app-shell-ipc-wiring/prd-addendum.md`
+- Status: Proposed
+- Story Set:
+  - KP-118 App Shell IPC State Orchestrator and ViewModel Contract
+  - KP-119 Routing Toggle Invoke Wiring in App Shell
+  - KP-120 Routing State Event Subscription and Badge Sync
+  - KP-121 Startup Detection Query Wiring on App Shell Mount
+  - KP-122 Detection Status Event Bridge for Live Panel Refresh
+  - KP-123 Ping Metrics Event Stream Binding in App Shell
+  - KP-124 IPC Listener Lifecycle Cleanup and Duplicate-Handler Guard
+  - KP-125 App Shell IPC Error Mapping and User-Safe Feedback
+  - KP-126 End-to-End App Shell IPC Wiring Harness
+
+### 13.26 App Shell IPC Guardrails Reinforced
+- App shell wajib menggunakan typed IPC adapter; tidak boleh hardcode `invoke/listen` string di composition layer.
+- Routing status badge harus mengikuti event `routing_state_changed` sebagai source-of-truth.
+- Detection status wajib di-query saat startup dan dapat disinkronkan ulang via event stream.
+- Listener lifecycle (attach/cleanup) harus deterministic untuk mencegah duplicate handler dan memory leak.
+
 ---
 
 ## 12) Appendix
@@ -481,4 +503,8 @@ Example event payload format:
 - Baseline Ping: Measured latency without routing optimization.
 - Optimized Ping: Measured latency after routing is enabled.
 - D7 Retention: Percentage of users returning on day 7 after first use.
+
+
+
+
 
