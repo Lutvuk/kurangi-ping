@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ConnectionStatusBadge, PrimaryToggle } from "./components/modules";
 import { useAppShellIpcState } from "./features/shell";
 import { ipcClient } from "./lib/ipc";
@@ -63,6 +63,33 @@ export default function App() {
     }
     return undefined;
   }, [inFlightCommand]);
+
+  useEffect(() => {
+    let active = true;
+    let unsubscribe: (() => Promise<void>) | undefined;
+
+    void (async () => {
+      try {
+        unsubscribe = await ipcClient.subscribeRoutingState((payload) => {
+          if (!active) {
+            return;
+          }
+          actions.applyRoutingStateEvent(payload);
+        });
+      } catch {
+        if (active) {
+          setCommandFeedback("Sinkronisasi status routing sedang tidak tersedia.");
+        }
+      }
+    })();
+
+    return () => {
+      active = false;
+      if (unsubscribe) {
+        void unsubscribe();
+      }
+    };
+  }, [actions]);
 
   return (
     <AppShell>

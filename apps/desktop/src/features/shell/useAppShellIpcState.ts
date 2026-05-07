@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useCallback, useMemo, useReducer } from "react";
 import type { ConnectionStatusState, PrimaryToggleState } from "../../components/modules";
 import type {
   DetectionStatusResponse,
@@ -129,6 +129,38 @@ function mapRoutingToViewModel(
   };
 }
 
+function isSameRoutingViewModel(
+  left: AppShellRoutingViewModel,
+  right: AppShellRoutingViewModel
+): boolean {
+  return (
+    left.lifecycleState === right.lifecycleState &&
+    left.toggleState === right.toggleState &&
+    left.badgeState === right.badgeState &&
+    left.reasonCode === right.reasonCode &&
+    left.message === right.message
+  );
+}
+
+function shouldApplyRoutingEvent(
+  current: AppShellRoutingViewModel,
+  payload: RoutingStateChangedEventPayload
+): boolean {
+  if (
+    payload.state === current.lifecycleState &&
+    payload.reasonCode === current.reasonCode &&
+    payload.message === current.message
+  ) {
+    return false;
+  }
+
+  if (payload.previousState !== current.lifecycleState && payload.state !== "error") {
+    return false;
+  }
+
+  return true;
+}
+
 function reduceAppShellIpcState(
   state: AppShellIpcViewModel,
   action: AppShellIpcAction
@@ -141,24 +173,35 @@ function reduceAppShellIpcState(
   }
 
   if (action.type === "routing.invoke.resolved") {
+    const nextRouting = mapRoutingToViewModel(
+      action.response.state,
+      action.response.reasonCode,
+      action.response.message
+    );
+    if (isSameRoutingViewModel(state.routing, nextRouting)) {
+      return state;
+    }
     return {
       ...state,
-      routing: mapRoutingToViewModel(
-        action.response.state,
-        action.response.reasonCode,
-        action.response.message
-      )
+      routing: nextRouting
     };
   }
 
   if (action.type === "routing.event.received") {
+    if (!shouldApplyRoutingEvent(state.routing, action.payload)) {
+      return state;
+    }
+    const nextRouting = mapRoutingToViewModel(
+      action.payload.state,
+      action.payload.reasonCode,
+      action.payload.message
+    );
+    if (isSameRoutingViewModel(state.routing, nextRouting)) {
+      return state;
+    }
     return {
       ...state,
-      routing: mapRoutingToViewModel(
-        action.payload.state,
-        action.payload.reasonCode,
-        action.payload.message
-      )
+      routing: nextRouting
     };
   }
 
@@ -192,47 +235,70 @@ function reduceAppShellIpcState(
 
 export function useAppShellIpcState(): AppShellIpcStateResult {
   const [viewModel, dispatch] = useReducer(reduceAppShellIpcState, INITIAL_VIEW_MODEL);
+  const markRoutingCommandStarted = useCallback((command: "on" | "off") => {
+    dispatch({
+      type: "routing.command.started",
+      command
+    });
+  }, []);
+
+  const applyRoutingInvokeResponse = useCallback((response: RoutingLifecycleResponse) => {
+    dispatch({
+      type: "routing.invoke.resolved",
+      response
+    });
+  }, []);
+
+  const applyRoutingStateEvent = useCallback((payload: RoutingStateChangedEventPayload) => {
+    dispatch({
+      type: "routing.event.received",
+      payload
+    });
+  }, []);
+
+  const applyDetectionQueryResponse = useCallback((response: DetectionStatusResponse) => {
+    dispatch({
+      type: "detection.query.resolved",
+      response
+    });
+  }, []);
+
+  const applyDetectionStatusEvent = useCallback((payload: DetectionStatusUpdatedEventPayload) => {
+    dispatch({
+      type: "detection.event.received",
+      payload
+    });
+  }, []);
+
+  const applyMetricsSampleEvent = useCallback((payload: MetricsPingSampledEventPayload) => {
+    dispatch({
+      type: "metrics.event.received",
+      payload
+    });
+  }, []);
+
+  const actions = useMemo<AppShellIpcActions>(
+    () => ({
+      markRoutingCommandStarted,
+      applyRoutingInvokeResponse,
+      applyRoutingStateEvent,
+      applyDetectionQueryResponse,
+      applyDetectionStatusEvent,
+      applyMetricsSampleEvent
+    }),
+    [
+      markRoutingCommandStarted,
+      applyRoutingInvokeResponse,
+      applyRoutingStateEvent,
+      applyDetectionQueryResponse,
+      applyDetectionStatusEvent,
+      applyMetricsSampleEvent
+    ]
+  );
 
   return {
     viewModel,
-    actions: {
-      markRoutingCommandStarted(command) {
-        dispatch({
-          type: "routing.command.started",
-          command
-        });
-      },
-      applyRoutingInvokeResponse(response) {
-        dispatch({
-          type: "routing.invoke.resolved",
-          response
-        });
-      },
-      applyRoutingStateEvent(payload) {
-        dispatch({
-          type: "routing.event.received",
-          payload
-        });
-      },
-      applyDetectionQueryResponse(response) {
-        dispatch({
-          type: "detection.query.resolved",
-          response
-        });
-      },
-      applyDetectionStatusEvent(payload) {
-        dispatch({
-          type: "detection.event.received",
-          payload
-        });
-      },
-      applyMetricsSampleEvent(payload) {
-        dispatch({
-          type: "metrics.event.received",
-          payload
-        });
-      }
-    }
+    actions
   };
 }
 

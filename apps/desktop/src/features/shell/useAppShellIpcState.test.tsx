@@ -125,4 +125,25 @@ describe("useAppShellIpcState", () => {
       reasonCode: undefined
     });
   });
+
+  it("ignores duplicate routing event payload to keep state deterministic", () => {
+    const { result } = renderHook(() => useAppShellIpcState());
+
+    act(() => {
+      result.current.actions.applyRoutingStateEvent({
+        previousState: "idle",
+        state: "active"
+      });
+    });
+    const viewAfterFirstEvent = result.current.viewModel;
+
+    act(() => {
+      result.current.actions.applyRoutingStateEvent({
+        previousState: "active",
+        state: "active"
+      });
+    });
+
+    expect(result.current.viewModel).toBe(viewAfterFirstEvent);
+  });
 });

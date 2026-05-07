@@ -18,10 +18,10 @@ Wire `routing_state_changed` event subscription in app shell so `ConnectionStatu
 *   **Data Models:** `RoutingStateEventPayload`, `ConnectionStatusViewModel`
 
 ## Acceptance Criteria (Technical)
-*   [ ] App shell subscribe ke `routing_state_changed` saat mount.
-*   [ ] Payload event valid memutakhirkan state badge (`offline/connecting/active/error`) secara deterministic.
-*   [ ] Out-of-order/duplicate event tidak membuat state loop atau UI flicker.
-*   [ ] Error listener di-normalize ke reason code UI-safe.
+*   [x] App shell subscribe ke `routing_state_changed` saat mount.
+*   [x] Payload event valid memutakhirkan state badge (`offline/connecting/active/error`) secara deterministic.
+*   [x] Out-of-order/duplicate event tidak membuat state loop atau UI flicker.
+*   [x] Error listener di-normalize ke reason code UI-safe.
 
 ## Business Rules & Logic
 *   Badge harus mencerminkan source-of-truth dari Rust engine, bukan asumsi frontend lokal.
@@ -30,6 +30,6 @@ Wire `routing_state_changed` event subscription in app shell so `ConnectionStatu
 *   Depends on: KP-118, KP-114, KP-112
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

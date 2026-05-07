@@ -4,13 +4,15 @@ import App from "./App";
 
 const mocks = vi.hoisted(() => ({
   invokeRoutingToggleOn: vi.fn(),
-  invokeRoutingToggleOff: vi.fn()
+  invokeRoutingToggleOff: vi.fn(),
+  subscribeRoutingState: vi.fn()
 }));
 
 vi.mock("./lib/ipc", () => ({
   ipcClient: {
     invokeRoutingToggleOn: mocks.invokeRoutingToggleOn,
-    invokeRoutingToggleOff: mocks.invokeRoutingToggleOff
+    invokeRoutingToggleOff: mocks.invokeRoutingToggleOff,
+    subscribeRoutingState: mocks.subscribeRoutingState
   }
 }));
 
@@ -18,6 +20,8 @@ describe("App IPC toggle wiring", () => {
   beforeEach(() => {
     mocks.invokeRoutingToggleOn.mockReset();
     mocks.invokeRoutingToggleOff.mockReset();
+    mocks.subscribeRoutingState.mockReset();
+    mocks.subscribeRoutingState.mockResolvedValue(async () => undefined);
   });
 
   it("invokes routing_toggle_on via ipc client and sets connecting badge", async () => {
@@ -73,5 +77,39 @@ describe("App IPC toggle wiring", () => {
     await waitFor(() =>
       expect(screen.getByRole("status")).toHaveTextContent("No Relay Available")
     );
+  });
+
+  it("syncs badge from routing_state_changed event and cleans listener on unmount", async () => {
+    let routingListener:
+      | ((payload: {
+          previousState: "idle" | "connecting" | "active" | "degraded" | "error";
+          state: "idle" | "connecting" | "active" | "degraded" | "error";
+          reasonCode?: string;
+          message?: string;
+        }) => void)
+      | undefined;
+    const unsubscribe = vi.fn(async () => undefined);
+    mocks.subscribeRoutingState.mockImplementation(async (handler) => {
+      routingListener = handler;
+      return unsubscribe;
+    });
+
+    const { unmount } = render(<App />);
+
+    await waitFor(() => expect(mocks.subscribeRoutingState).toHaveBeenCalledTimes(1));
+    routingListener?.({
+      previousState: "idle",
+      state: "active"
+    });
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Routing Active"));
+
+    routingListener?.({
+      previousState: "idle",
+      state: "connecting"
+    });
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Routing Active"));
+
+    unmount();
+    await waitFor(() => expect(unsubscribe).toHaveBeenCalledTimes(1));
   });
 });
