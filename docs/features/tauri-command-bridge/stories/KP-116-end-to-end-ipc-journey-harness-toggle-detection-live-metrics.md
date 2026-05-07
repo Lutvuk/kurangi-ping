@@ -18,10 +18,10 @@ Simulate full IPC flow from frontend command invocation to backend event deliver
 *   **Data Models:** IPC journey scenario fixtures
 
 ## Acceptance Criteria (Technical)
-*   [ ] Success path validates ON toggle command to active state event.
-*   [ ] Detection startup query path validates frontend-visible status contract.
-*   [ ] Metrics event path validates continuous UI updates.
-*   [ ] Journey traces are deterministic across repeated runs.
+*   [x] Success path validates ON toggle command to active state event.
+*   [x] Detection startup query path validates frontend-visible status contract.
+*   [x] Metrics event path validates continuous UI updates.
+*   [x] Journey traces are deterministic across repeated runs.
 
 ## Business Rules & Logic
 *   IPC wiring quality must be validated before production hardening.
@@ -30,6 +30,6 @@ Simulate full IPC flow from frontend command invocation to backend event deliver
 *   Depends on: KP-110, KP-111, KP-112, KP-115
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

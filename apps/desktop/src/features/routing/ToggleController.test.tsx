@@ -104,4 +104,60 @@ describe("ToggleController", () => {
     unmount();
     await waitFor(() => expect(unsubscribe).toHaveBeenCalledTimes(1));
   });
+
+  it("keeps ipc journey trace deterministic across repeated runs", async () => {
+    async function runJourney(): Promise<string[]> {
+      const trace: string[] = [];
+      let routingListener: ((payload: RoutingStateChangedEventPayload) => void) | undefined;
+      const unsubscribe = vi.fn(async () => {
+        trace.push("cleanup:routing_subscription");
+      });
+
+      const ipcClient: IpcClient = {
+        invokeRoutingToggleOn: vi.fn(async () => {
+          trace.push("invoke:routing_toggle_on");
+          return { state: "connecting" as const };
+        }),
+        invokeRoutingToggleOff: vi.fn(async () => ({ state: "idle" as const })),
+        invokeDetectionGetStatus: vi.fn(async () => ({ state: "not_detected" as const })),
+        subscribeRoutingState: vi.fn(async (handler) => {
+          trace.push("subscribe:routing_state_changed");
+          routingListener = handler;
+          return unsubscribe;
+        }),
+        subscribePingMetrics: vi.fn(async () => unsubscribe),
+        subscribeDetectionStatus: vi.fn(async () => unsubscribe)
+      };
+
+      const { unmount } = render(
+        <ToggleController initialState="off" enableIpcBridge ipcClient={ipcClient} />
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: "Routing toggle off" }));
+      await waitFor(() => expect(ipcClient.invokeRoutingToggleOn).toHaveBeenCalledTimes(1));
+
+      trace.push("event:routing_state_changed:idle->connecting");
+      routingListener?.({
+        previousState: "idle",
+        state: "connecting"
+      });
+      trace.push("event:routing_state_changed:connecting->active");
+      routingListener?.({
+        previousState: "connecting",
+        state: "active"
+      });
+
+      await waitFor(() =>
+        expect(screen.getByTestId("toggle-controller-status")).toHaveTextContent("Routing Active")
+      );
+
+      unmount();
+      await waitFor(() => expect(unsubscribe).toHaveBeenCalledTimes(1));
+      return trace;
+    }
+
+    const first = await runJourney();
+    const second = await runJourney();
+    expect(first).toEqual(second);
+  });
 });
