@@ -1,6 +1,6 @@
 ﻿# Global Dependency Graph
 
-> Generated: 2026-05-07
+> Generated: 2026-05-08
 
 ```mermaid
 graph TD
@@ -131,6 +131,15 @@ graph TD
     KP-124["KP-124: IPC Listener Lifecycle Cleanup and Duplicate-Handler Guard (L4-feature-ui)"]:::pending
     KP-125["KP-125: App Shell IPC Error Mapping and User-Safe Feedback (L4-feature-ui)"]:::pending
     KP-126["KP-126: End-to-End App Shell IPC Wiring Harness (L5-integration)"]:::pending
+    KP-127["KP-127: Environment Contract Extension for Relay Probe Targets and Timeouts (L1-data)"]:::pending
+    KP-128["KP-128: Relay Target Config Loader and Validation in Go Relay Controller (L3-backend)"]:::pending
+    KP-129["KP-129: Live Probe Executor (HTTP first, bounded timeout, failure capture) (L3-backend)"]:::pending
+    KP-130["KP-130: Relay Health Classifier (ok/warn/dead) from Probe Result (L3-backend)"]:::pending
+    KP-131["KP-131: Fresh Health Snapshot Store and Concurrency-Safe Updater (L3-backend)"]:::pending
+    KP-132["KP-132: GetRelayHealth Dynamic Wiring with Backward-Compatible JSON Contract (L3-backend)"]:::pending
+    KP-133["KP-133: Relay Health API Contract Regression Suite (shape unchanged, data dynamic) (L5-integration)"]:::pending
+    KP-134["KP-134: Offline Relay Scenario Harness (timeout/failure -> dead) (L5-integration)"]:::pending
+    KP-135["KP-135: Rust Client Freshness Consumption Harness for /v1/relay/health (L5-integration)"]:::pending
 
     %% Dependencies
     KP-001 --> KP-002
@@ -395,6 +404,21 @@ graph TD
     KP-125 --> KP-126
     KP-116 --> KP-126
     KP-117 --> KP-126
+    KP-002 --> KP-127
+    KP-127 --> KP-128
+    KP-006 --> KP-128
+    KP-128 --> KP-129
+    KP-129 --> KP-130
+    KP-049 --> KP-130
+    KP-129 --> KP-131
+    KP-130 --> KP-131
+    KP-131 --> KP-132
+    KP-128 --> KP-132
+    KP-132 --> KP-133
+    KP-132 --> KP-134
+    KP-133 --> KP-134
+    KP-132 --> KP-135
+    KP-048 --> KP-135
 
     %% Styles
     classDef done fill:#d4f0f0,stroke:#007777,stroke-width:2px;

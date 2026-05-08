@@ -41,13 +41,13 @@ export default function App() {
       const response =
         command === "on"
           ? await ipcClient.invokeRoutingToggleOn({
-              trigger: "user_toggle",
-              requestedAtUnixMs: Date.now()
-            })
+            trigger: "user_toggle",
+            requestedAtUnixMs: Date.now()
+          })
           : await ipcClient.invokeRoutingToggleOff({
-              trigger: "user_toggle",
-              requestedAtUnixMs: Date.now()
-            });
+            trigger: "user_toggle",
+            requestedAtUnixMs: Date.now()
+          });
       actions.applyRoutingInvokeResponse(response);
       if (response.reasonCode) {
         const rejected = presentIpcFailureState({

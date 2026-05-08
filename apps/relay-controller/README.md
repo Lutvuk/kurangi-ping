@@ -21,3 +21,18 @@ Scope for scaffold phase:
 - Startup behavior:
   - If `KP_RELAY_DB_PATH` is set, service runs `OpenDB()` then `Migrate()`.
   - Migration/bootstrap failures are logged and fail fast at startup.
+
+## Relay Probe Env Contract (KP-127)
+
+Live relay probing configuration is environment-driven.
+
+- `KP_RELAY_PROBE_TARGETS`
+  - Required for live probe mode.
+  - Format: comma-separated `<relay_id>|<probe_url>` entries.
+  - Example: `sin-01|https://sin-01.example.net/healthz,nrt-01|https://nrt-01.example.net/healthz`
+- `KP_RELAY_PROBE_TIMEOUT_MS`
+  - Per-target probe timeout in milliseconds.
+  - Safe default recommendation: `1200`.
+  - Invalid/empty values should fall back to controller default in runtime loader.
+
+This contract is additive and does not rename/remove existing relay controller env keys.

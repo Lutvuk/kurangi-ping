@@ -489,6 +489,27 @@ Example event payload format:
 - Detection status wajib di-query saat startup dan dapat disinkronkan ulang via event stream.
 - Listener lifecycle (attach/cleanup) harus deterministic untuk mencegah duplicate handler dan memory leak.
 
+### 13.27 Product Feature Registered: Live Relay Health Probe
+- Feature Code: FEATURE-011
+- Source: `docs/features/live-relay-health-probe/prd-addendum.md`
+- Status: Proposed
+- Story Set:
+  - KP-127 Environment Contract Extension for Relay Probe Targets and Timeouts
+  - KP-128 Relay Target Config Loader and Validation in Go Relay Controller
+  - KP-129 Live Probe Executor (HTTP first, bounded timeout, failure capture)
+  - KP-130 Relay Health Classifier (ok/warn/dead) from Probe Result
+  - KP-131 Fresh Health Snapshot Store and Concurrency-Safe Updater
+  - KP-132 GetRelayHealth Dynamic Wiring with Backward-Compatible JSON Contract
+  - KP-133 Relay Health API Contract Regression Suite (shape unchanged, data dynamic)
+  - KP-134 Offline Relay Scenario Harness (timeout/failure -> dead)
+  - KP-135 Rust Client Freshness Consumption Harness for /v1/relay/health
+
+### 13.28 Live Probe Guardrails Reinforced
+- Relay health response JSON shape must remain backward-compatible with Rust client parser.
+- Relay target definitions must come from environment contract, not hardcoded values in handler.
+- Probe execution must be timeout-bounded and failure-aware to avoid endpoint stalls.
+- Offline relay detection must map deterministically to `dead` for failover readiness.
+
 ---
 
 ## 12) Appendix

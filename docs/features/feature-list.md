@@ -16,6 +16,7 @@
 - [x] Privacy-Safe Telemetry Pipeline
 - [x] First-Run Onboarding Flow
 - [x] In-App Updater + Release Trust Gate (code-signing)
+- [x] Live Relay Health Probe (dynamic `/v1/relay/health` from real probes)
 
 
 
