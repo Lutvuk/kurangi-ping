@@ -12,6 +12,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -40,6 +41,11 @@ type relayProbeTarget struct {
 type relayProbeConfig struct {
 	Targets   []relayProbeTarget
 	TimeoutMS int
+}
+
+type relayHealthSnapshotStore struct {
+	mu    sync.RWMutex
+	items []RelayHealthItem
 }
 
 type relayProbeResult struct {
@@ -74,6 +80,8 @@ var defaultRelayProbeTargets = []relayProbeTarget{
 	{RelayID: "sin-01", ProbeURL: "https://sin-01.example.net/healthz"},
 	{RelayID: "nrt-01", ProbeURL: "https://nrt-01.example.net/healthz"},
 }
+
+var relayHealthStore = newRelayHealthSnapshotStore()
 
 func NewRouter() http.Handler {
 	mux := http.NewServeMux()
@@ -131,6 +139,48 @@ func loadRelayProbeConfigWithLookup(getenv func(string) string) relayProbeConfig
 		Targets:   targets,
 		TimeoutMS: timeout,
 	}
+}
+
+func newRelayHealthSnapshotStore() *relayHealthSnapshotStore {
+	return &relayHealthSnapshotStore{
+		items: []RelayHealthItem{},
+	}
+}
+
+func (s *relayHealthSnapshotStore) UpdateFromProbeResults(results []relayProbeResult) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	items := make([]RelayHealthItem, 0, len(results))
+	for _, result := range results {
+		updatedAt := result.ProbedAt
+		if updatedAt.IsZero() {
+			updatedAt = time.Now().UTC()
+		}
+
+		latency := result.LatencyMS
+		if latency < 0 {
+			latency = 0
+		}
+
+		items = append(items, RelayHealthItem{
+			RelayID:   result.RelayID,
+			Status:    classifyRelayStatus(result),
+			LatencyMS: latency,
+			UpdatedAt: updatedAt.UTC().Format(time.RFC3339),
+		})
+	}
+
+	s.items = items
+}
+
+func (s *relayHealthSnapshotStore) Read() []RelayHealthItem {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	copied := make([]RelayHealthItem, len(s.items))
+	copy(copied, s.items)
+	return copied
 }
 
 func probeAllRelays(targets []relayProbeTarget, timeoutMS int) []relayProbeResult {

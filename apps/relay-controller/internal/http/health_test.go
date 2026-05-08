@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"reflect"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 )
@@ -329,6 +330,107 @@ func TestClassifyRelayStatus(t *testing.T) {
 				t.Fatalf("unexpected status mapping: got %q, want %q", got, tc.want)
 			}
 		})
+	}
+}
+
+func TestRelayHealthSnapshotStoreUpdateAndRead(t *testing.T) {
+	store := newRelayHealthSnapshotStore()
+	now := time.Date(2026, 8, 1, 10, 11, 12, 0, time.UTC)
+	store.UpdateFromProbeResults([]relayProbeResult{
+		{
+			RelayID:   "sin-01",
+			Success:   true,
+			LatencyMS: 42,
+			ProbedAt:  now,
+		},
+		{
+			RelayID:   "nrt-01",
+			Success:   true,
+			LatencyMS: 120,
+			ProbedAt:  now,
+		},
+	})
+
+	got := store.Read()
+	if len(got) != 2 {
+		t.Fatalf("expected 2 items, got %d", len(got))
+	}
+	if got[0].Status != relayStatusOK {
+		t.Fatalf("expected first status ok, got %q", got[0].Status)
+	}
+	if got[1].Status != relayStatusWarn {
+		t.Fatalf("expected second status warn, got %q", got[1].Status)
+	}
+	if got[0].UpdatedAt != now.Format(time.RFC3339) {
+		t.Fatalf("unexpected updated_at: got %q", got[0].UpdatedAt)
+	}
+}
+
+func TestRelayHealthSnapshotStoreReadReturnsCopy(t *testing.T) {
+	store := newRelayHealthSnapshotStore()
+	store.UpdateFromProbeResults([]relayProbeResult{
+		{
+			RelayID:   "sin-01",
+			Success:   true,
+			LatencyMS: 38,
+			ProbedAt:  time.Date(2026, 8, 2, 1, 2, 3, 0, time.UTC),
+		},
+	})
+
+	first := store.Read()
+	if len(first) != 1 {
+		t.Fatalf("expected 1 item, got %d", len(first))
+	}
+	first[0].Status = relayStatusDead
+
+	second := store.Read()
+	if second[0].Status != relayStatusOK {
+		t.Fatalf("expected read result to be copy-safe, got %q", second[0].Status)
+	}
+}
+
+func TestRelayHealthSnapshotStoreConcurrentReadWrite(t *testing.T) {
+	store := newRelayHealthSnapshotStore()
+
+	var wg sync.WaitGroup
+	for i := 0; i < 25; i++ {
+		wg.Add(1)
+		go func(idx int) {
+			defer wg.Done()
+			store.UpdateFromProbeResults([]relayProbeResult{
+				{
+					RelayID:   "sin-01",
+					Success:   true,
+					LatencyMS: idx + 30,
+					ProbedAt:  time.Now().UTC(),
+				},
+				{
+					RelayID:   "nrt-01",
+					Success:   false,
+					TimedOut:  true,
+					ErrorCode: "timeout",
+					LatencyMS: 0,
+					ProbedAt:  time.Now().UTC(),
+				},
+			})
+		}(i)
+	}
+
+	for i := 0; i < 25; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			_ = store.Read()
+		}()
+	}
+
+	wg.Wait()
+	final := store.Read()
+	if len(final) != 2 {
+		t.Fatalf("expected 2 items in final snapshot, got %d", len(final))
+	}
+	if final[1].Status != relayStatusDead {
+		t.Fatalf("expected timed-out relay to map dead, got %q", final[1].Status)
 	}
 }
 

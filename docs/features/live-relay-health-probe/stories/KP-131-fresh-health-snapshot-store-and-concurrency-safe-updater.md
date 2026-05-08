@@ -18,10 +18,10 @@ Provide in-memory latest probe snapshot storage with safe concurrent read/write 
 *   **Data Models:** `RelayHealthResponse`
 
 ## Acceptance Criteria (Technical)
-*   [ ] Latest probe results can be stored and read atomically.
-*   [ ] Concurrent endpoint reads do not race with snapshot updates.
-*   [ ] Snapshot includes fresh `updated_at` timestamp values from latest probe cycle.
-*   [ ] Tests cover repeated reads/updates without contract drift.
+*   [x] Latest probe results can be stored and read atomically.
+*   [x] Concurrent endpoint reads do not race with snapshot updates.
+*   [x] Snapshot includes fresh `updated_at` timestamp values from latest probe cycle.
+*   [x] Tests cover repeated reads/updates without contract drift.
 
 ## Business Rules & Logic
 *   Response freshness must come from latest successful probe cycle, not static literals.
@@ -30,7 +30,6 @@ Provide in-memory latest probe snapshot storage with safe concurrent read/write 
 *   Depends on: KP-129, KP-130
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
-
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
