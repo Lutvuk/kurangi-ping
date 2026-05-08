@@ -15,6 +15,21 @@ import (
 )
 
 func TestGetRelayHealthShape(t *testing.T) {
+	withStubProbeExecutor(t, []relayProbeResult{
+		{
+			RelayID:   "sin-01",
+			Success:   true,
+			LatencyMS: 37,
+			ProbedAt:  time.Date(2026, 8, 1, 10, 11, 12, 0, time.UTC),
+		},
+		{
+			RelayID:   "nrt-01",
+			Success:   true,
+			LatencyMS: 118,
+			ProbedAt:  time.Date(2026, 8, 1, 10, 11, 12, 0, time.UTC),
+		},
+	})
+
 	rr := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/v1/relay/health", nil)
 
@@ -36,9 +51,41 @@ func TestGetRelayHealthShape(t *testing.T) {
 	if payload.Page.Limit != 50 {
 		t.Fatalf("expected default limit 50, got %d", payload.Page.Limit)
 	}
+
+	if payload.Data[0].RelayID != "sin-01" {
+		t.Fatalf("expected first relay_id sin-01, got %q", payload.Data[0].RelayID)
+	}
+	if payload.Data[0].Status != relayStatusOK {
+		t.Fatalf("expected first status ok, got %q", payload.Data[0].Status)
+	}
+	if payload.Data[1].Status != relayStatusWarn {
+		t.Fatalf("expected second status warn, got %q", payload.Data[1].Status)
+	}
 }
 
 func TestGetRelayHealthLimitClamp(t *testing.T) {
+	withStubProbeExecutor(t, []relayProbeResult{
+		{
+			RelayID:   "sin-01",
+			Success:   true,
+			LatencyMS: 20,
+			ProbedAt:  time.Date(2026, 8, 1, 10, 11, 12, 0, time.UTC),
+		},
+		{
+			RelayID:   "nrt-01",
+			Success:   true,
+			LatencyMS: 90,
+			ProbedAt:  time.Date(2026, 8, 1, 10, 11, 12, 0, time.UTC),
+		},
+		{
+			RelayID:   "usw-01",
+			Success:   false,
+			TimedOut:  true,
+			ErrorCode: "timeout",
+			ProbedAt:  time.Date(2026, 8, 1, 10, 11, 12, 0, time.UTC),
+		},
+	})
+
 	rr := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/v1/relay/health?limit=999", nil)
 
@@ -52,6 +99,68 @@ func TestGetRelayHealthLimitClamp(t *testing.T) {
 	if payload.Page.Limit != 200 {
 		t.Fatalf("expected clamped limit 200, got %d", payload.Page.Limit)
 	}
+	if len(payload.Data) != 3 {
+		t.Fatalf("expected all 3 data rows under limit 200, got %d", len(payload.Data))
+	}
+}
+
+func TestGetRelayHealthAppliesDataLimit(t *testing.T) {
+	withStubProbeExecutor(t, []relayProbeResult{
+		{
+			RelayID:   "sin-01",
+			Success:   true,
+			LatencyMS: 20,
+			ProbedAt:  time.Date(2026, 8, 1, 10, 11, 12, 0, time.UTC),
+		},
+		{
+			RelayID:   "nrt-01",
+			Success:   true,
+			LatencyMS: 90,
+			ProbedAt:  time.Date(2026, 8, 1, 10, 11, 12, 0, time.UTC),
+		},
+		{
+			RelayID:   "usw-01",
+			Success:   false,
+			TimedOut:  true,
+			ErrorCode: "timeout",
+			ProbedAt:  time.Date(2026, 8, 1, 10, 11, 12, 0, time.UTC),
+		},
+	})
+
+	rr := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/v1/relay/health?limit=2", nil)
+
+	GetRelayHealth(rr, req)
+
+	var payload RelayHealthResponse
+	if err := json.Unmarshal(rr.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("expected valid json, got error: %v", err)
+	}
+	if payload.Page.Limit != 2 {
+		t.Fatalf("expected limit 2, got %d", payload.Page.Limit)
+	}
+	if len(payload.Data) != 2 {
+		t.Fatalf("expected payload data to be trimmed by limit, got %d", len(payload.Data))
+	}
+}
+
+func withStubProbeExecutor(t *testing.T, results []relayProbeResult) {
+	t.Helper()
+
+	oldExecutor := executeRelayProbes
+	oldStore := relayHealthStore
+
+	relayHealthStore = newRelayHealthSnapshotStore()
+	executeRelayProbes = func(_ []relayProbeTarget, _ int) []relayProbeResult {
+		copied := make([]relayProbeResult, len(results))
+		copy(copied, results)
+		return copied
+	}
+
+	t.Cleanup(func() {
+		executeRelayProbes = oldExecutor
+		relayHealthStore = oldStore
+	})
 }
 
 func TestLoadRelayProbeConfigParsesValidTargets(t *testing.T) {

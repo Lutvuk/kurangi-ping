@@ -64,6 +64,8 @@ type relayHTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
+type relayProbeExecutor func(targets []relayProbeTarget, timeoutMS int) []relayProbeResult
+
 const (
 	envRelayProbeTargets   = "KP_RELAY_PROBE_TARGETS"
 	envRelayProbeTimeoutMS = "KP_RELAY_PROBE_TIMEOUT_MS"
@@ -82,6 +84,7 @@ var defaultRelayProbeTargets = []relayProbeTarget{
 }
 
 var relayHealthStore = newRelayHealthSnapshotStore()
+var executeRelayProbes relayProbeExecutor = probeAllRelays
 
 func NewRouter() http.Handler {
 	mux := http.NewServeMux()
@@ -94,24 +97,18 @@ func registerRoutes(mux *http.ServeMux) {
 }
 
 func GetRelayHealth(w http.ResponseWriter, r *http.Request) {
-	_ = loadRelayProbeConfig()
+	probeCfg := loadRelayProbeConfig()
+	probeResults := executeRelayProbes(probeCfg.Targets, probeCfg.TimeoutMS)
+	relayHealthStore.UpdateFromProbeResults(probeResults)
+
 	limit := parseLimit(r.URL.Query().Get("limit"))
+	data := relayHealthStore.Read()
+	if len(data) > limit {
+		data = data[:limit]
+	}
 
 	response := RelayHealthResponse{
-		Data: []RelayHealthItem{
-			{
-				RelayID:   "sin-01",
-				Status:    "ok",
-				LatencyMS: 38,
-				UpdatedAt: time.Now().UTC().Format(time.RFC3339),
-			},
-			{
-				RelayID:   "nrt-01",
-				Status:    "warn",
-				LatencyMS: 121,
-				UpdatedAt: time.Now().UTC().Format(time.RFC3339),
-			},
-		},
+		Data: data,
 		Page: PageInfo{
 			NextCursor: nil,
 			Limit:      limit,

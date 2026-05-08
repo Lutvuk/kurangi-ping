@@ -18,10 +18,10 @@ Replace hardcoded relay payload in `GetRelayHealth` with dynamic probe snapshot 
 *   **Data Models:** `RelayHealthResponse`, `RelayHealthItem`, `PageInfo`
 
 ## Acceptance Criteria (Technical)
-*   [ ] `GetRelayHealth` returns `data[]` built from latest live probe snapshot.
-*   [ ] `page.next_cursor` and `page.limit` behavior remains compatible with existing contract.
-*   [ ] Field names and JSON types remain unchanged from current Rust-consumed schema.
-*   [ ] Endpoint no longer returns hardcoded relay health values.
+*   [x] `GetRelayHealth` returns `data[]` built from latest live probe snapshot.
+*   [x] `page.next_cursor` and `page.limit` behavior remains compatible with existing contract.
+*   [x] Field names and JSON types remain unchanged from current Rust-consumed schema.
+*   [x] Endpoint no longer returns hardcoded relay health values.
 
 ## Business Rules & Logic
 *   Contract compatibility is mandatory to avoid breaking Rust client parsing and failover flow.
@@ -30,7 +30,6 @@ Replace hardcoded relay payload in `GetRelayHealth` with dynamic probe snapshot 
 *   Depends on: KP-131, KP-128
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
-
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
