@@ -264,6 +264,74 @@ func TestProbeAllRelaysUsesRealExecutor(t *testing.T) {
 	}
 }
 
+func TestClassifyRelayStatus(t *testing.T) {
+	cases := []struct {
+		name  string
+		input relayProbeResult
+		want  string
+	}{
+		{
+			name: "success low latency maps ok",
+			input: relayProbeResult{
+				Success:   true,
+				LatencyMS: 38,
+			},
+			want: relayStatusOK,
+		},
+		{
+			name: "success high latency maps warn",
+			input: relayProbeResult{
+				Success:   true,
+				LatencyMS: 120,
+			},
+			want: relayStatusWarn,
+		},
+		{
+			name: "success boundary 50ms maps warn",
+			input: relayProbeResult{
+				Success:   true,
+				LatencyMS: 50,
+			},
+			want: relayStatusWarn,
+		},
+		{
+			name: "timeout maps dead",
+			input: relayProbeResult{
+				Success:   false,
+				TimedOut:  true,
+				ErrorCode: "timeout",
+			},
+			want: relayStatusDead,
+		},
+		{
+			name: "network failure maps dead",
+			input: relayProbeResult{
+				Success:   false,
+				ErrorCode: "network_error",
+			},
+			want: relayStatusDead,
+		},
+		{
+			name: "http failure maps dead",
+			input: relayProbeResult{
+				Success:    false,
+				HTTPStatus: http.StatusServiceUnavailable,
+				ErrorCode:  "http_status",
+			},
+			want: relayStatusDead,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := classifyRelayStatus(tc.input)
+			if got != tc.want {
+				t.Fatalf("unexpected status mapping: got %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
+
 type probeStubResponse struct {
 	statusCode int
 	err        error

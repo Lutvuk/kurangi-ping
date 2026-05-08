@@ -64,6 +64,10 @@ const (
 	defaultProbeTimeoutMS  = 1200
 	minProbeTimeoutMS      = 100
 	maxProbeTimeoutMS      = 10000
+	relayStatusOK          = "ok"
+	relayStatusWarn        = "warn"
+	relayStatusDead        = "dead"
+	relayLatencyOKMaxMS    = 49
 )
 
 var defaultRelayProbeTargets = []relayProbeTarget{
@@ -200,6 +204,18 @@ func probeRelayTargetWithClient(
 	result.ErrorCode = "http_status"
 	result.ErrorMessage = http.StatusText(resp.StatusCode)
 	return result
+}
+
+func classifyRelayStatus(result relayProbeResult) string {
+	if !result.Success {
+		return relayStatusDead
+	}
+
+	if result.LatencyMS <= relayLatencyOKMaxMS {
+		return relayStatusOK
+	}
+
+	return relayStatusWarn
 }
 
 func parseRelayProbeTargets(raw string) []relayProbeTarget {

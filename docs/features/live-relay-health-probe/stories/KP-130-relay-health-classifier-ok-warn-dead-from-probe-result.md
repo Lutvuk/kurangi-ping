@@ -18,10 +18,10 @@ Map live probe outcomes into relay health status classes compatible with client 
 *   **Data Models:** `RelayHealthItem`
 
 ## Acceptance Criteria (Technical)
-*   [ ] Successful low-latency probe maps to `ok`.
-*   [ ] High-latency probe maps to `warn`.
-*   [ ] Timeout/failed probe maps to `dead`.
-*   [ ] Threshold mapping is deterministic and tested.
+*   [x] Successful low-latency probe maps to `ok`.
+*   [x] High-latency probe maps to `warn`.
+*   [x] Timeout/failed probe maps to `dead`.
+*   [x] Threshold mapping is deterministic and tested.
 
 ## Business Rules & Logic
 *   Status semantics must stay aligned with relay-failover behavior in Rust engine.
@@ -30,7 +30,6 @@ Map live probe outcomes into relay health status classes compatible with client 
 *   Depends on: KP-129, KP-049
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
-
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
