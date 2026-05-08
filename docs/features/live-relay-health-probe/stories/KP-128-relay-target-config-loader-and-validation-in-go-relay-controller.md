@@ -18,10 +18,10 @@ Implement config loader for relay probe targets and timeout values from environm
 *   **Data Models:** `relayProbeConfig`
 
 ## Acceptance Criteria (Technical)
-*   [ ] Config loader parses relay target list from environment.
-*   [ ] Invalid or empty target input is handled with explicit fallback behavior.
-*   [ ] Probe timeout value is bounded and validated.
-*   [ ] Unit tests cover valid, invalid, and default config paths.
+*   [x] Config loader parses relay target list from environment.
+*   [x] Invalid or empty target input is handled with explicit fallback behavior.
+*   [x] Probe timeout value is bounded and validated.
+*   [x] Unit tests cover valid, invalid, and default config paths.
 
 ## Business Rules & Logic
 *   Config validation must prevent malformed target data from crashing the health endpoint.
@@ -30,7 +30,6 @@ Implement config loader for relay probe targets and timeout values from environm
 *   Depends on: KP-127, KP-006
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
-
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear

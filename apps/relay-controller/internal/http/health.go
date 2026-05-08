@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"net/url"
+	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -25,6 +28,29 @@ type RelayHealthResponse struct {
 	Page PageInfo          `json:"page"`
 }
 
+type relayProbeTarget struct {
+	RelayID  string
+	ProbeURL string
+}
+
+type relayProbeConfig struct {
+	Targets   []relayProbeTarget
+	TimeoutMS int
+}
+
+const (
+	envRelayProbeTargets   = "KP_RELAY_PROBE_TARGETS"
+	envRelayProbeTimeoutMS = "KP_RELAY_PROBE_TIMEOUT_MS"
+	defaultProbeTimeoutMS  = 1200
+	minProbeTimeoutMS      = 100
+	maxProbeTimeoutMS      = 10000
+)
+
+var defaultRelayProbeTargets = []relayProbeTarget{
+	{RelayID: "sin-01", ProbeURL: "https://sin-01.example.net/healthz"},
+	{RelayID: "nrt-01", ProbeURL: "https://nrt-01.example.net/healthz"},
+}
+
 func NewRouter() http.Handler {
 	mux := http.NewServeMux()
 	registerRoutes(mux)
@@ -36,6 +62,7 @@ func registerRoutes(mux *http.ServeMux) {
 }
 
 func GetRelayHealth(w http.ResponseWriter, r *http.Request) {
+	_ = loadRelayProbeConfig()
 	limit := parseLimit(r.URL.Query().Get("limit"))
 
 	response := RelayHealthResponse{
@@ -62,6 +89,84 @@ func GetRelayHealth(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(response)
+}
+
+func loadRelayProbeConfig() relayProbeConfig {
+	return loadRelayProbeConfigWithLookup(os.Getenv)
+}
+
+func loadRelayProbeConfigWithLookup(getenv func(string) string) relayProbeConfig {
+	targets := parseRelayProbeTargets(getenv(envRelayProbeTargets))
+	if len(targets) == 0 {
+		targets = make([]relayProbeTarget, len(defaultRelayProbeTargets))
+		copy(targets, defaultRelayProbeTargets)
+	}
+
+	timeout := parseProbeTimeoutMS(getenv(envRelayProbeTimeoutMS))
+	return relayProbeConfig{
+		Targets:   targets,
+		TimeoutMS: timeout,
+	}
+}
+
+func parseRelayProbeTargets(raw string) []relayProbeTarget {
+	if strings.TrimSpace(raw) == "" {
+		return nil
+	}
+
+	entries := strings.Split(raw, ",")
+	parsed := make([]relayProbeTarget, 0, len(entries))
+	for _, entry := range entries {
+		pair := strings.SplitN(strings.TrimSpace(entry), "|", 2)
+		if len(pair) != 2 {
+			continue
+		}
+
+		relayID := strings.TrimSpace(pair[0])
+		probeURL := strings.TrimSpace(pair[1])
+		if relayID == "" || !isValidProbeURL(probeURL) {
+			continue
+		}
+
+		parsed = append(parsed, relayProbeTarget{
+			RelayID:  relayID,
+			ProbeURL: probeURL,
+		})
+	}
+
+	return parsed
+}
+
+func parseProbeTimeoutMS(raw string) int {
+	if strings.TrimSpace(raw) == "" {
+		return defaultProbeTimeoutMS
+	}
+
+	parsed, err := strconv.Atoi(raw)
+	if err != nil {
+		return defaultProbeTimeoutMS
+	}
+
+	if parsed < minProbeTimeoutMS {
+		return minProbeTimeoutMS
+	}
+	if parsed > maxProbeTimeoutMS {
+		return maxProbeTimeoutMS
+	}
+	return parsed
+}
+
+func isValidProbeURL(raw string) bool {
+	parsed, err := url.Parse(raw)
+	if err != nil {
+		return false
+	}
+
+	if parsed.Host == "" {
+		return false
+	}
+
+	return parsed.Scheme == "https" || parsed.Scheme == "http"
 }
 
 func parseLimit(raw string) int {
