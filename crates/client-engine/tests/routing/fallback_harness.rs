@@ -5,6 +5,8 @@ use client_engine::routing::{
     RouteDialer, RouteProtocol,
 };
 use client_engine::security::signature::AllowlistSignatureVerifier;
+use serde_json::Value;
+use std::collections::BTreeMap;
 use std::collections::HashSet;
 use std::fs;
 use std::path::PathBuf;
@@ -28,6 +30,13 @@ enum HarnessTerminalState {
 struct HarnessResult {
     terminal_state: HarnessTerminalState,
     trace: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct FreshnessHarnessCycleResult {
+    cycle_index: usize,
+    terminal_state: HarnessTerminalState,
+    relay_statuses: Vec<(String, RelayHealthStatus)>,
 }
 
 fn run_fallback_scenario(scenario: &FallbackScenario) -> HarnessResult {
@@ -76,6 +85,142 @@ fn run_fallback_scenario(scenario: &FallbackScenario) -> HarnessResult {
         terminal_state,
         trace,
     }
+}
+
+fn relay_health_freshness_consumption_harness(
+    payload_cycles: &[Value],
+) -> Result<Vec<FreshnessHarnessCycleResult>, String> {
+    let verifier = AllowlistSignatureVerifier::new(vec!["known-good".to_string()]);
+    let manifest = RelayManifestDto {
+        version: "2026.09.0".to_string(),
+        valid_until_unix_s: 1_900_000_000,
+        signature_b64: "known-good".to_string(),
+        relays: vec![RelayNodeDto {
+            relay_id: "sin-01".to_string(),
+            region: "sin".to_string(),
+            hostname: "sin-01.example.net".to_string(),
+            priority: 1,
+        }],
+    };
+
+    let candidates = match verify_manifest_or_fail(&verifier, &manifest, 1_700_000_000) {
+        ManifestGateResult::Passed { candidates, .. } => candidates,
+        ManifestGateResult::Blocked { failure_code } => {
+            return Err(format!(
+                "manifest verification blocked unexpectedly: {}",
+                failure_code.as_code()
+            ));
+        }
+    };
+
+    let mut last_seen_updated_at_by_relay = BTreeMap::<String, String>::new();
+    let dialer = ScenarioDialer {
+        fail_protocols: HashSet::new(),
+    };
+
+    let mut cycle_results = Vec::with_capacity(payload_cycles.len());
+    for (cycle_index, payload) in payload_cycles.iter().enumerate() {
+        let snapshots = parse_controller_health_payload(
+            payload,
+            cycle_index,
+            &mut last_seen_updated_at_by_relay,
+        )?;
+
+        let scored = score_candidates(&candidates, &snapshots, &RelayScoringConfig::default());
+        let attempt = attempt_route(
+            &[
+                RouteProtocol::WireGuard,
+                RouteProtocol::TcpTls,
+                RouteProtocol::Quic,
+            ],
+            &scored,
+            &dialer,
+        );
+        let terminal_state = match attempt.status {
+            AttemptStatus::Connected { protocol, .. } => HarnessTerminalState::Connected { protocol },
+            AttemptStatus::Exhausted { failure_code } => {
+                HarnessTerminalState::Failed { code: failure_code }
+            }
+        };
+
+        let mut relay_statuses = snapshots
+            .iter()
+            .map(|snapshot| (snapshot.relay_id.clone(), snapshot.status))
+            .collect::<Vec<_>>();
+        relay_statuses.sort_by(|left, right| left.0.cmp(&right.0));
+
+        cycle_results.push(FreshnessHarnessCycleResult {
+            cycle_index,
+            terminal_state,
+            relay_statuses,
+        });
+    }
+
+    Ok(cycle_results)
+}
+
+fn parse_controller_health_payload(
+    payload: &Value,
+    cycle_index: usize,
+    last_seen_updated_at_by_relay: &mut BTreeMap<String, String>,
+) -> Result<Vec<RelayHealthSnapshot>, String> {
+    let object = payload
+        .as_object()
+        .ok_or_else(|| format!("cycle #{cycle_index}: payload must be object"))?;
+    let data = object
+        .get("data")
+        .and_then(Value::as_array)
+        .ok_or_else(|| format!("cycle #{cycle_index}: data must be array"))?;
+
+    let mut snapshots = Vec::with_capacity(data.len());
+    for item in data {
+        let item_object = item
+            .as_object()
+            .ok_or_else(|| format!("cycle #{cycle_index}: health item must be object"))?;
+
+        let relay_id = item_object
+            .get("relay_id")
+            .and_then(Value::as_str)
+            .ok_or_else(|| format!("cycle #{cycle_index}: relay_id must be string"))?;
+        let updated_at = item_object
+            .get("updated_at")
+            .and_then(Value::as_str)
+            .ok_or_else(|| format!("cycle #{cycle_index}: updated_at must be string"))?;
+
+        if let Some(previous) = last_seen_updated_at_by_relay.get(relay_id) {
+            if updated_at <= previous.as_str() {
+                return Err(format!(
+                    "cycle #{cycle_index}: relay {relay_id} updated_at must increase (prev={previous}, now={updated_at})"
+                ));
+            }
+        }
+        last_seen_updated_at_by_relay.insert(relay_id.to_string(), updated_at.to_string());
+
+        let status = match item_object
+            .get("status")
+            .and_then(Value::as_str)
+            .ok_or_else(|| format!("cycle #{cycle_index}: status must be string"))?
+        {
+            "ok" => RelayHealthStatus::Ok,
+            "warn" => RelayHealthStatus::Warn,
+            "dead" => RelayHealthStatus::Dead,
+            invalid => return Err(format!("cycle #{cycle_index}: invalid status {invalid}")),
+        };
+
+        let latency_ms = item_object
+            .get("latency_ms")
+            .and_then(Value::as_u64)
+            .ok_or_else(|| format!("cycle #{cycle_index}: latency_ms must be integer"))?;
+
+        snapshots.push(RelayHealthSnapshot {
+            relay_id: relay_id.to_string(),
+            status,
+            latency_ms: latency_ms as u32,
+        });
+    }
+
+    snapshots.sort_by(|left, right| left.relay_id.cmp(&right.relay_id));
+    Ok(snapshots)
 }
 
 #[derive(Debug)]
@@ -257,6 +402,80 @@ fn harness_validates_exhaustion_terminal_failed_state() {
             "wireguard@sin-01:failed".to_string(),
             "tcp_tls@sin-01:failed".to_string(),
             "quic@sin-01:failed".to_string()
+        ]
+    );
+}
+
+#[test]
+fn relay_health_freshness_harness_tracks_dynamic_cycles_deterministically() {
+    let cycle_one = serde_json::json!({
+        "data": [
+            {
+                "relay_id": "sin-01",
+                "status": "ok",
+                "latency_ms": 42,
+                "updated_at": "2026-08-01T00:00:10Z"
+            }
+        ],
+        "page": {
+            "next_cursor": null,
+            "limit": 50
+        }
+    });
+    let cycle_two = serde_json::json!({
+        "data": [
+            {
+                "relay_id": "sin-01",
+                "status": "dead",
+                "latency_ms": 0,
+                "updated_at": "2026-08-01T00:00:20Z"
+            }
+        ],
+        "page": {
+            "next_cursor": null,
+            "limit": 50
+        }
+    });
+    let cycle_three = serde_json::json!({
+        "data": [
+            {
+                "relay_id": "sin-01",
+                "status": "warn",
+                "latency_ms": 125,
+                "updated_at": "2026-08-01T00:00:30Z"
+            }
+        ],
+        "page": {
+            "next_cursor": null,
+            "limit": 50
+        }
+    });
+
+    let first_run = relay_health_freshness_consumption_harness(&[
+        cycle_one.clone(),
+        cycle_two.clone(),
+        cycle_three.clone(),
+    ])
+    .expect("payload cycles should be consumable");
+    let second_run = relay_health_freshness_consumption_harness(&[cycle_one, cycle_two, cycle_three])
+        .expect("same payload cycles should remain deterministic");
+
+    assert_eq!(first_run, second_run);
+    assert_eq!(
+        first_run
+            .iter()
+            .map(|entry| entry.terminal_state.clone())
+            .collect::<Vec<_>>(),
+        vec![
+            HarnessTerminalState::Connected {
+                protocol: RouteProtocol::WireGuard
+            },
+            HarnessTerminalState::Failed {
+                code: RouteAttemptFailureCode::NoEligibleCandidates
+            },
+            HarnessTerminalState::Connected {
+                protocol: RouteProtocol::WireGuard
+            }
         ]
     );
 }

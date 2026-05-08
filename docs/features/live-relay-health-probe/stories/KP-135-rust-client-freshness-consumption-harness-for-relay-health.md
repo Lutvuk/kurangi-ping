@@ -18,10 +18,10 @@ Add client-engine side harness that validates fresh relay health snapshots from 
 *   **Data Models:** Relay health polling snapshot model
 
 ## Acceptance Criteria (Technical)
-*   [ ] Harness ingests controller-like relay health payloads with dynamic `updated_at` values.
-*   [ ] Freshness-sensitive flow in client engine accepts live updates without schema adaptation.
-*   [ ] Repeated polling cycles remain deterministic with dynamic latency/status changes.
-*   [ ] Contract compatibility remains intact with no parser regressions.
+*   [x] Harness ingests controller-like relay health payloads with dynamic `updated_at` values.
+*   [x] Freshness-sensitive flow in client engine accepts live updates without schema adaptation.
+*   [x] Repeated polling cycles remain deterministic with dynamic latency/status changes.
+*   [x] Contract compatibility remains intact with no parser regressions.
 
 ## Business Rules & Logic
 *   Rust client must consume fresh relay snapshots safely to support reliable failover decisions.
@@ -30,7 +30,6 @@ Add client-engine side harness that validates fresh relay health snapshots from 
 *   Depends on: KP-132, KP-048
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
-
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
