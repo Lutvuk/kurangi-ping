@@ -1,8 +1,12 @@
 package relayhttp
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
+	"io"
 	"log"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -36,6 +40,22 @@ type relayProbeTarget struct {
 type relayProbeConfig struct {
 	Targets   []relayProbeTarget
 	TimeoutMS int
+}
+
+type relayProbeResult struct {
+	RelayID      string
+	ProbeURL     string
+	LatencyMS    int
+	HTTPStatus   int
+	Success      bool
+	TimedOut     bool
+	ErrorCode    string
+	ErrorMessage string
+	ProbedAt     time.Time
+}
+
+type relayHTTPClient interface {
+	Do(req *http.Request) (*http.Response, error)
 }
 
 const (
@@ -109,6 +129,79 @@ func loadRelayProbeConfigWithLookup(getenv func(string) string) relayProbeConfig
 	}
 }
 
+func probeAllRelays(targets []relayProbeTarget, timeoutMS int) []relayProbeResult {
+	results := make([]relayProbeResult, 0, len(targets))
+	for _, target := range targets {
+		results = append(results, probeRelayTarget(target, timeoutMS))
+	}
+	return results
+}
+
+func probeRelayTarget(target relayProbeTarget, timeoutMS int) relayProbeResult {
+	client := &http.Client{}
+	return probeRelayTargetWithClient(client, target, timeoutMS)
+}
+
+func probeRelayTargetWithClient(
+	client relayHTTPClient,
+	target relayProbeTarget,
+	timeoutMS int,
+) relayProbeResult {
+	startedAt := time.Now().UTC()
+	timeout := time.Duration(parseProbeTimeoutMS(strconv.Itoa(timeoutMS))) * time.Millisecond
+
+	result := relayProbeResult{
+		RelayID:  target.RelayID,
+		ProbeURL: target.ProbeURL,
+		ProbedAt: startedAt,
+	}
+
+	req, err := http.NewRequestWithContext(
+		context.Background(),
+		http.MethodGet,
+		target.ProbeURL,
+		nil,
+	)
+	if err != nil {
+		result.ErrorCode = "invalid_target_url"
+		result.ErrorMessage = err.Error()
+		return result
+	}
+
+	ctx, cancel := context.WithTimeout(req.Context(), timeout)
+	defer cancel()
+	req = req.WithContext(ctx)
+
+	resp, err := client.Do(req)
+	result.LatencyMS = int(time.Since(startedAt).Milliseconds())
+	if result.LatencyMS < 0 {
+		result.LatencyMS = 0
+	}
+
+	if err != nil {
+		result.ErrorMessage = err.Error()
+		if errors.Is(err, context.DeadlineExceeded) || isTimeoutError(err) {
+			result.TimedOut = true
+			result.ErrorCode = "timeout"
+		} else {
+			result.ErrorCode = "network_error"
+		}
+		return result
+	}
+	defer resp.Body.Close()
+	_, _ = io.Copy(io.Discard, resp.Body)
+
+	result.HTTPStatus = resp.StatusCode
+	if resp.StatusCode >= http.StatusOK && resp.StatusCode < http.StatusBadRequest {
+		result.Success = true
+		return result
+	}
+
+	result.ErrorCode = "http_status"
+	result.ErrorMessage = http.StatusText(resp.StatusCode)
+	return result
+}
+
 func parseRelayProbeTargets(raw string) []relayProbeTarget {
 	if strings.TrimSpace(raw) == "" {
 		return nil
@@ -167,6 +260,11 @@ func isValidProbeURL(raw string) bool {
 	}
 
 	return parsed.Scheme == "https" || parsed.Scheme == "http"
+}
+
+func isTimeoutError(err error) bool {
+	var netErr net.Error
+	return errors.As(err, &netErr) && netErr.Timeout()
 }
 
 func parseLimit(raw string) int {

@@ -18,10 +18,10 @@ Implement real relay probing path to measure live latency and capture failure/ti
 *   **Data Models:** `relayProbeResult`
 
 ## Acceptance Criteria (Technical)
-*   [ ] Each configured relay target is probed using real network call path.
-*   [ ] Probe execution enforces bounded timeout per target.
-*   [ ] Failures/timeouts are captured as structured probe results.
-*   [ ] Unit tests validate latency capture and timeout/failure paths.
+*   [x] Each configured relay target is probed using real network call path.
+*   [x] Probe execution enforces bounded timeout per target.
+*   [x] Failures/timeouts are captured as structured probe results.
+*   [x] Unit tests validate latency capture and timeout/failure paths.
 
 ## Business Rules & Logic
 *   Probe execution must avoid unbounded blocking and must complete deterministically.
@@ -30,7 +30,6 @@ Implement real relay probing path to measure live latency and capture failure/ti
 *   Depends on: KP-128
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
-
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
