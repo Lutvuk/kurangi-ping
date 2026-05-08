@@ -14,6 +14,93 @@ import (
 	"time"
 )
 
+func TestGetRelayHealthContractRegression(t *testing.T) {
+	withStubProbeExecutor(t, []relayProbeResult{
+		{
+			RelayID:   "custom-a",
+			Success:   true,
+			LatencyMS: 777,
+			ProbedAt:  time.Date(2026, 9, 1, 10, 11, 12, 0, time.UTC),
+		},
+		{
+			RelayID:   "custom-b",
+			Success:   false,
+			TimedOut:  true,
+			ErrorCode: "timeout",
+			LatencyMS: 0,
+			ProbedAt:  time.Date(2026, 9, 1, 10, 11, 13, 0, time.UTC),
+		},
+	})
+
+	rr := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/v1/relay/health?limit=50", nil)
+	GetRelayHealth(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rr.Code)
+	}
+
+	var root map[string]any
+	if err := json.Unmarshal(rr.Body.Bytes(), &root); err != nil {
+		t.Fatalf("expected valid json, got error: %v", err)
+	}
+
+	// Envelope lock: exactly `data` + `page`.
+	if len(root) != 2 {
+		t.Fatalf("expected exactly 2 top-level keys, got %d", len(root))
+	}
+	if _, ok := root["data"]; !ok {
+		t.Fatal("missing top-level key: data")
+	}
+	if _, ok := root["page"]; !ok {
+		t.Fatal("missing top-level key: page")
+	}
+
+	page, ok := root["page"].(map[string]any)
+	if !ok {
+		t.Fatalf("expected page object, got %T", root["page"])
+	}
+	if _, ok := page["next_cursor"]; !ok {
+		t.Fatal("missing page.next_cursor")
+	}
+	if _, ok := page["limit"]; !ok {
+		t.Fatal("missing page.limit")
+	}
+
+	data, ok := root["data"].([]any)
+	if !ok {
+		t.Fatalf("expected data array, got %T", root["data"])
+	}
+	if len(data) != 2 {
+		t.Fatalf("expected 2 data entries, got %d", len(data))
+	}
+
+	// Item schema lock: exactly relay_id/status/latency_ms/updated_at.
+	first, ok := data[0].(map[string]any)
+	if !ok {
+		t.Fatalf("expected first item object, got %T", data[0])
+	}
+	if len(first) != 4 {
+		t.Fatalf("expected exactly 4 keys on data item, got %d", len(first))
+	}
+	for _, key := range []string{"relay_id", "status", "latency_ms", "updated_at"} {
+		if _, ok := first[key]; !ok {
+			t.Fatalf("missing data item key: %s", key)
+		}
+	}
+
+	// Dynamic source lock: output must reflect probe stub values, not old hardcoded defaults.
+	if first["relay_id"] != "custom-a" {
+		t.Fatalf("expected dynamic relay_id custom-a, got %#v", first["relay_id"])
+	}
+	if first["latency_ms"] != float64(777) {
+		t.Fatalf("expected dynamic latency_ms 777, got %#v", first["latency_ms"])
+	}
+	if first["status"] != relayStatusWarn {
+		t.Fatalf("expected dynamic status warn for 777ms, got %#v", first["status"])
+	}
+}
+
 func TestGetRelayHealthShape(t *testing.T) {
 	withStubProbeExecutor(t, []relayProbeResult{
 		{

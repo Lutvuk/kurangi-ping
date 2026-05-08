@@ -18,10 +18,10 @@ Add integration tests to lock response contract shape while validating dynamic d
 *   **Data Models:** `RelayHealthResponse`
 
 ## Acceptance Criteria (Technical)
-*   [ ] Tests assert response envelope fields remain unchanged (`data`, `page`).
-*   [ ] Tests assert item schema compatibility (`relay_id`, `status`, `latency_ms`, `updated_at`).
-*   [ ] Tests assert data values originate from dynamic probe path, not fixed literals.
-*   [ ] Regression suite fails if contract shape drifts.
+*   [x] Tests assert response envelope fields remain unchanged (`data`, `page`).
+*   [x] Tests assert item schema compatibility (`relay_id`, `status`, `latency_ms`, `updated_at`).
+*   [x] Tests assert data values originate from dynamic probe path, not fixed literals.
+*   [x] Regression suite fails if contract shape drifts.
 
 ## Business Rules & Logic
 *   JSON compatibility is release-blocking because Rust engine depends on this shape.
@@ -30,7 +30,6 @@ Add integration tests to lock response contract shape while validating dynamic d
 *   Depends on: KP-132
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
-
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
