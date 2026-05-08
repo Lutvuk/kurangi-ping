@@ -231,6 +231,70 @@ func TestGetRelayHealthAppliesDataLimit(t *testing.T) {
 	}
 }
 
+func TestOfflineRelayProbeMapsToDeadStatus(t *testing.T) {
+	stubResults := []relayProbeResult{
+		{
+			RelayID:   "sin-01",
+			Success:   true,
+			LatencyMS: 33,
+			ProbedAt:  time.Date(2026, 9, 2, 8, 0, 0, 0, time.UTC),
+		},
+		{
+			RelayID:   "nrt-01",
+			Success:   false,
+			TimedOut:  true,
+			ErrorCode: "timeout",
+			LatencyMS: 0,
+			ProbedAt:  time.Date(2026, 9, 2, 8, 0, 1, 0, time.UTC),
+		},
+		{
+			RelayID:   "usw-01",
+			Success:   false,
+			ErrorCode: "network_error",
+			LatencyMS: 0,
+			ProbedAt:  time.Date(2026, 9, 2, 8, 0, 2, 0, time.UTC),
+		},
+	}
+	withStubProbeExecutor(t, stubResults)
+
+	readPayload := func() RelayHealthResponse {
+		rr := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/v1/relay/health?limit=50", nil)
+		GetRelayHealth(rr, req)
+
+		if rr.Code != http.StatusOK {
+			t.Fatalf("expected 200, got %d", rr.Code)
+		}
+
+		var payload RelayHealthResponse
+		if err := json.Unmarshal(rr.Body.Bytes(), &payload); err != nil {
+			t.Fatalf("expected valid json, got error: %v", err)
+		}
+		return payload
+	}
+
+	first := readPayload()
+	if len(first.Data) != 3 {
+		t.Fatalf("expected full response generation with 3 relays, got %d", len(first.Data))
+	}
+
+	statusByRelay := map[string]string{}
+	for _, item := range first.Data {
+		statusByRelay[item.RelayID] = item.Status
+	}
+	if statusByRelay["nrt-01"] != relayStatusDead {
+		t.Fatalf("expected timeout relay nrt-01 => dead, got %q", statusByRelay["nrt-01"])
+	}
+	if statusByRelay["usw-01"] != relayStatusDead {
+		t.Fatalf("expected network failure relay usw-01 => dead, got %q", statusByRelay["usw-01"])
+	}
+
+	second := readPayload()
+	if !reflect.DeepEqual(first, second) {
+		t.Fatalf("expected deterministic repeated output, first=%+v second=%+v", first, second)
+	}
+}
+
 func withStubProbeExecutor(t *testing.T, results []relayProbeResult) {
 	t.Helper()
 

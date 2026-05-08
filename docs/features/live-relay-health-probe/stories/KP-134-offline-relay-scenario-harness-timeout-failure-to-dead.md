@@ -18,10 +18,10 @@ Validate end-to-end behavior for unreachable relay targets so timeout/failure co
 *   **Data Models:** `RelayHealthItem`
 
 ## Acceptance Criteria (Technical)
-*   [ ] Timeout probe path marks relay as `dead`.
-*   [ ] Immediate network failure path marks relay as `dead`.
-*   [ ] Offline target handling does not crash or block full response generation.
-*   [ ] Harness validates deterministic output across repeated runs.
+*   [x] Timeout probe path marks relay as `dead`.
+*   [x] Immediate network failure path marks relay as `dead`.
+*   [x] Offline target handling does not crash or block full response generation.
+*   [x] Harness validates deterministic output across repeated runs.
 
 ## Business Rules & Logic
 *   Offline detection must be explicit to support failover decision quality in client engine.
@@ -30,7 +30,6 @@ Validate end-to-end behavior for unreachable relay targets so timeout/failure co
 *   Depends on: KP-132, KP-133
 
 ## Definition of Done
-*   [ ] Code implemented
-*   [ ] Unit tests passing
-*   [ ] Lint/Type check clear
-
+*   [x] Code implemented
+*   [x] Unit tests passing
+*   [x] Lint/Type check clear
